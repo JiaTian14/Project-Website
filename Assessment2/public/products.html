@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Products - TechMart</title>
+  <title>Products - We Care You </title>
   <style>
     * {
       margin: 0;
@@ -14,13 +14,13 @@
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f8f9fa;
-      color: #333;
+      color: #070707;
       padding-top: 80px;
     }
 
     /* Header Styles */
     header {
-      background-color: #2d6a4f;
+      background-color: #BF6900;
       padding: 1rem;
       position: fixed;
       width: 100%;
@@ -44,8 +44,8 @@
     }
 
     .logo h1 {
-      color: white;
-      font-size: 1.8rem;
+      color: #070707;
+      font-size: 2.0rem;
       font-weight: 600;
     }
 
@@ -67,9 +67,9 @@
     }
 
     .nav-links a {
-      color: white;
+      color: #070707;
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 900;
       padding: 8px 15px;
       border-radius: 4px;
       transition: background-color 0.3s;
@@ -88,13 +88,13 @@
     }
 
     .login-btn {
-      color: #2d6a4f;
+      color: #070707;
       background-color: white;
     }
 
     .register-btn {
-      color: white;
-      border: 1px solid white;
+      color: #070707;
+      background-color: white;
       margin-left: 10px;
     }
 
@@ -145,12 +145,13 @@
 
     .page-title {
       text-align: center;
-      color: #2d6a4f;
+      color: #070707;
       margin: 20px 0 40px;
       font-size: 2.5rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
+      margin-top: 50px;
     }
 
     .filters {
@@ -162,7 +163,7 @@
 
     .search-bar {
       flex: 1;
-      max-width: 300px;
+      max-width: 500px;
       position: relative;
     }
 
@@ -240,7 +241,7 @@
     .product-name {
       font-size: 1.4rem;
       font-weight: 700;
-      color: #2d6a4f;
+      color: #070707;
       margin-bottom: 12px;
       line-height: 1.3;
       display: -webkit-box;
@@ -259,7 +260,7 @@
 
     .product-price {
       font-size: 1.5rem;
-      color: #2d6a4f;
+      color: #070707;
       font-weight: 800;
       margin-bottom: 12px;
       display: flex;
@@ -268,7 +269,7 @@
     }
 
     .product-price::before {
-      content: '$';
+      content: 'RM';
       font-size: 1rem;
       font-weight: 600;
     }
@@ -302,7 +303,7 @@
     }
 
     .loading {
-      color: #2d6a4f;
+      color: #070707;
       background: rgba(45, 106, 79, 0.1);
     }
 
@@ -313,7 +314,7 @@
 
     /* 添加到 style ��分 */
     .add-to-cart-btn {
-      background: #2d6a4f;
+      background: #BF6900;
       color: white;
       border: none;
       padding: 8px 16px;
@@ -326,7 +327,7 @@
     }
 
     .add-to-cart-btn:hover {
-      background: #235c3f;
+      background: #BF6900;
     }
 
     .add-to-cart-btn:disabled {
@@ -340,8 +341,8 @@
     <div class="header-container">
       <div class="logo">
             <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
-          <i class="fas fa-shopping-bag"></i>
-          <h1>TechMart</h1>
+              <img src="images/Logo.png" alt="Company Logo" width="100" height="100">
+          <h1>We Care You</h1>
         </a>
       </div>
           <nav class="header-nav">
@@ -356,7 +357,6 @@
         </ul>
             <div class="auth-buttons">
               <a href="login.html" class="login-btn">Login</a>
-              <a href="register.html" class="register-btn">Register</a>
               <a href="clientlogin.html" class="login-btn">Seller Login</a>
             </div>
       </nav>
@@ -442,7 +442,7 @@
                 <div class="product-info">
                     <h3 class="product-name">${product.name}</h3>
                     <p class="product-category">${product.category}</p>
-                    <p class="product-price">$${product.price.toFixed(2)}</p>
+                    <p class="product-price">${product.price.toFixed(2)}</p>
                     <p class="product-stock ${product.stock <= 0 ? 'out-of-stock' : ''}">
                         ${product.stock > 0 ? `In Stock (${product.stock})` : 'Out of Stock'}
                     </p>

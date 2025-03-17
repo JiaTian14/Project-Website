@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details - TechMart</title>
+    <title>Product Details - We Care You</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
@@ -15,13 +15,13 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8f9fa;
-            color: #333;
+            color: #070707;
             padding-top: 80px;
         }
 
         /* Header Styles */
     header {
-      background-color: #2d6a4f;
+      background-color: #BF6900;
       padding: 1rem;
       position: fixed;
       width: 100%;
@@ -45,13 +45,13 @@
     }
 
     .logo h1 {
-      color: white;
-      font-size: 1.8rem;
+      color: #070707;
+      font-size: 2.0rem;
       font-weight: 600;
     }
 
     .logo i {
-      color: #fff;
+      color: #070707;
       font-size: 2rem;
     }
 
@@ -68,9 +68,9 @@
     }
 
     .nav-links a {
-      color: white;
+      color: #070707;
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 900;
       padding: 8px 15px;
       border-radius: 4px;
       transition: background-color 0.3s;
@@ -89,13 +89,13 @@
     }
 
     .login-btn {
-      color: #2d6a4f;
+      color: #070707;
       background-color: white;
     }
 
     .register-btn {
-      color: white;
-      border: 1px solid white;
+      color: #070707;
+      background-color: white;
       margin-left: 10px;
     }
 
@@ -126,7 +126,7 @@
       display: inline-block;
       padding: 15px 30px;
       background-color: #fff;
-      color: #2d6a4f;
+      color: #BF6900;
       text-decoration: none;
       border-radius: 5px;
       font-weight: bold;
@@ -176,13 +176,13 @@
         }
 
         .product-header {
-            border-bottom: 2px solid #e9ecef;
+            border-bottom: 2px solid #070707;
             padding-bottom: 20px;
         }
 
         .product-name {
             font-size: 2.5rem;
-            color: #2d6a4f;
+            color: #070707;
             margin-bottom: 10px;
         }
 
@@ -197,14 +197,20 @@
 
         .product-price {
             font-size: 2rem;
-            color: #2d6a4f;
+            color: #070707;
             font-weight: bold;
             margin: 20px 0;
         }
 
+        .product-price::before {
+        content: 'RM';
+        font-size: 1rem;
+        font-weight: 600;
+        }
+
         .product-description {
-            color: #6c757d;
-            line-height: 1.6;
+            color: #070707;
+            line-height: 1.7;
             margin-bottom: 20px;
         }
 
@@ -232,8 +238,8 @@
         }
 
         .add-to-cart {
-            background: #2d6a4f;
-            color: white;
+            background: #BF6900;
+            color: #070707;
             border: none;
             padding: 15px 30px;
             border-radius: 8px;
@@ -245,11 +251,11 @@
         }
 
         .add-to-cart:hover {
-            background: #235c3f;
+            background: #BF6900;
         }
 
         .add-to-cart:disabled {
-            background: #6c757d;
+            background: #070707;
             cursor: not-allowed;
         }
 
@@ -257,10 +263,11 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            color: #2d6a4f;
+            color: #495057;
             text-decoration: none;
             font-weight: 500;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            margin-top: 80px;
         }
 
         .back-button:hover {
@@ -272,7 +279,7 @@
             text-align: center;
             padding: 40px;
             font-size: 1.2rem;
-            color: #6c757d;
+            color: #070707;
         }
 
         /* Error State */
@@ -293,9 +300,9 @@
         .quantity-controls button {
             width: 36px;
             height: 36px;
-            border: 2px solid #2d6a4f;
+            border: 2px solid #070707;
             background: white;
-            color: #2d6a4f;
+            color: #070707;
             font-size: 1.2rem;
             border-radius: 4px;
             cursor: pointer;
@@ -305,7 +312,7 @@
             transition: all 0.3s ease;
         }
         .quantity-controls button:hover {
-            background: #2d6a4f;
+            background: #BF6900;
             color: white;
         }
 
@@ -326,7 +333,7 @@
         .add-to-cart {
             width: 100%;
             padding: 12px 24px;
-            background-color: #2d6a4f;
+            background-color: #BF6900;
             color: white;
             border: none;
             border-radius: 6px;
@@ -342,7 +349,7 @@
         }
 
         .add-to-cart:hover {
-            background-color: #235c3f;
+            background-color: #BF6900;
         }
 
         .add-to-cart:disabled {
@@ -378,8 +385,8 @@
         <div class="header-container">
           <div class="logo">
             <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
-                <i class="fas fa-shopping-bag"></i>
-                <h1>TechMart</h1>
+                <img src="images/Logo.png" alt="Company Logo" width="100" height="100">
+                <h1>We Care You</h1>
             </a>
           </div>
           <nav class="header-nav">
@@ -394,7 +401,6 @@
             </ul>
             <div class="auth-buttons">
               <a href="login.html" class="login-btn">Login</a>
-              <a href="register.html" class="register-btn">Register</a>
               <a href="clientlogin.html" class="login-btn">Seller Login</a>
             </div>
           </nav>
@@ -468,7 +474,7 @@ let quantity = 1;
                         
                         <p class="product-description">${product.description || 'No description available'}</p>
                         
-                        <div class="product-price">$${product.price.toFixed(2)}</div>
+                        <div class="product-price">${product.price.toFixed(2)}</div>
                         
                         <div class="product-stock">
                             <span>Availability:</span>

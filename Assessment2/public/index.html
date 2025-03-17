@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechMart - Your Ultimate E-commerce Destination</title>
+  <title>We Care You Sdn.Bhd</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     /* Global Styles */
@@ -17,12 +21,12 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       line-height: 1.6;
       background-color: #f8f9fa;
-      color: #333;
+      color: #070707;
     }
 
     /* Header Styles */
     header {
-      background-color: #2d6a4f;
+      background-color: #BF6900;
       padding: 1rem;
       position: fixed;
       width: 100%;
@@ -46,8 +50,8 @@
     }
 
     .logo h1 {
-      color: white;
-      font-size: 1.8rem;
+      color: #070707;
+      font-size: 2.0rem;
       font-weight: 600;
     }
 
@@ -69,9 +73,9 @@
     }
 
     .nav-links a {
-      color: white;
+      color: #070707;
       text-decoration: none;
-      font-weight: 500;
+      font-weight: 900;
       padding: 8px 15px;
       border-radius: 4px;
       transition: background-color 0.3s;
@@ -90,27 +94,32 @@
     }
 
     .login-btn {
-      color: #2d6a4f;
+      color: #070707;
       background-color: white;
     }
 
     .register-btn {
-      color: white;
+      color: #070707;
       border: 1px solid white;
+      background-color: white;
       margin-left: 10px;
     }
 
     /* Hero Section */
     .hero {
-      margin-top: 80px;
-      background: linear-gradient(rgba(45, 106, 79, 0.9), rgba(45, 106, 79, 0.9)),
-                  url('https://images.unsplash.com/photo-1607082349566-187342175e2f?ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80');
-      background-size: cover;
-      background-position: center;
-      color: white;
-      text-align: center;
-      padding: 100px 20px;
-    }
+    margin-top: 150px;
+    background: 
+                url('images/banner.png');
+    background-size: 100%; /* Ensures the full image is visible */
+    background-position: center;
+    background-repeat: no-repeat; /* Prevents tiling */
+    color: white;
+    text-align: center;
+    padding: 100px 20px;
+    height: 10vh; /* Make it take full viewport height */
+    width: 100%; /* Full width */
+}
+
 
     .hero h2 {
       font-size: 3rem;
@@ -127,7 +136,7 @@
       display: inline-block;
       padding: 15px 30px;
       background-color: #fff;
-      color: #2d6a4f;
+      color: #070707;
       text-decoration: none;
       border-radius: 5px;
       font-weight: bold;
@@ -149,7 +158,7 @@
       text-align: center;
       font-size: 2rem;
       margin-bottom: 50px;
-      color: #2d6a4f;
+      color: #070707;
     }
 
     .features-grid {
@@ -173,13 +182,13 @@
 
     .feature-card i {
       font-size: 2.5rem;
-      color: #2d6a4f;
+      color: #070707;
       margin-bottom: 20px;
     }
 
     .feature-card h4 {
       margin-bottom: 15px;
-      color: #2d6a4f;
+      color: #070707;
     }
 
     /* Categories Section */
@@ -197,7 +206,7 @@
       text-align: center;
       font-size: 2rem;
       margin-bottom: 50px;
-      color: #2d6a4f;
+      color: #070707;
     }
 
     .categories-grid {
@@ -237,8 +246,8 @@
 
     /* Footer */
     footer {
-      background-color: #2d6a4f;
-      color: white;
+      background-color: #BF6900;
+      color: #070707;
       padding: 50px 20px 20px;
     }
 
@@ -295,14 +304,17 @@
     .social-links a:hover {
       transform: translateY(-3px);
     }
+
+    
   </style>
 </head>
 <body>
   <header>
     <div class="header-container">
       <div class="logo">
-        <i class="fas fa-shopping-bag"></i>
-        <h1>TechMart</h1>
+        <img src="images/Logo.png" alt="Company Logo" width="100" height="100">
+
+        <h1>We Care You</h1>
       </div>
       <nav class="header-nav">
         <ul class="nav-links">
@@ -314,7 +326,6 @@
         </ul>
         <div class="auth-buttons">
           <a href="login.html" class="login-btn">Login</a>
-          <a href="register.html" class="register-btn">Register</a>
           <a href="clientlogin.html" class="login-btn">Seller Login</a>
         </div>
       </nav>
@@ -322,55 +333,78 @@
   </header>
 
   <section class="hero">
-    <h2>Welcome to TechMart</h2>
-    <p>Discover amazing products at unbeatable prices. Shop the latest trends in technology, fashion, and more.</p>
+    <h2>Welcome to We Care You</h2>
     <a href="products.html" class="cta-button">Shop Now</a>
   </section>
 
-  <section class="features">
-    <h3>Why Choose Us</h3>
-    <div class="features-grid">
-      <div class="feature-card">
-        <i class="fas fa-shield-alt"></i>
-        <h4>Secure Payment</h4>
-        <p>100% secure payment processing</p>
-      </div>
-      <div class="feature-card">
-        <i class="fas fa-headset"></i>
-        <h4>24/7 Support</h4>
-        <p>Dedicated support team</p>
-      </div>
+  <div class="product-slider-container">
+    <h2 class="section-title">Product Category</h2>
+    <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide">
+                <img src="images/logo.png" alt="Food Container">
+                <p>Food Container</p>
+            </div>
+            <div class="swiper-slide">
+                <img src="images/logo.png" alt="Bottle & Tumbler">
+                <p>Bottle & Tumbler</p>
+            </div>
+            <div class="swiper-slide">
+                <img src="images/logo.png" alt="Kitchenware">
+                <p>Kitchenware</p>
+            </div>
+            <div class="swiper-slide">
+                <img src="images/logo.png" alt="Tableware">
+                <p>Tableware</p>
+            </div>
+        </div>
+        <!-- Navigation buttons -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
     </div>
-  </section>
+</div>
+
 
   
 
   <footer>
     <div class="footer-content">
       <div class="footer-section">
-        <h4>About TechMart</h4>
+        <h4>We Care You Sdn.Bhd.</h4>
         <ul>
-          <li><a href="about.html">About Us</a></li>
+          <li><i class="fas fa-building"></i> HQ</li>
+          <li>571, Jalan Kubang Semang 14000 Bukit Mertajam, Pulau Pinang</li>
+          <li>Business Hour: Mon-Sat 9:00AM - 7:00PM</li>
+          <br>
+          <li><i class="fas fa-store"></i>Outlet</li>
+          <li>NO.69 & 70 Persiaran 1 Kulim Avenue, Kulim Hi-Tech, 09000 Kulim Kedah</li>
+          <li>Business Hour: Mon-Sun 10:00AM - 8:00PM</li>
+          <br>
         </ul>
       </div>
       <div class="footer-section">
         <h4>Customer Service</h4>
         <ul>
-          <li><a href="contact.html">Contact</a></li>
+          <li><i class="fas fa-envelope"></i> Email</li>
+          <li>wecareyousdnbhd@gmail.com</li>
+          <br>
+          <li><i class="fa fa-phone"></i>Call Us</li>
+          <li>Tel: 011-11937602</li>
         </ul>
-      </div>
-      <div class="footer-section">
-        <h4>Connect With Us</h4>
+        <br>
+        <ul>Follow Us</ul>
         <div class="social-links">
-          <a href="#"><i class="fab fa-facebook"></i></a>
-          <a href="#"><i class="fab fa-twitter"></i></a>
-          <a href="#"><i class="fab fa-instagram"></i></a>
-          <a href="#"><i class="fab fa-linkedin"></i></a>
+          <a href="https://www.facebook.com/WeCareYou20/" target="_blank">
+            <i class="fab fa-facebook"></i>
+        </a>
+        <a href="https://www.instagram.com/wecareyou20?igsh=aTUzbnhjeDVraXN1" target="_blank">
+          <i class="fab fa-instagram"></i>
+      </a>
         </div>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; 2024 TechMart. All Rights Reserved.</p>
+      <p>&copy; 2025 We Care You. All Rights Reserved.</p>
     </div>
   </footer>
 

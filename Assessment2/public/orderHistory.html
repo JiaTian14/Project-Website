@@ -15,64 +15,90 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8f9fa;
-            color: #333;
+            color: #070707;
             padding-top: 80px;
         }
 
         /* Header Styles */
-        header {
-            background-color: #2d6a4f;
-            padding: 1rem;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+    header {
+      background-color: #BF6900;
+      padding: 1rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
 
-        .header-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-        .logo a {
-            color: white;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        .logo i {
-            font-size: 2rem;
-        }
+    .logo h1 {
+      color: #070707;
+      font-size: 2.0rem;
+      font-weight: 600;
+    }
 
-        .logo h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
-        }
+    .logo i {
+      color: #fff;
+      font-size: 2rem;
+    }
 
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            list-style: none;
-        }
+    .header-nav {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
 
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 8px 15px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
 
-        .nav-links a:hover {
-            background-color: rgba(255,255,255,0.1);
-        }
+    .nav-links a {
+      color: #070707;
+      text-decoration: none;
+      font-weight: 900;
+      padding: 8px 15px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    .nav-links a:hover {
+      background-color: rgba(255,255,255,0.1);
+    }
+
+    .auth-buttons a {
+      padding: 8px 20px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .login-btn {
+      color: #070707;
+      background-color: white;
+    }
+
+    .register-btn {
+      color: #070707;
+      border: 1px solid white;
+      background-color: white;
+      margin-left: 10px;
+    }
 
         /* Order History Styles */
         .container {
@@ -83,8 +109,9 @@
 
         .page-title {
             text-align: center;
-            color: #2d6a4f;
+            color: #070707;
             margin-bottom: 30px;
+            margin-top: 80px;
             font-size: 2.5rem;
         }
 
@@ -108,7 +135,7 @@
         }
 
         .order-header h3 {
-            color: #2d6a4f;
+            color: #070707;
             margin-bottom: 10px;
             font-size: 1.2rem;
         }
@@ -150,12 +177,12 @@
         }
 
         .item-details h4 {
-            color: #2d6a4f;
+            color: #070707;
             margin-bottom: 5px;
         }
 
         .item-price {
-            color: #2d6a4f;
+            color: #070707;
             font-weight: bold;
         }
 
@@ -165,14 +192,14 @@
             border-top: 1px solid #e9ecef;
             text-align: right;
             font-weight: bold;
-            color: #2d6a4f;
+            color: #070707;
         }
 
         .back-button {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            color: #2d6a4f;
+            color: #6c757d;
             text-decoration: none;
             font-weight: 500;
             margin-bottom: 20px;
@@ -204,7 +231,7 @@
         .shop-now-btn {
             display: inline-block;
             padding: 10px 20px;
-            background: #2d6a4f;
+            background: #BF6900;
             color: white;
             text-decoration: none;
             border-radius: 6px;
@@ -212,7 +239,7 @@
         }
 
         .shop-now-btn:hover {
-            background: #235c3f;
+            background: #BF6900;
         }
     </style>
 </head>
@@ -220,22 +247,26 @@
     <header>
         <div class="header-container">
             <div class="logo">
-                <a href="index.html">
-                    <i class="fas fa-shopping-bag"></i>
-                    <h1>TechMart</h1>
+                <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                    <img src="images/Logo.png" alt="Company Logo" width="100" height="100">
+                    <h1>We Care You</h1>
                 </a>
             </div>
-            <nav>
-                <ul class="nav-links">
-                  <li><a href="products.html">Products</a></li>
-                  <li><a href="about.html">About</a></li>
-                  <li><a href="contact.html">Contact</a></li>
-                  <li><a href="profile.html">Profile</a></li>
-                  <li><a href="cart.html">Cart</a></li>
-                </ul>
-            </nav>
+          <nav class="header-nav">
+            <ul class="nav-links">
+              <li><a href="products.html">Products</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="contact.html">Contact</a></li>
+              <li><a href="profile.html">Profile</a></li>
+              <li><a href="cart.html">Cart</a></li>
+            </ul>
+            <div class="auth-buttons">
+              <a href="login.html" class="login-btn">Login</a>
+              <a href="clientlogin.html" class="login-btn">Seller Login</a>
+            </div>
+          </nav>
         </div>
-    </header>
+      </header>
 
     <div class="container">
         <h1 class="page-title">Order History</h1>
@@ -293,13 +324,13 @@
                                         <p>Quantity: ${product.quantity}</p>
                                     </div>
                                     <div class="item-price">
-                                        $${(product.price * product.quantity).toFixed(2)}
+                                        RM ${(product.price * product.quantity).toFixed(2)}
                                     </div>
                                 </div>
                             `).join('')}
                         </div>
                         <div class="order-total">
-                            Total: $${order.total.toFixed(2)}
+                            Total: RM ${order.total.toFixed(2)}
                         </div>
                     </div>
                 `).join('');

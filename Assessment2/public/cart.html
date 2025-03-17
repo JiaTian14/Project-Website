@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart - TechMart</title>
+    <title>Shopping Cart - We Care You</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
@@ -15,13 +15,13 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f8f9fa;
-            color: #333;
+            color: #070707;
             padding-top: 80px;
         }
 
         /* Header Styles */
         header {
-            background-color: #2d6a4f;
+            background-color: #BF6900;
             padding: 1rem;
             position: fixed;
             width: 100%;
@@ -45,8 +45,8 @@
         }
 
         .logo h1 {
-            color: white;
-            font-size: 1.8rem;
+            color: #070707;
+            font-size: 2.0rem;
             font-weight: 600;
         }
 
@@ -59,6 +59,7 @@
             display: flex;
             gap: 20px;
             align-items: center;
+            
         }
 
         .nav-links {
@@ -68,9 +69,9 @@
         }
 
         .nav-links a {
-            color: white;
+            color: #070707;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 900;
             padding: 8px 15px;
             border-radius: 4px;
             transition: background-color 0.3s;
@@ -89,13 +90,13 @@
         }
 
         .login-btn {
-            color: #2d6a4f;
+            color: #070707;
             background-color: white;
         }
 
         .register-btn {
-            color: white;
-            border: 1px solid white;
+            color: #070707;
+            background-color: white;
             margin-left: 10px;
         }
 
@@ -108,9 +109,11 @@
 
         .page-title {
             text-align: center;
-            color: #2d6a4f;
+            color: #070707;
             margin-bottom: 30px;
             font-size: 2.5rem;
+            margin-top: 90px;
+            
         }
 
         .cart-container {
@@ -147,14 +150,18 @@
         }
 
         .product-info h3 {
-            color: #2d6a4f;
+            color: #070707;
             margin-bottom: 5px;
         }
 
         .product-price {
-            color: #2d6a4f;
-            font-weight: bold;
+            color: #070707;
             font-size: 1.2rem;
+        }
+        .product-price::before {
+        content: 'RM';
+        font-size: 1rem;
+        font-weight: 600;
         }
 
         .quantity-controls {
@@ -212,7 +219,7 @@
         .total-row {
             font-size: 1.4rem;
             font-weight: bold;
-            color: #2d6a4f;
+            color: #070707;
             margin-top: 20px;
             padding-top: 20px;
             border-top: 2px solid #e9ecef;
@@ -245,14 +252,14 @@
         }
 
         .checkout-btn {
-            background: #2d6a4f;
+            background: #BF6900;
             color: white;
             border: none;
             cursor: pointer;
         }
 
         .checkout-btn:hover {
-            background: #235c3f;
+            background: #BF6900;
         }
 
         .empty-cart {
@@ -288,8 +295,8 @@
         <div class="header-container">
             <div class="logo">
                 <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
-                    <i class="fas fa-shopping-bag"></i>
-                    <h1>TechMart</h1>
+                    <img src="images/Logo.png" alt="Company Logo" width="100" height="100">
+                    <h1>We Care You</h1>
                 </a>
             </div>
             <nav class="header-nav">
@@ -302,7 +309,6 @@
                 </ul>
                 <div class="auth-buttons">
                     <a href="login.html" class="login-btn">Login</a>
-                    <a href="register.html" class="register-btn">Register</a>
                     <a href="clientlogin.html" class="login-btn">Seller Login</a>
                 </div>
             </nav>
@@ -324,15 +330,15 @@
             <div class="cart-summary">
                 <div class="summary-row">
                     <span>Subtotal</span>
-                    <span id="subtotal">$0.00</span>
+                    <span id="subtotal">RM 0.00</span>
                 </div>
                 <div class="summary-row">
                     <span>Shipping</span>
-                    <span id="shipping">$0.00</span>
+                    <span id="shipping">RM 0.00</span>
                 </div>
                 <div class="summary-row total-row">
                     <span>Total</span>
-                    <span id="total">$0.00</span>
+                    <span id="total">RM 0.00</span>
                 </div>
             </div>
 
@@ -442,7 +448,7 @@
             </div>
             <div class="product-info">
                 <h3>${item.name}</h3>
-                <p class="product-price">$${item.price.toFixed(2)}</p>
+                <p class="product-price">${item.price.toFixed(2)}</p>
             </div>
             <div class="quantity-controls">
                 <button class="quantity-btn" onclick="updateQuantity('${item.productId}', ${item.quantity - 1})"
@@ -450,7 +456,7 @@
                 <span class="quantity">${item.quantity}</span>
                 <button class="quantity-btn" onclick="updateQuantity('${item.productId}', ${item.quantity + 1})">+</button>
             </div>
-            <div class="product-price">$${(item.price * item.quantity).toFixed(2)}</div>
+            <div class="product-price">${(item.price * item.quantity).toFixed(2)}</div>
             <button class="remove-btn" onclick="removeFromCart('${item.productId}')">
                 <i class="fas fa-trash"></i>
             </button>
@@ -507,9 +513,9 @@
     const shipping = subtotal > 50 ? 0 : 10;
     const total = subtotal + shipping;
 
-    document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
-    document.getElementById('shipping').textContent = `$${shipping.toFixed(2)}`;
-    document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+    document.getElementById('subtotal').textContent = `RM ${subtotal.toFixed(2)}`;
+    document.getElementById('shipping').textContent = `RM ${shipping.toFixed(2)}`;
+    document.getElementById('total').textContent = `RM ${total.toFixed(2)}`;
     document.querySelector('.cart-summary').style.display = 'block';
 }
         

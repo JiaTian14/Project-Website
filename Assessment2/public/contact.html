@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - TechMart</title>
+    <title>Contact Us - We Care You</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
@@ -16,12 +16,12 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             background-color: #f8f9fa;
-            color: #333;
+            color: #070707;
         }
 
         /* Header Styles */
         header {
-        background-color: #2d6a4f;
+        background-color: #BF6900;
         padding: 1rem;
         position: fixed;
         width: 100%;
@@ -45,8 +45,8 @@
         }
 
         .logo h1 {
-        color: white;
-        font-size: 1.8rem;
+        color: #070707;
+        font-size: 2.0rem;
         font-weight: 600;
         }
 
@@ -68,9 +68,9 @@
         }
 
         .nav-links a {
-        color: white;
+        color: #070707;
         text-decoration: none;
-        font-weight: 500;
+        font-weight: 900;
         padding: 8px 15px;
         border-radius: 4px;
         transition: background-color 0.3s;
@@ -89,13 +89,13 @@
         }
 
         .login-btn {
-        color: #2d6a4f;
+        color: #070707;
         background-color: white;
         }
 
         .register-btn {
-          color: white;
-          border: 1px solid white;
+          color: #070707;
+          background-color: white;
           margin-left: 10px;
         }
 
@@ -123,7 +123,7 @@
 
         .contact-hero h1 {
             font-size: 2.5rem;
-            color: #2d6a4f;
+            color: #070707;
             margin-bottom: 20px;
         }
 
@@ -170,7 +170,7 @@
         .form-group input:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #2d6a4f;
+            border-color: #070707;
         }
 
         .form-group textarea {
@@ -179,7 +179,7 @@
         }
 
         .submit-btn {
-            background-color: #2d6a4f;
+            background-color: #070707;
             color: white;
             padding: 12px 24px;
             border: none;
@@ -201,8 +201,10 @@
         }
 
         .contact-info h2 {
-            color: #2d6a4f;
+            color: #070707;
             margin-bottom: 20px;
+            margin-top: 50px;
+            font-weight: bold;
         }
 
         .info-item {
@@ -213,7 +215,7 @@
         }
 
         .info-item i {
-            color: #2d6a4f;
+            color: #070707;
             font-size: 1.2rem;
             margin-top: 4px;
         }
@@ -241,7 +243,7 @@
         }
 
         .social-icons a {
-            color: #2d6a4f;
+            color: #070707;
             font-size: 1.5rem;
             transition: transform 0.3s;
         }
@@ -263,6 +265,19 @@
             height: 100%;
             border: 0;
         }
+
+        iframe {
+            width: 80%; /* Adjust width as needed */
+            max-width: 600px; /* Set a maximum width */
+            height: 350px;
+            border: 2px solid #ccc; /* Optional: Add border */
+            border-radius: 10px; /* Optional: Rounded corners */
+        }
+
+        .map-container {
+            text-align: center;
+            margin: 20px auto;
+        }
     </style>
 </head>
 <body>
@@ -270,8 +285,8 @@
         <div class="header-container">
           <div class="logo">
             <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
-                <i class="fas fa-shopping-bag"></i>
-                <h1>TechMart</h1>
+                <img src="images/Logo.png" alt="Company Logo" width="100" height="100">
+                <h1>We Care You</h1>
             </a>
           </div>
           <nav class="header-nav">
@@ -284,7 +299,6 @@
             </ul>
             <div class="auth-buttons">
               <a href="login.html" class="login-btn">Login</a>
-              <a href="register.html" class="register-btn">Register</a>
               <a href="clientlogin.html" class="login-btn">Seller Login</a>
             </div>
           </nav>
@@ -292,33 +306,6 @@
       </header>
 
     <div class="contact-container">
-        <div class="contact-hero">
-            <h1>Get in Touch</h1>
-            <p>Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
-        </div>
-
-        <div class="contact-content">
-            <div class="contact-form">
-                <form id="contactForm" onsubmit="handleSubmit(event)">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" id="name" name="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="subject">Subject</label>
-                        <input type="text" id="subject" name="subject" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea id="message" name="message" required></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn">Send Message</button>
-                </form>
-            </div>
 
             <div class="contact-info">
                 <h2>Contact Information</h2>
@@ -326,42 +313,74 @@
                     <i class="fas fa-map-marker-alt"></i>
                     <div>
                         <h3>Address</h3>
-                        <p>23, Lorong Industrian Bukit Merah<br>Taman Industrian Bukit Merah, Kuala Lumpur</p>
+                        <p>HQ : We Care You <br>
+                            571, Jalan Kubang Semang 14000 Bukit Mertajam, Pulau Pinang</p>
+                        <br>
+                        <p>OUTLET : My Plas <br>
+                             NO.69 & 70 Persiaran 1 Kulim Avenue, Kulim Hi-Tech, 09000 Kulim Kedah<p>
                     </div>
                 </div>
                 <div class="info-item">
                     <i class="fas fa-phone"></i>
                     <div>
                         <h3>Phone</h3>
-                        <p>(+60) 04-7292683</p>
+                        <p>011-11937602</p>
                     </div>
                 </div>
                 <div class="info-item">
                     <i class="fas fa-envelope"></i>
                     <div>
                         <h3>Email</h3>
-                        <p>techmart@gamil.com</p>
+                        <p>wecareyousdnbhd@gamil.com</p>
                     </div>
                 </div>
                 <div class="info-item">
                     <i class="fas fa-clock"></i>
                     <div>
                         <h3>Working Hours</h3>
-                        <p>Monday - Friday: 9:00 AM - 6:00 PM<br>Saturday: 10:00 AM - 4:00 PM</p>
+                        <p>HQ : We Care You <br>
+                        Monday - Saturday: 9:00 AM - 7:00 PM<br></p><br>
+                        <p>OUTLET : My Plas  <br>
+                            Monday - Sunday: 10:00 AM - 8:00 PM<br></p>
                     </div>
                 </div>
 
                 <div class="social-links">
                     <h3>Follow Us</h3>
                     <div class="social-icons">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="https://www.facebook.com/WeCareYou20/" target="_blank">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="https://www.instagram.com/wecareyou20?igsh=aTUzbnhjeDVraXN1" target="_blank">
+                          <i class="fab fa-instagram"></i>
+                      </a>
                     </div>
                 </div>
             </div>
         </div>
+
+        <h1 style="text-align: center;">Our Location</h3>
+
+    <div class="map-container">
+        <h4>HQ : We Care You</h4>
+        <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.9985737860136!2d100.4634085!3d5.4037806!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304acf68c05aa0d3%3A0xc7a7cbf8b444f3a1!2sWe%20Care%20You%20Sdn%20Bhd!5e0!3m2!1sen!2smy!4v1700000000000"
+            allowfullscreen="" 
+            loading="lazy">
+        </iframe>
+    </div>
+
+    <div class="map-container">
+        <h4>Outlet: My Plas</h4>
+        <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3977.3275305838145!2d100.5683352!3d5.3884861!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304acd991cff2237%3A0x52c7672b19d8ff1c!2sMy%20Plas!5e0!3m2!1sen!2smy!4v1700000000000"
+            allowfullscreen="" 
+            loading="lazy">
+        </iframe>
+    </div>
+
+
+
 
     </div>
 
