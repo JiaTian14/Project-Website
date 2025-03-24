@@ -166,6 +166,9 @@
             bottom: 0;
             background: rgba(0,0,0,0.5);
             z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .modal-content {
@@ -173,8 +176,11 @@
             width: 90%;
             max-width: 600px;
             margin: 50px auto;
+            height: 80vh; /* Set a fixed height */
+            overflow-y: auto; /* Enable scrolling */
             padding: 30px;
             border-radius: 12px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
         }
 
         .form-group {
@@ -183,6 +189,7 @@
 
         .form-group label {
             display: block;
+            font-weight: bold;
             margin-bottom: 8px;
             color: #495057;
         }
@@ -193,7 +200,14 @@
             width: 100%;
             padding: 10px;
             border: 1px solid #ced4da;
-            border-radius: 4px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            background: #f8f9fa;
+        }
+
+        textarea {
+            height: 100px;
+            resize: none;
         }
 
         .modal-actions {
@@ -201,6 +215,52 @@
             justify-content: flex-end;
             gap: 10px;
             margin-top: 20px;
+        }
+        .modal-actions button {
+            padding: 10px 22px; /* Increase padding for a bigger button */
+            font-size: 15px; /* Increase font size */
+            width: 100px; /* Set a fixed width */
+            border-radius: 8px; /* Make edges rounded */
+            font-weight: bold; /* Make text bolder */
+        }
+
+        .option {
+            display: block;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 0;
+            padding: 15px;
+            background: #ffffff;
+            border-radius: 8px;
+            border: 2px solid #ccc;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Hover effect */
+        .option:hover {
+            background: #e9ecef;
+            border-color: #007bff;
+        }
+
+         /* Checkbox hover effect */
+         .form-group label:hover {
+            background: #e9ecef;
+            border-color: #007bff;
+
+        }
+
+        /* Checked effect */
+        .form-group input[type="radio"]:checked + label {
+            background: #007bff;
+            color: white;
+            border: 5px solid;
+            border-color: #007bff;
+        }
+
+        /* Hide default radio buttons */
+        .form-group input[type="radio"] {
+            display: none;
         }
     </style>
 </head>
@@ -242,7 +302,7 @@
     <div class="main-content">
         <div class="header">
             <h1>Product Management</h1>
-            <button class="add-product-btn" onclick="openModal()">
+            <button class="add-product-btn" onclick="showTypeSelection()">
                 <i class="fas fa-plus"></i> Add Product
             </button>
         </div>
@@ -252,6 +312,16 @@
         </div>
     </div>
 
+    <!-- Type Selection Modal -->
+<div id="typeSelectionModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h2>Select Product Type</h2>
+        <button onclick="openModal('wholesale')">Wholesale</button>
+        <button onclick="openModal('product')">Product</button>
+        <button onclick="closeTypeSelectionModal()">Cancel</button>
+    </div>
+</div>
+    
     <!-- Product Modal -->
     <div id="productModal" class="modal" style="display: none;">
         <div class="modal-content">
@@ -283,10 +353,21 @@
                         <option value="Other">Other</option>
                     </select>
                 </div>
+
                 <div class="form-group">
-                    <label for="image">Image URL</label>
-                    <input type="url" id="image">
+                    <label for="Type">Type</label>
+                    <select id="Type" required>
+                        <option value="" disabled selected>Select Type</option>
+                        <option value="wholesale">Wholesale</option>
+                        <option value="product">Product</option>
+                    </select>
                 </div>
+                
+                <div class="form-group">
+                    <label for="image">Upload Image</label>
+                    <input type="file" id="image" accept="image/*">
+                </div>
+                
                 <div class="modal-actions">
                     <button type="button" id="cancelBtn">Cancel</button>
                     <button type="submit">Save</button>
@@ -295,6 +376,42 @@
         </div>
     </div>
 
+    <!-- Wholesale Modal -->
+    <div id="wholesaleModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Add Wholesale Product</h2>
+            <form id="wholesaleForm">
+                <div class="form-group">
+                    <label for="wholesaleName">Product Name</label>
+                    <input type="text" id="wholesaleName" required>
+                </div>
+                <div class="form-group">
+                    <label for="wholesaleDescription">Description</label>
+                    <textarea id="wholesaleDescription" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="wholesalePrice">Wholesale Price</label>
+                    <input type="number" id="wholesalePrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="wholesaleMinOrder">Minimum Order Quantity</label>
+                    <input type="number" id="wholesaleMinOrder" required>
+                </div>
+                <div class="form-group">
+                    <label for="wholesaleSupplier">Supplier Name</label>
+                    <input type="text" id="wholesaleSupplier" required>
+                </div>
+                <div class="form-group">
+                    <label for="wholesaleImage">Upload Image</label>
+                    <input type="file" id="wholesaleImage" accept="image/*">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="cancelBtn">Cancel</button>
+                    <button type="submit">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <!-- Edit Modal -->
     <div id="editModal" class="modal" style="display: none;">
         <div class="modal-content">
@@ -557,10 +674,113 @@
                 }
             }
         }
+        window.onload = loadProducts;
+
+        function showTypeSelection() {
+        document.getElementById('typeSelectionModal').style.display = 'block';
+    }
+
+    function closeTypeSelectionModal() {
+        document.getElementById('typeSelectionModal').style.display = 'none';
+    }
+
+    function openModal(type) {
+        closeTypeSelectionModal(); // Close type selection modal
+
+        if (type === "wholesale") {
+            document.getElementById('wholesaleModal').style.display = 'block';
+        } else {
+            document.getElementById('productModal').style.display = 'block';
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('productModal').style.display = 'none';
+        document.getElementById('wholesaleModal').style.display = 'none';
+        document.getElementById('typeSelectionModal').style.display = 'none';
+        document.getElementById('productForm').reset();
+        document.getElementById('wholesaleForm').reset();
+    }
+
+    document.getElementById('productForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const productData = {
+            name: document.getElementById('name').value,
+            description: document.getElementById('description').value,
+            price: parseFloat(document.getElementById('price').value),
+            stock: parseInt(document.getElementById('stock').value),
+            category: document.getElementById('category').value,
+            image: document.getElementById('image').value || ''
+        };
+
+        try {
+            const response = await fetch('http://localhost:3000/api/products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(productData)
+            });
+            const result = await response.json();
+            if (result.success) {
+                alert('Product added successfully!');
+                closeModal();
+                await loadProducts();
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert(error.message);
+        }
+    });
+
+    document.getElementById('wholesaleForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const wholesaleData = {
+            name: document.getElementById('wholesaleName').value,
+            description: document.getElementById('wholesaleDescription').value,
+            price: parseFloat(document.getElementById('wholesalePrice').value),
+            minOrder: parseInt(document.getElementById('wholesaleMinOrder').value),
+            supplier: document.getElementById('wholesaleSupplier').value,
+            image: document.getElementById('wholesaleImage').value || ''
+        };
+
+        document.addEventListener("DOMContentLoaded", function() {
+        const cancelButton = document.getElementById("cancel-button");
+        if (cancelButton) {
+            cancelButton.addEventListener("click", function() {
+                document.getElementById("wholesale-form").style.display = "none";
+            });
+        } else {
+            console.error("Cancel button not found.");
+        }
+    });
+
+
+        try {
+            const response = await fetch('http://localhost:3000/api/wholesales', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(wholesaleData)
+            });
+            const result = await response.json();
+            if (result.success) {
+                alert('Wholesale product added successfully!');
+                closeModal();
+                await loadProducts();
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert(error.message);
+        }
+    });
+
+    
 
         // Load products when page loads
         window.onload = loadProducts;
-    
+
     </script>
 </body>
 </html>

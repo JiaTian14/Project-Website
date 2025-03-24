@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wholesale Products</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+        }
+        .wholesale-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .product-image img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .product-info {
+            margin-top: 10px;
+        }
+        .product-name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .product-price {
+            font-size: 16px;
+            color: #28a745;
+            font-weight: bold;
+        }
+        .product-stock {
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Wholesale Products</h1>
+    <div id="wholesale-products" class="wholesale-container"></div>
+
+    <script>
+        async function loadWholesaleProducts() {
+    try {
+        const response = await fetch("http://localhost:3000/api/wholesales");
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const result = await response.json(); // Ensure JSON parsing
+
+        if (!result.success || !result.data.length) {
+            throw new Error("No wholesale products found!");
+        }
+
+        const wholesaleGrid = document.getElementById("wholesale-products");
+        wholesaleGrid.innerHTML = ""; // Clear before loading
+
+        result.data.forEach(product => {
+            wholesaleGrid.innerHTML += `
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="${product.image_url || 'https://via.placeholder.com/300x200'}" 
+                             alt="${product.name}">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">${product.name}</h3>
+                        <div class="product-price">Price: $${product.price_per_unit.toFixed(2)}</div>
+                        <div class="product-stock">Stock: ${product.stock}</div>
+                    </div>
+                </div>
+            `;
+        });
+
+    } catch (error) {
+        console.error("❌ Error loading wholesale products:", error);
+        alert("Error loading wholesale products: " + error.message);
+    }
+}
+
+// Load products when the page loads
+document.addEventListener("DOMContentLoaded", loadWholesaleProducts);
+
+    </script>
+
+</body>
+</html>

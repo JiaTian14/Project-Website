@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Products - We Care You </title>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+<script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
+
+
   <style>
     * {
       margin: 0;
@@ -334,6 +338,77 @@
       background: #ccc;
       cursor: not-allowed;
     }
+     /* AR Form Styling */
+    .ar-form {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 500px;
+        margin: 20px auto;
+        text-align: center;
+    }
+
+    .ar-container {
+        width: 100%;
+        height: 300px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    a-scene {
+        width: 100% !important;
+        height: 100% !important;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .ar-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .close-ar-btn {
+        background: red;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .close-ar-btn:hover {
+        background: darkred;
+    }
+    .retrybutton {
+        background: green;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .retrybutton:hover {
+        background: darkgreen;
+    }
+    
+    .camera-icon {
+    position: absolute;
+    left: 510px;
+    top: 40%;
+    transform: translateY(-50%);
+    width: 30px; /* Adjust icon size */
+    height: 30px;
+    opacity: 1.0; /* Faded effect to keep it in the background */
+}
   </style>
 </head>
 <body>
@@ -369,14 +444,33 @@
     <div class="filters">
       <div class="search-bar">
         <input type="text" id="searchInput" placeholder="Search products...">
-        <i class="fas fa-search"></i>
+        <button id="openARBtn">
+          <img src="images/camera.png" alt="Camera Icon" class="camera-icon">
+      </button>
+       
+        
       </div>
     </div>
+    <!-- Camera Icon Button -->
+    
+</div>
 
-    <div id="productList" class="product-grid">
-      <!-- Products will be dynamically inserted here -->
+   <!-- AR Form (Initially Hidden) -->
+   <div id="arForm" class="ar-form" style="display: none;">
+    <h2>Augmented Reality View</h2>
+
+    <!-- AR Camera Container -->
+    <div class="ar-container">
+        <iframe id="arFrame" class="ar-frame" style="display: none;"></iframe>
     </div>
-  </div>
+    
+    <!-- Close AR Button -->
+    <button id="retryBtn" class="retrybutton">🔄 Try Again</button>
+    <button id="closeARBtn" class="close-ar-btn">Close AR</button>
+</div>
+<div id="productList" class="product-grid">
+  <!-- Products will be dynamically inserted here -->
+</div>
 
   <script>
     let allProducts = []; // Store all products
@@ -513,6 +607,47 @@
             alert('Failed to add product to cart. Please try again.');
         }
     }
-  </script>
+
+    const openARBtn = document.getElementById('openARBtn');
+    const closeARBtn = document.getElementById('closeARBtn');
+    const arForm = document.getElementById('arForm');
+    const arFrame = document.getElementById('arFrame');
+    const retryBtn = document.getElementById('retryBtn');
+    // Open AR function
+    openARBtn.addEventListener('click', () => {
+    arForm.style.display = 'block';  // Show AR container
+    arFrame.style.display = 'block';
+    arFrame.src = 'ar.html';  // Load the external AR scene
+});
+
+// Close AR function
+closeARBtn.addEventListener('click', () => {
+    arForm.style.display = 'none';  // Hide AR form
+    arFrame.style.display = 'none';
+    arFrame.src = '';  // Unload the AR scene
+});
+
+retryBtn.addEventListener('click', () => {
+    // Hide AR form and frame
+    arForm.style.display = 'none';  
+    arFrame.style.display = 'none';
+
+    // Reload the AR scene instantly
+    arFrame.src = 'about:blank'; // Reset the iframe completely
+    arFrame.src = 'ar.html';  // Reload the AR scene
+
+    // Show the AR view again
+    arFrame.style.display = 'block';
+    arForm.style.display = 'block';
+
+    // Reset UI for new search
+    searchBtn.style.display = 'block';  // Show search button
+    retryBtn.style.display = 'none';  // Hide retry button
+});
+
+
+
+    </script>
+
 </body>
 </html>

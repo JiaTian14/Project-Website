@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR View</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/ar.js/aframe/build/aframe-ar.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        a-scene { width: 100vw; height: 100vh; }
+        
+        /* Floating buttons */
+        .button-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .button:hover {
+            background: #0056b3;
+        }
+
+        /* Hide initially */
+        #retryBtn { display: none; }
+
+        canvas { display: none; }
+    </style>
+</head>
+<body>
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+        <a-marker preset="hiro">
+            <a-box id="productBox" position="0 0.5 0" material="color: red;"></a-box>
+        </a-marker>
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <!-- Floating Buttons -->
+    <div class="button-container">
+        <button id="searchBtn" class="button">🔍 Search Related Products</button>
+        <input type="file" id="uploadInput" accept="image/*" style="display: none;">
+        <button id="uploadBtn" class="button">📂 Upload Image</button>
+        <button id="retryBtn" class="button" style="display: none;">🔄 Try Again</button>
+    </div>
+
+    <!-- Hidden Canvas for Image Processing -->
+    <canvas id="captureCanvas"></canvas>
+
+    <!-- Image Preview for Debugging -->
+    <img id="imgPreview" alt="Captured Image Preview">
+
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener("DOMContentLoaded", function() {
+    console.log("DOM fully loaded");
+
+    const searchBtn = document.getElementById("searchBtn");
+    const retryBtn = document.getElementById("retryBtn");
+    const canvas = document.getElementById("captureCanvas");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const uploadInput = document.getElementById("uploadInput");
+
+    if (!searchBtn || !uploadBtn) {
+                console.error("One or more buttons not found in DOM");
+                return;
+            }
+
+            searchBtn.addEventListener("click", function() {
+                captureAndSearch();
+            });
+
+            uploadBtn.addEventListener("click", function() {
+                uploadInput.click(); // Open file picker
+            });
+
+            uploadInput.addEventListener("change", function(event) {
+                handleImageUpload(event);
+            });
+
+            function captureAndSearch() {
+                const video = document.querySelector("video");
+
+                if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
+                    console.error("No video element found or camera not ready.");
+                    return;
+                }
+
+                try {
+                    const ctx = canvas.getContext("2d");
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+
+                    // Draw video frame on canvas
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                    // Convert canvas to Base64 image
+                    const imageData = canvas.toDataURL("image/png");
+
+                    // Store image data in local storage
+                    localStorage.setItem("capturedImage", imageData);
+
+                    // Redirect to search page
+                    window.location.href = "search.html";
+
+                } catch (error) {
+                    console.error("Error during image capture:", error);
+                }
+            }
+
+            function handleImageUpload(event) {
+                const file = event.target.files[0];
+
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageData = e.target.result;
+
+                    // DEBUG: Display uploaded image on page
+                    const imgPreview = document.getElementById("imgPreview");
+                    imgPreview.src = imageData;
+                    imgPreview.style.display = "block";
+
+                    console.log("Uploaded Image Data:", imageData.substring(0, 100) + "...");
+
+                    // Store uploaded image data in local storage
+                    localStorage.setItem("capturedImage", imageData);
+
+                    // Redirect to search page
+                    window.location.href = "search.html";
+                };
+
+                reader.readAsDataURL(file);
+            }
+
+            // Retry button resets the process
+            if (retryBtn) {
+                retryBtn.addEventListener("click", function() {
+                    searchBtn.style.display = "block";
+                    retryBtn.style.display = "none";
+                });
+            }
+        });
+    </script>
+</body>
+</html>

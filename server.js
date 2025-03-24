@@ -1114,6 +1114,179 @@ app.post('/orders', async (req, res) => {
     }
 });
 
+// GET all wholesale products
+// 修改获取所有批发产品的路由
+app.get('/api/wholesales', async (req, res) => {
+    try {
+        console.log('Fetching wholesale products...');
+        const client = await connectDB();
+        const database = client.db("techmart"); // 连接到数据库
+        const wholesalesCollection = database.collection("wholesales"); // 连接到 wholesales 集合
+
+        // 获取所有批发产品
+        const allWholesales = await wholesalesCollection.find({}).toArray();
+        console.log(`Found ${allWholesales.length} wholesale products`);
+
+            // 重新获取产品列表
+            const updatedWholesales = await wholesalesCollection.find({}).toArray();
+            return res.json({
+                success: true,
+                data: updatedWholesales
+            });
+        
+
+        // 返回找到的批发产品
+        return res.json({
+            success: true,
+            data: allWholesales
+        });
+
+    } catch (error) {
+        console.error('Error in /api/wholesales:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error fetching wholesale products',
+            error: error.message
+        });
+    }
+});
+
+
+
+// 🔹 POST a New Wholesale Product
+app.post("/api/wholesales", async (req, res) => {
+    try {
+        const newProduct = new WholesaleProduct(req.body);
+        const savedProduct = await newProduct.save();
+
+        res.json({
+            success: true,
+            message: "Product added successfully",
+            data: savedProduct
+        });
+    } catch (error) {
+        console.error("❌ Error adding product:", error);
+        res.status(500).json({ success: false, message: "Failed to add product", error: error.message });
+    }
+});
+
+
+
+app.post('api/add-product', async (req, res) => {
+    try {
+        const product = new Product(req.body);
+        await product.save();
+        res.status(201).send("Product added successfully!");
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
+
+
+// 产品搜索 API 端点
+app.get('/api/products/search', async (req, res) => {
+    try {
+      // 从查询中获取关键词数组
+      const keywords = req.query['keywords[]'];
+      
+      // 确保关键词是数组形式
+      const keywordArray = Array.isArray(keywords) ? keywords : [keywords];
+      
+      if (!keywordArray || keywordArray.length === 0) {
+        return res.status(400).json({ success: false, message: '未提供搜索关键词' });
+      }
+      
+      console.log('搜索关键词:', keywordArray);
+      
+      // 从数据库中搜索产品
+      const products = await Product.find({
+        $or: [
+          // 在产品名称中搜索关键词
+          { name: { $regex: new RegExp(keywordArray.join('|'), 'i') } },
+          // 在产品类别中搜索关键词
+          { category: { $regex: new RegExp(keywordArray.join('|'), 'i') } },
+          // 在产品标签中搜索关键词
+          { tags: { $in: keywordArray.map(kw => new RegExp(kw, 'i')) } }
+        ]
+      }).limit(10);
+      
+      // 为每个产品计算相似度分数
+      const productsWithSimilarity = products.map(product => {
+        const productObj = product.toObject();
+        
+        // 计算相似度（这是一个简单的实现，可以根据需要调整）
+        let similarity = 0;
+        const productName = productObj.name.toLowerCase();
+        const productCategory = (productObj.category || '').toLowerCase();
+        const productTags = (productObj.tags || []).map(tag => tag.toLowerCase());
+        
+        keywordArray.forEach(keyword => {
+          const lowerKeyword = keyword.toLowerCase();
+          
+          // 检查名称中的关键词匹配
+          if (productName.includes(lowerKeyword)) {
+            similarity += 0.6;
+          }
+          
+          // 检查类别中的关键词匹配
+          if (productCategory.includes(lowerKeyword)) {
+            similarity += 0.3;
+          }
+          
+          // 检查标签中的关键词匹配
+          if (productTags.some(tag => tag.includes(lowerKeyword))) {
+            similarity += 0.1;
+          }
+        });
+        
+        // 将相似度标准化到0-1范围
+        similarity = Math.min(1, similarity);
+        
+        return {
+          ...productObj,
+          similarity
+        };
+      });
+      
+      // 根据相似度对产品进行排序
+      productsWithSimilarity.sort((a, b) => b.similarity - a.similarity);
+      
+      return res.json({
+        success: true,
+        products: productsWithSimilarity
+      });
+    } catch (error) {
+      console.error('产品搜索错误:', error);
+      return res.status(500).json({ success: false, message: '服务器错误' });
+    }
+  });
+app.post('/api/search', async (req, res) => {
+    try {
+        const { image } = req.body;
+        if (!image) return res.status(400).json({ success: false, message: "No image provided" });
+
+        console.log("Processing image search...");
+
+        // ✅ Step 1: Analyze Image with Google Vision API
+        const detectedLabels = await analyzeImageWithGoogleVision(image);
+        console.log("🔍 Detected Labels:", detectedLabels);
+
+        // ✅ Step 2: Search for a matching product in the database
+        const matchedProduct = await Product.findOne({
+            keywords: { $in: detectedLabels } // Check if any keyword matches
+        });
+
+        if (matchedProduct) {
+            return res.json({ success: true, product: matchedProduct.name });
+        } else {
+            return res.json({ success: false, message: "No matching product found." });
+        }
+    } catch (error) {
+        console.error("Search API error:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+});
+
 // Export the app for testing
 module.exports = app;
 

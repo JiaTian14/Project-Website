@@ -118,3 +118,57 @@ if (location.pathname === '/products') {
 function viewProduct(productId) {
   location.href = `/productDetails.html?id=${productId}`;
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const productForm = document.getElementById("productForm");
+
+  productForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const productType = document.querySelector('input[name="productType"]:checked').value;
+
+      const productData = {
+          name: document.getElementById("name").value,
+          description: document.getElementById("description").value,
+          price: parseFloat(document.getElementById("price").value),
+          stock: parseInt(document.getElementById("stock").value),
+          category: document.getElementById("category").value,
+          image: document.getElementById("image").value,
+          type: productType // Include type (wholesale or product)
+      };
+
+      // Determine the correct API endpoint based on type
+      let endpoint = "http://localhost:3000/api/products"; // Default is normal product
+      if (productType === "wholesale") {
+          endpoint = "http://localhost:3000/api/wholesale"; // Send wholesale products to another endpoint
+      }
+
+      try {
+          const response = await fetch(endpoint, {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json"
+              },
+              body: JSON.stringify(productData)
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+              alert("Product added successfully!");
+              productForm.reset();
+              closeModal();
+              await loadProducts(); // Reload the product list
+              if (productType === "wholesale") {
+                  await loadWholesaleProducts(); // Reload wholesale list
+              }
+          } else {
+              throw new Error(result.message || "Failed to add product");
+          }
+      } catch (error) {
+          console.error("Error:", error);
+          alert(error.message);
+      }
+  });
+});
+

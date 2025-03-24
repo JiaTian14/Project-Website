@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+    <style>
+        body { text-align: center; }
+        img { max-width: 80%; margin: 20px 0; }
+        .loading { font-size: 18px; color: gray; }
+    </style>
+</head>
+<body>
+    <h2>🔍 Searching for Related Products...</h2>
+    <img id="capturedImage" alt="Captured Image">
+    <p class="loading">Processing Image...</p>
+    <div id="results"></div>
+
+    <script>
+        async function analyzeImage() {
+            const imageElement = document.getElementById("capturedImage");
+            const storedImage = localStorage.getItem("capturedImage");
+            if (storedImage) {
+                imageElement.src = storedImage;
+            }
+
+            const model = await mobilenet.load(); // Load AI Model
+            const results = await model.classify(imageElement);
+            console.log("Detected Objects:", results);
+
+            const detectedKeyword = results[0]?.className.split(",")[0]; // Get Top Result
+            if (!detectedKeyword) {
+                document.querySelector(".loading").innerText = "No objects detected.";
+                return;
+            }
+
+            document.querySelector(".loading").innerText = `🔎 Searching for: ${detectedKeyword}`;
+            searchProducts(detectedKeyword);
+        }
+
+        async function searchProducts(keyword) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/products/search?query=${keyword}`);
+                const data = await response.json();
+
+                if (data.success && data.products.length > 0) {
+                    const resultsDiv = document.getElementById("results");
+                    resultsDiv.innerHTML = data.products.map(p => `
+                        <div>
+                            <h3>${p.name}</h3>
+                            <img src="${p.image}" width="150">
+                            <p>${p.price} USD</p>
+                        </div>
+                    `).join("");
+                } else {
+                    document.getElementById("results").innerHTML = "<p>No related products found.</p>";
+                }
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", analyzeImage);
+
+        document.addEventListener("DOMContentLoaded", function() {
+    console.log("Search page loaded.");
+
+    // Retrieve captured image from local storage
+    const imageData = localStorage.getItem("capturedImage");
+
+    if (!imageData) {
+        console.error("No captured image found!");
+        return;
+    }
+
+    // DEBUG: Confirm correct image is used for search
+    console.log("Using Image for Search:", imageData.substring(0, 100) + "...");
+
+    // Display captured image for confirmation
+    document.getElementById("searchPreview").src = imageData;
+    document.getElementById("searchPreview").style.display = "block";
+
+    // Send the image to the search API
+    performSearch(imageData);
+});
+
+async function performSearch(image) {
+    try {
+        const response = await fetch("http://localhost:3000/api/search", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ image: image })
+        });
+
+        const data = await response.json();
+
+        // DEBUG: Log API response
+        console.log("API Response:", data);
+
+        if (data.success) {
+            console.log("Search Result:", data.product);
+            document.getElementById("searchResult").innerText = "🔎 Searching for: " + data.product;
+        } else {
+            console.log("No match found.");
+            document.getElementById("searchResult").innerText = "No match found.";
+        }
+    } catch (error) {
+        console.error("Search error:", error);
+    }
+}
+    </script>
+</body>
+</html>
