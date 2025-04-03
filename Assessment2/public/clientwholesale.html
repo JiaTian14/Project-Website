@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management - We Care You Seller</title>
+    <style>
+         * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+        }
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 250px;
+            background: #2d6a4f;
+            padding: 20px;
+            color: white;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .sidebar-header i {
+            font-size: 2rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .add-product-btn {
+            background: #2d6a4f;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .product-image {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-name {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            color: #2d6a4f;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .product-stock {
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .edit-btn {
+            background: #ffd43b;
+            color: #664d03;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 600px;
+            margin: 50px auto;
+            height: 80vh; /* Set a fixed height */
+            overflow-y: auto; /* Enable scrolling */
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #495057;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            background: #f8f9fa;
+        }
+
+        textarea {
+            height: 100px;
+            resize: none;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-actions button {
+            padding: 10px 22px; /* Increase padding for a bigger button */
+            font-size: 15px; /* Increase font size */
+            width: 100px; /* Set a fixed width */
+            border-radius: 8px; /* Make edges rounded */
+            font-weight: bold; /* Make text bolder */
+        }
+
+        .option {
+            display: block;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 0;
+            padding: 15px;
+            background: #ffffff;
+            border-radius: 8px;
+            border: 2px solid #ccc;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Hover effect */
+        .option:hover {
+            background: #e9ecef;
+            border-color: #007bff;
+        }
+
+         /* Checkbox hover effect */
+         .form-group label:hover {
+            background: #e9ecef;
+            border-color: #007bff;
+
+        }
+
+        /* Checked effect */
+        .form-group input[type="radio"]:checked + label {
+            background: #007bff;
+            color: white;
+            border: 5px solid;
+            border-color: #007bff;
+        }
+
+        /* Hide default radio buttons */
+        .form-group input[type="radio"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-store"></i>
+            <h1>TechMart Seller</h1>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="clientdashboard.html" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="clientproducts.html" class="nav-link">
+                    <i class="fas fa-box"></i>
+                    Products
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="clientwholesales.html" class="nav-link active">
+                    <i class="fas fa-box"></i>
+                    Wholesales Products
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="clientorders.html" class="nav-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    Orders
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="clientlogin.html" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Wholesale Product Management</h1>
+             <!-- Button to open the modal for adding new product -->
+    <button class="add-product-btn" onclick="openWholesaleModal()">Add Product</button>
+
+        </div>
+
+        <div class="products-grid" id="productsGrid">
+            <!-- Products will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <!-- Type Selection Modal -->
+<div id="typeSelectionModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h2>Select Product Type</h2>
+        <button onclick="openModal('wholesale')">Wholesale</button>
+        <button onclick="openModal('product')">Product</button>
+        <button onclick="closeTypeSelectionModal()">Cancel</button>
+    </div>
+</div>
+
+    <!-- Wholesale Modal -->
+    <div id="wholesaleModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Add Wholesale Product</h2>
+            <form id="wholesaleForm">
+                <div class="form-group">
+                    <label for="wholesaleName">Product Name</label>
+                    <input type="text" id="wholesaleName" required>
+                </div>
+                <div class="form-group">
+                    <label for="wholesaleDescription">Description</label>
+                    <textarea id="wholesaleDescription" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="wholesalePrice">Wholesale Price</label>
+                    <input type="number" id="wholesalePrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="wholesaleMinOrder">Minimum Order Quantity</label>
+                    <input type="number" id="wholesaleMinOrder" required>
+                </div>
+                <div class="form-group">
+                    <label for="wholesaleStock">Wholesale Stock</label>
+                    <input type="number" id="wholesaleStock" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" required>
+                        <option value="Kitchenware">Kitchenware</option>
+                        <option value="Laundry & Cleaning">Laundry & Cleaning</option>
+                        <option value="Pail & Dusbin">Pail & Dusbin</option>
+                        <option value="Storage & Organisation">Storage & Organisation</option>
+                        <option value="Home Improvement">Home Improvement</option>
+                        <option value="Food Containers">Food Containers</option>
+                        <option value="Bottles">Bottles</option>
+                        <option value="Tableware">Tableware</option>
+                        <option value="Bottles">Bottles</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="type">Type</label>
+                    <select id="type" required>
+                        <option value="Wholesale">Wholesale</option>
+                        <option value="Product">Product</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="wholesaleImage">Upload Image</label>
+                    <input type="file" id="wholesaleImage" accept="image/*">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="closeModal()">Cancel</button>
+                    <button type="submit">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal for editing wholesale product -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2>Edit Wholesale Product</h2><br><br>
+            <form id="editForm">
+                <!-- Hidden field for product ID -->
+                <input type="hidden" id="editProductId" name="editProductId"><br><br>
+                
+                <label for="editProductName">Name</label>
+                <input type="text" id="editProductName" name="editProductName"><br><br>
+                
+                <label for="editProductDescription">Description</label>
+                <textarea id="editProductDescription" name="editProductDescription"></textarea><br><br>
+                
+                <label for="editProductPrice">Price</label>
+                <input type="number" id="editProductPrice" name="editProductPrice" step="0.01"><br><br>
+                
+                <label for="editProductStock">Stock</label>
+                <input type="number" id="editProductStock" name="editProductStock"><br><br>
+                
+                <label for="editProductMinOrder">Minimum Order</label>
+                <input type="number" id="editProductMinOrder" name="editProductMinOrder"><br><br>
+                
+                <label for="editProductCategory">Category</label>
+                <input type="text" id="editProductCategory" name="editProductCategory"><br><br>
+                
+                <label for="editProductImage">Image URL</label>
+                <input type="text" id="editProductImage" name="editProductImage"><br><br>
+                
+                <button type="submit">Save Changes</button>
+                <button type="button" id="cancelEditBtn">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+   // Edit wholesale product function to populate the modal
+async function editWholesaleProduct(productId) {
+    try {
+        const response = await fetch(`http://localhost:3000/api/wholesales/${productId}`);
+
+        if (!response.ok) {
+            throw new Error(`Error fetching product: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error('Error: ' + data.message);
+        }
+
+        const product = data.data;  // Get the product data
+
+        // Populate your HTML form with the fetched data
+        document.getElementById('editProductId').value = product._id;
+        document.getElementById('editProductName').value = product.name;
+        document.getElementById('editProductDescription').value = product.description;
+        document.getElementById('editProductPrice').value = product.price;
+        document.getElementById('editProductStock').value = product.stock;
+        document.getElementById('editProductMinOrder').value = product.minOrder;
+        document.getElementById('editProductCategory').value = product.category;
+        document.getElementById('editProductImage').value = product.image;
+
+        // Show the modal
+        document.getElementById('editModal').style.display = 'block';
+    } catch (error) {
+        console.error('Error loading wholesale product:', error.message);
+        alert(`Error: ${error.message}`);
+    }
+}
+
+// Edit wholesale product form submission
+document.getElementById('editForm').addEventListener('submit', async (event) => {
+    event.preventDefault(); // Prevent default form submission
+
+    const productId = document.getElementById('editProductId').value;
+
+    const updatedProduct = {
+        name: document.getElementById('editProductName').value,
+        description: document.getElementById('editProductDescription').value,
+        price: parseFloat(document.getElementById('editProductPrice').value),
+        stock: parseInt(document.getElementById('editProductStock').value),
+        minOrder: parseInt(document.getElementById('editProductMinOrder').value),
+        category: document.getElementById('editProductCategory').value,
+        image: document.getElementById('editProductImage').value,
+    };
+
+    if (!productId || !updatedProduct.name || isNaN(updatedProduct.price) || isNaN(updatedProduct.stock)) {
+        alert('Please fill all fields correctly.');
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:3000/api/wholesales/${productId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedProduct)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Wholesale product updated successfully');
+            closeModal();
+            await loadWholesaleProducts(); // Refresh the wholesale products list
+        } else {
+            throw new Error(result.message || 'Failed to update wholesale product');
+        }
+    } catch (error) {
+        console.error('Error updating wholesale product:', error);
+        alert(`Error: ${error.message}`);
+    }
+});
+
+// Function to close the modal
+function closeModal() {
+    // Close the edit modal
+    document.getElementById('editModal').style.display = 'none';
+    // Reset form to clear any input values
+    document.getElementById('editForm').reset();
+}
+
+// Ensure the Cancel button works by closing the modal and resetting the form
+document.getElementById('cancelEditBtn').addEventListener('click', () => {
+    closeModal();
+});
+
+// Load wholesale products
+async function loadWholesaleProducts() {
+    try {
+        const response = await fetch('http://localhost:3000/api/wholesales');
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error(result.message || 'Failed to load wholesale products');
+        }
+
+        const productsGrid = document.getElementById('productsGrid');
+        productsGrid.innerHTML = ''; // Clear the product grid before appending new products
+
+        // Dynamically render the wholesale products
+        productsGrid.innerHTML = result.data.map(product => `
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="${product.image || 'https://via.placeholder.com/300x200'}" alt="${product.name}">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">${product.name}</h3>
+                    <div class="product-price">$${(product.price || 0).toFixed(2)}</div>
+                    <div class="product-stock">Stock: ${product.stock}</div>
+                    <div class="product-min-order">Min Order: ${product.minOrder}</div>
+                    <div class="product-actions">
+                        <button class="edit-btn" onclick="editWholesaleProduct('${product._id}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="delete-btn" onclick="deleteWholesaleProduct('${product._id}')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading wholesale products:', error);
+        alert('Error loading wholesale products: ' + error.message);
+    }
+}
+
+// Load wholesale products on page load
+window.onload = loadWholesaleProducts;
+
+</script>
+
+    
+</body>
+</html>

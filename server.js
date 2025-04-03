@@ -328,19 +328,27 @@ app.get('/api/products', async (req, res) => {
 
 // 添加获取单个产品的路由
 app.get('/api/products/:id', async (req, res) => {
+    const productId = req.params.id;
+
     try {
+        // ✅ Validate the ID format
+        if (!ObjectId.isValid(productId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid product ID format"
+            });
+        }
+
         const client = await connectDB();
         const database = client.db("techmart");
         const products = database.collection("products");
 
-        const product = await products.findOne({ 
-            _id: new ObjectId(req.params.id) 
-        });
-        
+        const product = await products.findOne({ _id: new ObjectId(productId) });
+
         if (!product) {
             return res.status(404).json({
                 success: false,
-                message: 'Product not found'
+                message: "Product not found"
             });
         }
 
@@ -350,15 +358,14 @@ app.get('/api/products/:id', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error fetching product:', error);
+        console.error("Error fetching product:", error);
         res.status(500).json({
             success: false,
-            message: 'Error fetching product',
+            message: "Error fetching product",
             error: error.message
         });
     }
 });
-
 // ---------- POST Routes ----------
 class APIError extends Error {
     constructor(statusCode, message) {
@@ -1151,36 +1158,79 @@ app.get('/api/wholesales', async (req, res) => {
     }
 });
 
-
+const wholesaleProductSchema = new mongoose.Schema({
+    name: String,
+    description: String,
+    price: Number,
+    minOrder: Number,
+    stock: Number,
+    category: String,
+    type: String,
+    image: String // Store as Base64 or a file URL
+});
 
 // 🔹 POST a New Wholesale Product
-app.post("/api/wholesales", async (req, res) => {
+app.post('/api/wholesales', async (req, res) => {
     try {
-        const newProduct = new WholesaleProduct(req.body);
-        const savedProduct = await newProduct.save();
+        const client = await connectDB();
+        const database = client.db("techmart");
+        const wholesales = database.collection("wholesales");
 
-        res.json({
+        const newWholesaleProduct = {
+            ...req.body,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        };
+
+        const result = await wholesales.insertOne(newWholesaleProduct);
+
+        if (!result.insertedId) {
+            throw new Error('Failed to insert wholesale product');
+        }
+
+        res.status(201).json({
             success: true,
-            message: "Product added successfully",
-            data: savedProduct
+            data: { _id: result.insertedId, ...newWholesaleProduct }
         });
+
     } catch (error) {
-        console.error("❌ Error adding product:", error);
-        res.status(500).json({ success: false, message: "Failed to add product", error: error.message });
+        console.error('Error adding wholesale product:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to add wholesale product',
+            error: error.message
+        });
     }
 });
 
 
 
-app.post('api/add-product', async (req, res) => {
+
+app.post('/add-wholesale-product', async (req, res) => {
     try {
-        const product = new Product(req.body);
-        await product.save();
-        res.status(201).send("Product added successfully!");
+        const { name, description, price, minOrder, stock, category, type, image } = req.body;
+
+        // Create a new wholesale product
+        const newProduct = new WholesaleProduct({
+            name,
+            description,
+            price,
+            minOrder,
+            stock,
+            category,
+            type,
+            image
+        });
+
+        await newProduct.save();
+        res.status(201).json({ message: 'Wholesale product added successfully!' });
     } catch (error) {
-        res.status(500).send(error.message);
+        console.error('Error adding product:', error);
+        res.status(500).json({ message: 'Failed to add product', error });
     }
 });
+
+
 
 
 // 产品搜索 API 端点
@@ -1284,6 +1334,128 @@ app.post('/api/search', async (req, res) => {
     } catch (error) {
         console.error("Search API error:", error);
         res.status(500).json({ success: false, message: "Server error" });
+    }
+});
+
+
+app.get('/api/recommendations', async (req, res) => {
+    try {
+        const client = await connectDB();
+        const database = client.db("techmart"); // Ensure correct DB name
+        const products = database.collection("products"); // Ensure collection name is correct
+
+        console.log("Connected to database successfully");
+
+        // Check if the collection contains products
+        const productCount = await products.countDocuments();
+        console.log("Total products in collection:", productCount);
+
+        if (productCount === 0) {
+            return res.status(404).json({ error: "No products found in the database" });
+        }
+
+        // Fetch 5 random products using MongoDB's $sample
+        const recommendedProducts = await products.aggregate([{ $sample: { size: 5 } }]).toArray();
+        
+
+        res.json({ success: true, data: recommendedProducts });
+
+    } catch (error) {
+        console.error("Error fetching recommendations:", error);
+        res.status(500).json({ error: "Error fetching recommendations", details: error.message });
+    }
+});
+
+app.get('/wholesaleProducts', async (req, res) => {
+    try {
+        const products = await WholesaleProduct.find(); // Fetch all products
+        res.status(200).json(products);
+    } catch (error) {
+        console.error('Error fetching wholesale products:', error);
+        res.status(500).json({ message: 'Failed to fetch wholesale products' });
+    }
+});
+
+// Get a single wholesale product by ID
+app.get('/api/wholesales/:id', async (req, res) => {
+    const productId = req.params.id;
+
+    // Validate the ID
+    if (!ObjectId.isValid(productId)) {
+        return res.status(400).json({ success: false, message: 'Invalid product ID' });
+    }
+
+    let client;
+    try {
+        // Ensure client is connected before any query
+        client = await connectDB();  // Establish the connection here
+        const database = client.db("techmart"); // Ensure the correct database name
+        const wholesalesCollection = database.collection("wholesales"); // Correct collection name
+
+        // Find product by ID
+        const wholesaleProduct = await wholesalesCollection.findOne({ _id: new ObjectId(productId) });
+
+        // If product not found, return error
+        if (!wholesaleProduct) {
+            return res.status(404).json({ success: false, message: 'Wholesale product not found' });
+        }
+
+        // Return the product details
+        res.json({ success: true, data: wholesaleProduct });
+
+    } catch (error) {
+        // Log the error and send appropriate response
+        console.error('Error fetching wholesale product:', error.message);
+        res.status(500).json({ success: false, message: `Server error: ${error.message}` });
+    } finally {
+        if (client) {
+            await client.close();  // Ensure the client is closed after query
+        }
+    }
+});
+
+
+
+// Update a wholesale product by ID
+app.put('/api/wholesales/:id', async (req, res) => {
+    try {
+        const { name, description, price, stock, minOrder, category, type, image } = req.body;
+
+        // Validate required fields
+        if (!name || !description || !price || !stock || !minOrder || !category || !type) {
+            return res.status(400).json({ success: false, message: 'Missing required fields' });
+        }
+
+        const updatedProduct = await WholesaleProduct.findByIdAndUpdate(
+            req.params.id,
+            { name, description, price, stock, minOrder, category, type, image },
+            { new: true }
+        );
+
+        if (!updatedProduct) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+
+        res.json({ success: true, message: 'Product updated successfully', data: updatedProduct });
+    } catch (error) {
+        console.error('Error updating product:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// Delete a wholesale product by ID
+app.delete('/api/wholesales/:id', async (req, res) => {
+    try {
+        const product = await WholesaleProduct.findByIdAndDelete(req.params.id);
+
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+
+        res.json({ success: true, message: 'Product deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting product:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
     }
 });
 

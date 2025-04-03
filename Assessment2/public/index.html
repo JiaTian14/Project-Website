@@ -304,8 +304,142 @@
     .social-links a:hover {
       transform: translateY(-3px);
     }
-
     
+        
+    .product-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.product-item {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    width: 220px;
+    text-align: center;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.product-item h3 {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.product-item p {
+    font-size: 14px;
+    color: #555;
+}
+
+.product-item .price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #e44d26;
+}
+
+/* Wrapper for Recommendations */
+.recommendations-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Space between items */
+    position: relative;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 20px 0;
+    background-color: #f8f8f8; /* Light background to make it stand out */
+    border-radius: 10px; /* Rounded corners for the wrapper */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow around the section */
+}
+
+/* Horizontal Scroll Container for Recommendations */
+.product-scroll {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 20px;
+    padding: 10px;
+    white-space: nowrap;
+    width: 100%; /* Ensure it takes the full width available */
+    scrollbar-width: none;
+    justify-content: flex-start;
+}
+
+/* Hide scrollbar for Chrome, Safari */
+.product-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+/* Product Item Styling */
+.product-item {
+    display: inline-block;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    width: 220px;
+    text-align: center;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    transition: transform 0.3s ease; /* Smooth scaling effect on hover */
+}
+
+.product-item:hover {
+    transform: translateY(-10px); /* Elevate product item on hover */
+}
+
+/* Product Image Styling */
+.product-item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+/* Product Title Styling */
+.product-item h3 {
+    font-size: 18px;
+    margin: 10px 0;
+    color: #333;
+}
+
+/* Product Description Styling */
+.product-item p {
+    font-size: 14px;
+    color: #555;
+}
+
+/* Price Styling */
+.product-item .price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #e44d26; /* Highlight price color */
+    margin-top: 5px;
+}
+
+/* Add to Cart Button Styling */
+.add-to-cart {
+    background-color: #ff6600;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+.add-to-cart:hover {
+    background-color: #e65c00;
+}
+
+
   </style>
 </head>
 <body>
@@ -318,6 +452,7 @@
       </div>
       <nav class="header-nav">
         <ul class="nav-links">
+          <li><a href="wholesale.html">Wholesale</a></li>
           <li><a href="products.html">Products</a></li>
           <li><a href="about.html">About</a></li>
           <li><a href="contact.html">Contact</a></li>
@@ -337,35 +472,20 @@
     <a href="products.html" class="cta-button">Shop Now</a>
   </section>
 
-  <div class="product-slider-container">
-    <h2 class="section-title">Product Category</h2>
-    <div class="swiper mySwiper">
-        <div class="swiper-wrapper">
-            <div class="swiper-slide">
-                <img src="images/logo.png" alt="Food Container">
-                <p>Food Container</p>
-            </div>
-            <div class="swiper-slide">
-                <img src="images/logo.png" alt="Bottle & Tumbler">
-                <p>Bottle & Tumbler</p>
-            </div>
-            <div class="swiper-slide">
-                <img src="images/logo.png" alt="Kitchenware">
-                <p>Kitchenware</p>
-            </div>
-            <div class="swiper-slide">
-                <img src="images/logoa.png" alt="Tableware">
-                <p>Tableware</p>
-            </div>
-        </div>
-        <!-- Navigation buttons -->
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
+  <h2>Recommended Products</h2>
+<div class="recommendations-wrapper">
+    <button class="scroll-btn left-btn" onclick="scrollRecommendations(-200)">&#8249;</button>
+    <div id="recommendations-container" class="product-scroll">
+        <p>Loading recommendations...</p>
     </div>
+    <button class="scroll-btn right-btn" onclick="scrollRecommendations(200)">&#8250;</button>
 </div>
 
 
-  
+
+    
+
+
 
   <footer>
     <div class="footer-content">
@@ -409,6 +529,75 @@
   </footer>
 
   <script>
+    async function fetchRecommendations() {
+        try {
+            const response = await fetch("http://localhost:3000/api/recommendations");
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (!data.success || !data.data.length) {
+                document.getElementById("recommendations-container").innerHTML = "<p>No recommendations available.</p>";
+                return;
+            }
+
+            let recommendationsHTML = "";
+            data.data.forEach(product => {
+                recommendationsHTML += `
+                    <div class="product-item" onclick="goToProductDetails('${product._id}')">
+                        <img src="${product.image || 'default-image.jpg'}" alt="${product.name}">
+                        <h3>${product.name}</h3>
+                        <p class="price">RM ${product.price}</p>
+                        <button class="add-to-cart" onclick="event.stopPropagation(); addToCart('${product._id}', '${product.name}', ${product.price})">Add to Cart</button>
+                    </div>
+                `;
+            });
+
+            document.getElementById("recommendations-container").innerHTML = recommendationsHTML;
+
+        } catch (error) {
+            console.error("Error fetching recommendations:", error);
+            document.getElementById("recommendations-container").innerHTML = "<p>Failed to load recommendations.</p>";
+        }
+    }
+
+    // Redirect to product detail page
+    function goToProductDetails(productId) {
+        window.location.href = `productDetails.html?id=${productId}`;
+    }
+
+    // Function to check if user is logged in
+    function isLoggedIn() {
+        return localStorage.getItem("user") !== null;
+    }
+
+    // Function to add product to cart (with login check)
+    function addToCart(productId, productName, productPrice) {
+        if (!isLoggedIn()) {
+            alert("You must log in to add items to the cart.");
+            window.location.href = "login.html";
+            return;
+        }
+
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let existingProduct = cart.find(item => item.id === productId);
+
+        if (existingProduct) {
+            existingProduct.quantity += 1;
+        } else {
+            cart.push({ id: productId, name: productName, price: productPrice, quantity: 1 });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        alert(`${productName} added to cart!`);
+    }
+
+    // Run function when the page loads
+    document.addEventListener("DOMContentLoaded", fetchRecommendations);
+
+
     // Connect to WebSocket server
     const socket = new WebSocket('ws://localhost:3000'); // Update the endpoint to match the server
 

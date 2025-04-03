@@ -5,7 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wholesale Products</title>
     
+    <header>
+        <div class="header-container">
+          <div class="logo">
+                <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                  <img src="images/Logo.png" alt="Company Logo" width="100" height="100">
+              <h1>We Care You</h1>
+            </a>
+          </div>
+              <nav class="header-nav">
+            <ul class="nav-links">
+              <li><a href="wholesale.html">Wholesale</a></li>
+              <li><a href="products.html">Products</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="contact.html">Contact</a></li>
+              <li><a href="profile.html">Profile</a></li>
+              <li><a href="cart.html">Cart</a></li>
+    
+                  
+            </ul>
+                <div class="auth-buttons">
+                  <a href="login.html" class="login-btn">Login</a>
+                  <a href="clientlogin.html" class="login-btn">Seller Login</a>
+                </div>
+          </nav>
+        </div>
+      </header>
     <style>
+         * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -24,7 +56,7 @@
         .product-card {
             background: white;
             border-radius: 10px;
-            padding: 15px;
+            padding: 90px;
             box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
@@ -50,32 +82,376 @@
             font-size: 14px;
             color: #666;
         }
+        /* Header Styles */
+    header {
+      background-color: #BF6900;
+      padding: 1rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo h1 {
+      color: #070707;
+      font-size: 2.0rem;
+      font-weight: 600;
+    }
+
+    .logo i {
+      color: #fff;
+      font-size: 2rem;
+    }
+
+    .header-nav {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: #070707;
+      text-decoration: none;
+      font-weight: 900;
+      padding: 8px 15px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    .nav-links a:hover {
+      background-color: rgba(255,255,255,0.1);
+    }
+
+    .auth-buttons a {
+      padding: 8px 20px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .login-btn {
+      color: #070707;
+      background-color: white;
+    }
+
+    .register-btn {
+      color: #070707;
+      background-color: white;
+      margin-left: 10px;
+    }
+    /* Hero Section */
+    .hero {
+      margin-top: 80px;
+      background: linear-gradient(rgba(45, 106, 79, 0.9), rgba(45, 106, 79, 0.9)),
+                  url('https://images.unsplash.com/photo-1607082349566-187342175e2f?ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      text-align: center;
+      padding: 100px 20px;
+    }
+
+    .hero h2 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      max-width: 600px;
+      margin: 0 auto 30px;
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 15px 30px;
+      background-color: #fff;
+      color: #2d6a4f;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: transform 0.3s;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+    }
+
+    /* 改进的产品区域样式 */
+    .products-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .page-title {
+      text-align: center;
+      color: #070707;
+      margin: 20px 0 40px;
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 50px;
+    }
+
+    .filters {
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .search-bar {
+      flex: 1;
+      max-width: 500px;
+      position: relative;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 12px 40px 12px 15px;
+      border: 2px solid #e9ecef;
+      border-radius: 25px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .search-bar input:focus {
+      outline: none;
+      border-color: #2d6a4f;
+      box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.2);
+    }
+
+    .search-bar i {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d;
+    }
+
+    .product-stock {
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-top: 5px;
+    }
+
+    .product-stock:not(.out-of-stock) {
+      background-color: rgba(40, 167, 69, 0.1);
+      color: #28a745;
+    }
+
+    .out-of-stock {
+      background-color: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+    }
+
+    /* Loading 和 Error 状态样式 */
+    .loading, .error {
+      text-align: center;
+      padding: 40px;
+      font-size: 1.2rem;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+
+    .loading {
+      color: #070707;
+      background: rgba(45, 106, 79, 0.1);
+    }
+
+    .error {
+      color: #dc3545;
+      background: rgba(220, 53, 69, 0.1);
+    }
+
+    /* 添加到 style ��分 */
+    .add-to-cart-btn {
+      background: #BF6900;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      margin-top: 10px;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+
+    .add-to-cart-btn:hover {
+      background: #BF6900;
+    }
+
+    .add-to-cart-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+     /* AR Form Styling */
+    .ar-form {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 500px;
+        margin: 20px auto;
+        text-align: center;
+    }
+
+    .ar-container {
+        width: 100%;
+        height: 300px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    a-scene {
+        width: 100% !important;
+        height: 100% !important;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .ar-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .close-ar-btn {
+        background: red;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .close-ar-btn:hover {
+        background: darkred;
+    }
+    .retrybutton {
+        background: green;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .retrybutton:hover {
+        background: darkgreen;
+    }
+    
+    .camera-icon {
+    position: absolute;
+    left: 510px;
+    top: 40%;
+    transform: translateY(-50%);
+    width: 30px; /* Adjust icon size */
+    height: 30px;
+    opacity: 1.0; /* Faded effect to keep it in the background */
+}
+.page-title {
+      text-align: center;
+      color: #070707;
+      margin: 20px 0 40px;
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 115px;
+    }
     </style>
 </head>
 <body>
 
-    <h1>Wholesale Products</h1>
+    
+  <div class="products-container">
+    <h1 class="page-title">Wholesale Products</h1>
+    
+    <div class="filters">
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search products...">
+        <button id="openARBtn">
+          <img src="images/camera.png" alt="Camera Icon" class="camera-icon">
+      </button>
+      </div>
+    </div>
+    <!-- Camera Icon Button -->
+
+
+   <!-- AR Form (Initially Hidden) -->
+   <div id="arForm" class="ar-form" style="display: none;">
+    <h2>Augmented Reality View</h2>
+
+    <!-- AR Camera Container -->
+    <div class="ar-container">
+        <iframe id="arFrame" class="ar-frame" style="display: none;"></iframe>
+    </div>
+    
+    <!-- Close AR Button -->
+    <button id="retryBtn" class="retrybutton">🔄 Try Again</button>
+    <button id="closeARBtn" class="close-ar-btn">Close AR</button>
+</div>
     <div id="wholesale-products" class="wholesale-container"></div>
 
+
     <script>
-        async function loadWholesaleProducts() {
-    try {
-        const response = await fetch("http://localhost:3000/api/wholesales");
+       async function loadWholesaleProducts() {
+        try {
+            const response = await fetch("http://localhost:3000/api/wholesales");
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            
+            const result = await response.json();
+            if (!result.success || !result.data.length) throw new Error("No wholesale products found!");
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+            allProducts = result.data; // Store all products globally
+            displayProducts(allProducts); // Display all products initially
+        } catch (error) {
+            console.error("❌ Error loading wholesale products:", error);
+            alert("Error loading wholesale products: " + error.message);
         }
+    }
 
-        const result = await response.json(); // Ensure JSON parsing
-
-        if (!result.success || !result.data.length) {
-            throw new Error("No wholesale products found!");
-        }
-
+    // Display products
+    function displayProducts(products) {
         const wholesaleGrid = document.getElementById("wholesale-products");
         wholesaleGrid.innerHTML = ""; // Clear before loading
 
-        result.data.forEach(product => {
+        products.forEach(product => {
             wholesaleGrid.innerHTML += `
                 <div class="product-card">
                     <div class="product-image">
@@ -90,17 +466,57 @@
                 </div>
             `;
         });
-
-    } catch (error) {
-        console.error("❌ Error loading wholesale products:", error);
-        alert("Error loading wholesale products: " + error.message);
     }
-}
 
-// Load products when the page loads
-document.addEventListener("DOMContentLoaded", loadWholesaleProducts);
+    // Filter products based on search input
+    function filterProducts() {
+        const searchInput = document.getElementById('searchInput').value.toLowerCase();
+        const filteredProducts = allProducts.filter(product =>
+            product.name.toLowerCase().includes(searchInput)
+        );
+        displayProducts(filteredProducts); // Display filtered products
+    }
 
-    </script>
+    // Event listener for search input
+    document.getElementById('searchInput').addEventListener('input', filterProducts);
+
+    // Open AR function
+    const openARBtn = document.getElementById('openARBtn');
+    const closeARBtn = document.getElementById('closeARBtn');
+    const arForm = document.getElementById('arForm');
+    const arFrame = document.getElementById('arFrame');
+    const retryBtn = document.getElementById('retryBtn');
+
+    openARBtn.addEventListener('click', () => {
+        arForm.style.display = 'block';  // Show AR container
+        arFrame.style.display = 'block';
+        arFrame.src = 'ar.html';  // Load the external AR scene
+    });
+
+    // Close AR form
+    closeARBtn.addEventListener('click', () => {
+        arForm.style.display = 'none';  // Hide AR form
+        arFrame.style.display = 'none';
+        arFrame.src = '';  // Unload AR scene
+    });
+
+    retryBtn.addEventListener('click', () => {
+        // Hide AR form and frame
+        arForm.style.display = 'none';  
+        arFrame.style.display = 'none';
+
+        // Reload the AR scene instantly
+        arFrame.src = 'about:blank'; // Reset iframe
+        arFrame.src = 'ar.html';  // Reload AR scene
+
+        // Show AR view again
+        arFrame.style.display = 'block';
+        arForm.style.display = 'block';
+    });
+
+    // Load products when the page loads
+    document.addEventListener('DOMContentLoaded', loadWholesaleProducts);
+</script>
 
 </body>
 </html>
