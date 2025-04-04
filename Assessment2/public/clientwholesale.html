@@ -268,7 +268,7 @@
     <div class="sidebar">
         <div class="sidebar-header">
             <i class="fas fa-store"></i>
-            <h1>TechMart Seller</h1>
+            <h1>We Care You Seller</h1>
         </div>
         <ul class="nav-menu">
             <li class="nav-item">
@@ -309,7 +309,8 @@
         <div class="header">
             <h1>Wholesale Product Management</h1>
              <!-- Button to open the modal for adding new product -->
-    <button class="add-product-btn" onclick="openWholesaleModal()">Add Product</button>
+    <button class="add-product-btn" onclick="openModal('wholesale')">Add Product</button>
+    
 
         </div>
 
@@ -327,6 +328,7 @@
         <button onclick="closeTypeSelectionModal()">Cancel</button>
     </div>
 </div>
+
 
     <!-- Wholesale Modal -->
     <div id="wholesaleModal" class="modal" style="display: none;">
@@ -386,7 +388,7 @@
         </div>
     </div>
     <!-- Modal for editing wholesale product -->
-    <div id="editModal" class="modal">
+    <div id="editModal" class="modal" style="display:none;">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">&times;</span>
             <h2>Edit Wholesale Product</h2><br><br>
@@ -415,7 +417,7 @@
                 <label for="editProductImage">Image URL</label>
                 <input type="text" id="editProductImage" name="editProductImage"><br><br>
                 
-                <button type="submit">Save Changes</button>
+                <button onclick="updateWholesaleProduct(productId)">Update</button>
                 <button type="button" id="cancelEditBtn">Cancel</button>
             </form>
         </div>
@@ -423,38 +425,90 @@
 
 
     <script>
+
+function openModal(type) {
+    if (type === 'wholesale') {
+        document.getElementById('wholesaleModal').style.display = 'block';
+    } else {
+        alert('Product modal not implemented yet.');
+    }
+}
+
    // Edit wholesale product function to populate the modal
+   // Function to show the modal
+   function showEditProductModal(productId) {
+    console.log("Showing edit modal for product with ID:", productId);
+    
+    // Get the modal element
+    const modal = document.getElementById("editModal");
+
+    // Check if modal exists
+    if (!modal) {
+        console.error("Modal not found!");
+        return;
+    }
+
+    // Display the modal
+    modal.style.display = "block";
+
+    // Get close button
+    const closeModal = document.getElementById("closeModal");
+
+    // Check if close button exists before setting the onclick event
+   
+
+    // Close the modal if the user clicks outside of the modal
+    window.addEventListener('click', function (event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    });
+    
+}
+
+// Function to load product details and show the modal
 async function editWholesaleProduct(productId) {
+    console.log("Editing product with ID:", productId);
+
     try {
         const response = await fetch(`http://localhost:3000/api/wholesales/${productId}`);
-
-        if (!response.ok) {
-            throw new Error(`Error fetching product: ${response.statusText}`);
-        }
-
         const data = await response.json();
 
-        if (!data.success) {
-            throw new Error('Error: ' + data.message);
+        console.log("API Response:", data);
+
+        if (!data.success || !data.product) {
+            throw new Error("Product not found");
         }
 
-        const product = data.data;  // Get the product data
+        // Get form elements
+        const nameField = document.getElementById("editProductName");
+        const descriptionField = document.getElementById("editProductDescription");
+        const priceField = document.getElementById("editProductPrice");
+        const stockField = document.getElementById("editProductStock");
+        const minOrderField = document.getElementById("editProductMinOrder");
+        const categoryField = document.getElementById("editProductCategory");
+        const imageField = document.getElementById("editProductImage");
 
-        // Populate your HTML form with the fetched data
-        document.getElementById('editProductId').value = product._id;
-        document.getElementById('editProductName').value = product.name;
-        document.getElementById('editProductDescription').value = product.description;
-        document.getElementById('editProductPrice').value = product.price;
-        document.getElementById('editProductStock').value = product.stock;
-        document.getElementById('editProductMinOrder').value = product.minOrder;
-        document.getElementById('editProductCategory').value = product.category;
-        document.getElementById('editProductImage').value = product.image;
+        // Assign values from the product data
+        nameField.value = data.product.name;
+        descriptionField.value = data.product.description;
+        priceField.value = data.product.price;
+        stockField.value = data.product.stock;
+        minOrderField.value = data.product.minOrder;
+        categoryField.value = data.product.category;
+        imageField.src = data.product.image || "default-image.png"; // Set a default image if empty
 
-        // Show the modal
-        document.getElementById('editModal').style.display = 'block';
+        // Store productId in the form field to send with the update request
+        document.getElementById("editProductId").value = productId;
+
+        console.log("Product details loaded successfully.");
+
+        // Show the modal after loading data
+        showEditProductModal();
+
     } catch (error) {
-        console.error('Error loading wholesale product:', error.message);
-        alert(`Error: ${error.message}`);
+        console.error("Error loading wholesale product:", error.message);
+        alert("Failed to load product details.");
     }
 }
 
@@ -488,7 +542,7 @@ document.getElementById('editForm').addEventListener('submit', async (event) => 
 
         const result = await response.json();
 
-        if (result.success) {
+       if (result.success) {
             alert('Wholesale product updated successfully');
             closeModal();
             await loadWholesaleProducts(); // Refresh the wholesale products list
@@ -505,8 +559,10 @@ document.getElementById('editForm').addEventListener('submit', async (event) => 
 function closeModal() {
     // Close the edit modal
     document.getElementById('editModal').style.display = 'none';
+    document.getElementById('wholesaleModal').style.display = 'none';
     // Reset form to clear any input values
     document.getElementById('editForm').reset();
+    document.getElementById('wholesaleForm').reset();
 }
 
 // Ensure the Cancel button works by closing the modal and resetting the form
@@ -554,6 +610,81 @@ async function loadWholesaleProducts() {
         alert('Error loading wholesale products: ' + error.message);
     }
 }
+// Form submission handling
+document.getElementById('wholesaleForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const product = {
+        name: document.getElementById('wholesaleName').value,
+        description: document.getElementById('wholesaleDescription').value,
+        price: parseFloat(document.getElementById('wholesalePrice').value),
+        minOrder: parseInt(document.getElementById('wholesaleMinOrder').value),
+        stock: parseInt(document.getElementById('wholesaleStock').value),
+        category: document.getElementById('category').value,
+        type: document.getElementById('type').value,
+        image: ''
+    };
+
+    const imageInput = document.getElementById('wholesaleImage');
+    if (imageInput.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = async function (e) {
+            product.image = e.target.result;
+            await saveWholesaleProduct(product);
+        };
+        reader.readAsDataURL(imageInput.files[0]);
+    } else {
+        await saveWholesaleProduct(product);
+    }
+});window.onload = loadWholesaleProducts;
+
+// Save product function
+async function saveWholesaleProduct(product) {
+    try {
+        const response = await fetch('http://localhost:3000/api/wholesales', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(product)
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Product added successfully');
+            closeModal();
+            
+        } else {
+            throw new Error(result.message);
+        }
+    } catch (err) {
+        alert('Error adding product: ' + err.message);
+    }
+}
+// Function to delete a wholesale product
+async function deleteWholesaleProduct(productId) {
+    try {
+        // Confirm with the user before deleting
+        const confirmDelete = confirm('Are you sure you want to delete this product?');
+        if (!confirmDelete) return;
+
+        // Send a delete request to the backend API
+        const response = await fetch(`http://localhost:3000/api/wholesales/${productId}`, {
+            method: 'DELETE',
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Product deleted successfully');
+            await loadWholesaleProducts(); // Reload the products list after deletion
+        } else {
+            throw new Error(result.message || 'Failed to delete product');
+        }
+    } catch (error) {
+        console.error('Error deleting wholesale product:', error);
+        alert('Error deleting wholesale product: ' + error.message);
+    }
+}
+
 
 // Load wholesale products on page load
 window.onload = loadWholesaleProducts;

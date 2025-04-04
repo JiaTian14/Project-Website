@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const Wholesale = require('./Assessment2/models/wholesale');
 const Product = require('./Assessment2/models/product'); // Corrected the path to the Product model
 const cartRoutes = require('./Assessment2/routes/cartRoutes'); // Import cart routes
 const http = require('http');
@@ -1380,82 +1381,76 @@ app.get('/wholesaleProducts', async (req, res) => {
 app.get('/api/wholesales/:id', async (req, res) => {
     const productId = req.params.id;
 
-    // Validate the ID
-    if (!ObjectId.isValid(productId)) {
-        return res.status(400).json({ success: false, message: 'Invalid product ID' });
-    }
-
-    let client;
     try {
-        // Ensure client is connected before any query
-        client = await connectDB();  // Establish the connection here
-        const database = client.db("techmart"); // Ensure the correct database name
-        const wholesalesCollection = database.collection("wholesales"); // Correct collection name
+        const client = await connectDB();  // Ensure connection
+        const database = client.db('techmart');
+        const wholesalesCollection = database.collection('wholesales');
 
-        // Find product by ID
-        const wholesaleProduct = await wholesalesCollection.findOne({ _id: new ObjectId(productId) });
-
-        // If product not found, return error
-        if (!wholesaleProduct) {
-            return res.status(404).json({ success: false, message: 'Wholesale product not found' });
+        if (!ObjectId.isValid(productId)) {
+            return res.status(400).json({ success: false, message: 'Invalid product ID' });
         }
 
-        // Return the product details
-        res.json({ success: true, data: wholesaleProduct });
-
-    } catch (error) {
-        // Log the error and send appropriate response
-        console.error('Error fetching wholesale product:', error.message);
-        res.status(500).json({ success: false, message: `Server error: ${error.message}` });
-    } finally {
-        if (client) {
-            await client.close();  // Ensure the client is closed after query
-        }
-    }
-});
-
-
-
-// Update a wholesale product by ID
-app.put('/api/wholesales/:id', async (req, res) => {
-    try {
-        const { name, description, price, stock, minOrder, category, type, image } = req.body;
-
-        // Validate required fields
-        if (!name || !description || !price || !stock || !minOrder || !category || !type) {
-            return res.status(400).json({ success: false, message: 'Missing required fields' });
-        }
-
-        const updatedProduct = await WholesaleProduct.findByIdAndUpdate(
-            req.params.id,
-            { name, description, price, stock, minOrder, category, type, image },
-            { new: true }
-        );
-
-        if (!updatedProduct) {
-            return res.status(404).json({ success: false, message: 'Product not found' });
-        }
-
-        res.json({ success: true, message: 'Product updated successfully', data: updatedProduct });
-    } catch (error) {
-        console.error('Error updating product:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
-    }
-});
-
-// Delete a wholesale product by ID
-app.delete('/api/wholesales/:id', async (req, res) => {
-    try {
-        const product = await WholesaleProduct.findByIdAndDelete(req.params.id);
+        const product = await wholesalesCollection.findOne({ _id: new ObjectId(productId) });
 
         if (!product) {
             return res.status(404).json({ success: false, message: 'Product not found' });
         }
 
-        res.json({ success: true, message: 'Product deleted successfully' });
+        res.json({ success: true, product });
     } catch (error) {
-        console.error('Error deleting product:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        console.error('Error fetching product:', error.message);
+        res.status(500).json({ success: false, message: `Server error: ${error.message}` });
+    }
+});
+
+// ✅ PUT request to update a wholesale product
+app.put('/api/wholesales/:id', async (req, res) => {
+    const productId = req.params.id;
+    const updatedData = req.body;
+
+    try {
+        const client = await connectDB();
+        const database = client.db('techmart');
+        const wholesalesCollection = database.collection('wholesales');
+
+        if (!ObjectId.isValid(productId)) {
+            return res.status(400).json({ success: false, message: 'Invalid product ID' });
+        }
+
+        const result = await wholesalesCollection.updateOne(
+            { _id: new ObjectId(productId) },
+            { $set: updatedData }
+        );
+
+        if (result.modifiedCount === 0) {
+            return res.status(400).json({ success: false, message: 'Product not found or no changes made' });
+        }
+
+        res.json({ success: true, message: 'Product updated successfully' });
+    } catch (error) {
+        console.error('Error updating product:', error.message);
+        res.status(500).json({ success: false, message: `Server error: ${error.message}` });
+    }
+});
+
+
+
+// Delete a wholesale product by ID
+// Example route for deleting a wholesale product
+app.delete('/api/wholesales/:id', async (req, res) => {
+    const productId = req.params.id;
+
+    try {
+        // Perform deletion logic here
+        const result = await Product.deleteOne({ _id: productId });
+
+        if (result.deletedCount === 1) {
+            res.json({ success: true, message: 'Product deleted successfully' });
+        } else {
+            res.json({ success: false, message: 'Product not found' });
+        }
+    } catch (error) {
+        res.json({ success: false, message: error.message });
     }
 });
 
