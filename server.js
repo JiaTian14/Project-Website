@@ -1403,7 +1403,7 @@ app.get('/api/wholesales/:id', async (req, res) => {
     }
 });
 
-// ✅ PUT request to update a wholesale product
+// PUT request to update a wholesale product
 app.put('/api/wholesales/:id', async (req, res) => {
     const productId = req.params.id;
     const updatedData = req.body;
@@ -1453,6 +1453,32 @@ app.delete('/api/wholesales/:id', async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 });
+
+// Example: GET /api/wholesalesfilter?category=Kitchen
+// GET /api/wholesalesfilter
+app.get('/api/wholesalesfilter', async (req, res) => {
+    const { category } = req.query;
+  
+    try {
+      // Access the database and collection
+      const database = client.db("techmart");
+      const wholesalesCollection = database.collection('wholesales');
+  
+      // If category is not specified, return all products
+      if (!category || category === 'All Categories') {
+        const products = await wholesalesCollection.find().toArray();
+        return res.json({ success: true, data: products });
+      }
+  
+      // Otherwise, return products filtered by category
+      const products = await wholesalesCollection.find({ category }).toArray();
+      res.json({ success: true, data: products });
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      res.status(500).json({ success: false, message: "Server error while fetching products" });
+    }
+  });
+  
 
 // Export the app for testing
 module.exports = app;

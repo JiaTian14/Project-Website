@@ -6,11 +6,15 @@ const wholesaleSchema = new Schema({
     name: String,
     description: String,
     price: Number,
-    stock: Number,
     minOrder: Number,
+    stock: Number,
     category: String,
-    image: String
-});
+    type: String,
+    image: String,
+  }, {
+    timestamps: true,
+    collection: 'wholesales' // Make sure this matches your MongoDB collection
+  });
 
 // Create the model
 const Wholesale = mongoose.model('Wholesale', wholesaleSchema);
