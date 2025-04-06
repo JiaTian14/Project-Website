@@ -404,7 +404,7 @@
     
     <div class="filters">
       <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="Search products...">
+        <input type="text" id="searchInput" placeholder="Search products..."oninput="filterProducts()"/>
         <button id="openARBtn">
           <img src="images/camera.png" alt="Camera Icon" class="camera-icon">
       </button>
@@ -431,6 +431,7 @@
 <label for="categoryFilter">Filter by Category:</label>
 <select id="categoryFilter" required>
     <option value="All Categories">All Categories</option>
+    <option value="Hawker">Hawker</option>
     <option value="Kitchenware">Kitchenware</option>
     <option value="Laundry & Cleaning">Laundry & Cleaning</option>
     <option value="Pail & Dusbin">Pail & Dusbin</option>
@@ -449,10 +450,60 @@
 
 
     <script>
+    async function addToCart(event, productId, wholesaleId, quantity) {
+  // Prevent the default button click action
+  event.preventDefault();
+
+  // Ensure the user is logged in
+  const userData = localStorage.getItem('userData');
+  if (!userData) {
+    window.location.href = 'login.html'; // Redirect to login page if not logged in
+    return;
+  }
+
+  const user = JSON.parse(userData);
+  console.log('User data:', user);
+
+  // Ensure quantity is a number (default to 1 if not provided)
+  quantity = quantity || 1;
+
+  try {
+    // Construct URL for adding product to the cart
+    let url = `http://localhost:3000/api/cart/${user._id}/add`;
+
+    // Send request to backend to add product to cart
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userId: user._id,       // Send user ID from localStorage
+        productId: productId,   // Send product ID
+        wholesaleId: wholesaleId, // Send wholesale ID (empty string for non-wholesale)
+        quantity: quantity      // Send quantity (default to 1)
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      alert('Product added to cart successfully!');
+      // Optionally redirect to the cart page or refresh the page
+    } else {
+      alert(result.message || 'Failed to add product to cart');
+    }
+  } catch (error) {
+    console.error('Error adding to cart:', error);
+    alert('Failed to add product to cart. Please try again.');
+  }
+}
+
+
        async function loadWholesaleProducts() {
         try {
             const response = await fetch("http://localhost:3000/api/wholesales");
-            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            if (!response.ok) throw new Error('HTTP error! Status: ${response.status}');
             
             const result = await response.json();
             if (!result.success || !result.data.length) throw new Error("No wholesale products found!");
@@ -484,6 +535,11 @@
             <h3 class="product-name">${product.name}</h3>
             <div class="product-price">Price: RM${price.toFixed(2)}</div>
             <div class="product-stock">Stock: ${product.stock}</div>
+            <button onclick="addToCart(event, '${product._id}', '${product.type === 'Wholesale' ? product._id : ''}', 1)" class="add-to-cart-btn" 
+              ${product.stock <= 0 ? 'disabled' : ''}>
+              ${product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
+            </button>
+
           </div>
         </div>
       `;
@@ -494,12 +550,20 @@
 }
     // Filter products based on search input
     function filterProducts() {
-        const searchInput = document.getElementById('searchInput').value.toLowerCase();
-        const filteredProducts = allProducts.filter(product =>
-            product.name.toLowerCase().includes(searchInput)
-        );
-        displayProducts(filteredProducts); // Display filtered products
+    const searchInputElement = document.getElementById('searchInput');
+    if (!searchInputElement) {
+        console.error("searchInput element not found.");
+        return;
     }
+
+    const searchValue = searchInputElement.value.toLowerCase();
+
+    const filteredProducts = allProducts.filter(product =>
+        product.name && product.name.toLowerCase().includes(searchValue)
+    );
+
+    displayProducts(filteredProducts);
+}
 
     // Event listener for search input
     document.getElementById('searchInput').addEventListener('input', filterProducts);
@@ -582,7 +646,7 @@
   async function loadWholesaleProducts() {
   try {
     const response = await fetch('http://localhost:3000/api/wholesales');
-    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+    if (!response.ok) throw new Error('HTTP error! Status: ${response.status}');
     
     const result = await response.json();
     if (!result.success || !Array.isArray(result.data)) throw new Error("No wholesale products found!");
@@ -600,7 +664,7 @@
   // Handle category selection change
   categoryFilter.addEventListener('change', async (e) => {
     const selectedCategory = e.target.value;
-    console.log(`Selected category: ${selectedCategory}`);
+    console.log('Selected category: ${selectedCategory}');
 
     // When "All Products" is selected, load all products
     if (selectedCategory === 'All Products') {
@@ -608,7 +672,7 @@
     } else {
       // Fetch filtered products based on the selected category
       try {
-        const response = await fetch(`http://localhost:3000/api/wholesalesfilter?category=${selectedCategory}`);
+        const response = await fetch('http://localhost:3000/api/wholesalesfilter?category=${selectedCategory}');
         if (!response.ok) {
           throw new Error('Error fetching products');
         }
@@ -630,17 +694,22 @@
   // Function to display products in the UI
   function displayProducts(products) {
   const wholesaleGrid = document.getElementById("wholesale-products");
+  const messageArea = document.getElementById('messageArea');
+
   wholesaleGrid.innerHTML = ""; // Clear previous products
 
   if (Array.isArray(products) && products.length > 0) {
+    // ✅ Clear any previous "no products" message
+    messageArea.innerHTML = '';
+
     products.forEach(product => {
       const price = product.price_per_unit ?? 0;
       wholesaleGrid.innerHTML += `
         <div class="product-card">
           <div class="product-image">
-          <img src="${product.image_url || 'https://via.placeholder.com/300x200'}" 
-              alt="${product.name}" 
-              onerror="this.onerror=null;this.src='https://via.placeholder.com/300x200';">
+            <img src="${product.image_url || 'https://via.placeholder.com/300x200'}" 
+                alt="${product.name}" 
+                onerror="this.onerror=null;this.src='https://via.placeholder.com/300x200';">
           </div>
           <div class="product-info">
             <h3 class="product-name">${product.name}</h3>
@@ -651,7 +720,8 @@
       `;
     });
   } else {
-    document.getElementById('messageArea').innerHTML = 'No products found.';
+    // ✅ Show message if no products
+    messageArea.innerHTML = 'No products found.';
   }
 }
 

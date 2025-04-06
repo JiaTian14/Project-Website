@@ -1383,8 +1383,8 @@ app.get('/api/wholesales/:id', async (req, res) => {
 
     try {
         const client = await connectDB();  // Ensure connection
-        const database = client.db('techmart');
-        const wholesalesCollection = database.collection('wholesales');
+        const database = client.db("techmart");
+        const wholesalesCollection = database.collection("wholesales");
 
         if (!ObjectId.isValid(productId)) {
             return res.status(400).json({ success: false, message: 'Invalid product ID' });
@@ -1410,8 +1410,8 @@ app.put('/api/wholesales/:id', async (req, res) => {
 
     try {
         const client = await connectDB();
-        const database = client.db('techmart');
-        const wholesalesCollection = database.collection('wholesales');
+        const database = client.db("techmart");
+        const wholesalesCollection = database.collection("wholesales");
 
         if (!ObjectId.isValid(productId)) {
             return res.status(400).json({ success: false, message: 'Invalid product ID' });
@@ -1462,7 +1462,7 @@ app.get('/api/wholesalesfilter', async (req, res) => {
     try {
       // Access the database and collection
       const database = client.db("techmart");
-      const wholesalesCollection = database.collection('wholesales');
+      const wholesalesCollection = database.collection("wholesales");
   
       // If category is not specified, return all products
       if (!category || category === 'All Categories') {
@@ -1479,6 +1479,31 @@ app.get('/api/wholesalesfilter', async (req, res) => {
     }
   });
   
+  // GET all products or filter by category
+  app.get('/api/productsfilter', async (req, res) => {
+  const { category } = req.query;
+
+  try {
+    const database = client.db("techmart");
+    const productsCollection = database.collection("products");
+
+    if (!category || category === 'All Categories' || category === 'All Products') {
+      const products = await productsCollection.find().toArray();
+      return res.json({ success: true, data: products });
+    }
+
+    const products = await productsCollection.find({ category }).toArray();
+    res.json({ success: true, data: products });
+
+  } catch (err) {
+    console.error('Error fetching products:', err);
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching products",
+      error: err.message
+    });
+  }
+});  
 
 // Export the app for testing
 module.exports = app;
