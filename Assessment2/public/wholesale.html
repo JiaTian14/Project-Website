@@ -14,8 +14,9 @@
             </a>
           </div>
               <nav class="header-nav">
-            <ul class="nav-links">
+            <ul class="nav-links"> 
               <li><a href="wholesale.html">Wholesale</a></li>
+              <li><a href="hawker.html">Hawker</a></li>
               <li><a href="products.html">Products</a></li>
               <li><a href="about.html">About</a></li>
               <li><a href="contact.html">Contact</a></li>
@@ -161,6 +162,12 @@
       background-color: white;
       margin-left: 10px;
     }
+    h2 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      padding-top: 100px;
+      text-align: center;
+    }
     /* Hero Section */
     .hero {
       margin-top: 80px;
@@ -253,7 +260,7 @@
       color: #6c757d;
     }
 
-    .product-stock {
+    .wholessale-stock {
       font-size: 0.9rem;
       font-weight: 600;
       padding: 5px 10px;
@@ -262,7 +269,7 @@
       margin-top: 5px;
     }
 
-    .product-stock:not(.out-of-stock) {
+    .wholesale-stock:not(.out-of-stock) {
       background-color: rgba(40, 167, 69, 0.1);
       color: #28a745;
     }
@@ -469,7 +476,7 @@
 
   try {
     // Construct URL for adding product to the cart
-    let url = `http://localhost:3000/api/cart/${user._id}/add`;
+    let url = `http://localhost:3000/api/wholesalecart/${user._id}/add`;
 
     // Send request to backend to add product to cart
     const response = await fetch(url, {
@@ -524,12 +531,15 @@
   if (Array.isArray(products) && products.length > 0) {
     products.forEach(product => {
       const price = product.price_per_unit ?? 0;
-      wholesaleGrid.innerHTML += `
-        <div class="product-card">
+
+      const card = document.createElement("div");
+      card.classList.add("product-card");
+      card.setAttribute("data-id", product._id); // Set product ID
+
+      card.innerHTML = `
           <div class="product-image">
-          <img src="${product.image_url || 'https://via.placeholder.com/300x200'}" 
-              alt="${product.name}" 
-              onerror="this.onerror=null;this.src='https://via.placeholder.com/300x200';">
+          <img src="${product.image_url}" 
+              alt="${product.name}">
           </div>
           <div class="product-info">
             <h3 class="product-name">${product.name}</h3>
@@ -543,7 +553,17 @@
           </div>
         </div>
       `;
+      // Add click listener to card (not on button)
+      card.addEventListener("click", function (e) {
+        if (!e.target.classList.contains("add-to-cart-btn")) {
+          const id = this.getAttribute("data-id");
+          window.location.href = `wholesaleDetails.html?id=${id}`;
+        }
+      });
+
+      wholesaleGrid.appendChild(card);
     });
+    
   } else {
     document.getElementById('messageArea').innerHTML = 'No products found.';
   }
@@ -664,7 +684,7 @@
   // Handle category selection change
   categoryFilter.addEventListener('change', async (e) => {
     const selectedCategory = e.target.value;
-    console.log('Selected category: ${selectedCategory}');
+    console.log(`Selected category: ${selectedCategory}`);
 
     // When "All Products" is selected, load all products
     if (selectedCategory === 'All Products') {
@@ -672,7 +692,7 @@
     } else {
       // Fetch filtered products based on the selected category
       try {
-        const response = await fetch('http://localhost:3000/api/wholesalesfilter?category=${selectedCategory}');
+        const response = await fetch(`http://localhost:3000/api/wholesalesfilter?category=${encodeURIComponent(selectedCategory)}`);
         if (!response.ok) {
           throw new Error('Error fetching products');
         }
@@ -707,9 +727,8 @@
       wholesaleGrid.innerHTML += `
         <div class="product-card">
           <div class="product-image">
-            <img src="${product.image_url || 'https://via.placeholder.com/300x200'}" 
-                alt="${product.name}" 
-                onerror="this.onerror=null;this.src='https://via.placeholder.com/300x200';">
+            <img src="${product.image_url}" 
+                alt="${product.name}" >
           </div>
           <div class="product-info">
             <h3 class="product-name">${product.name}</h3>

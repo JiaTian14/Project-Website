@@ -301,6 +301,8 @@
             </div>
             <nav class="header-nav">
                 <ul class="nav-links">
+                    <li><a href="wholesale.html">Wholesale</a></li>
+                    <li><a href="hawker.html">Hawker</a></li>
                     <li><a href="products.html">Products</a></li>
                     <li><a href="about.html">About</a></li>
                     <li><a href="contact.html">Contact</a></li>
@@ -442,9 +444,8 @@
     cartItems.innerHTML = cartData.products.map(item => `
         <div class="cart-item" data-id="${item.productId}">
             <div class="product-image">
-                <img src="${item.image || 'https://via.placeholder.com/100'}" 
-                     alt="${item.name}"
-                     onerror="this.src='https://via.placeholder.com/100'">
+                <img src="${item.image }" 
+                     alt="${item.name}">
             </div>
             <div class="product-info">
                 <h3>${item.name}</h3>

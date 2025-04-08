@@ -410,190 +410,156 @@
       </header>
 
     <div class="container">
-        <a href="products.html" class="back-button">
+        <a href="wholesale.html" class="back-button">
             <i class="fas fa-arrow-left"></i>
-            Back to Products
+            Back to Wholesale Products
         </a>
-        
+
         <div id="productDetails" class="product-details">
             <!-- Product details will be inserted here -->
         </div>
-    </div>
-
-    
-
-    <script>
-
-let quantity = 1;
-        const maxStock = parseInt('${product.stock}'); // 假设产品数据中有stock字段
-
-        function incrementQuantity() {
-            if (quantity < maxStock) {
-                quantity++;
-                updateQuantityDisplay();
-            }
-        }
-
-        function decrementQuantity() {
-            if (quantity > 1) {
-                quantity--;
-                updateQuantityDisplay();
-            }
-        }
-
-        function updateQuantityDisplay() {
-            document.getElementById('quantity').textContent = quantity;
-        }
-
-        async function fetchProductDetails() {
-            const productId = new URLSearchParams(window.location.search).get('id');
-            const productDetails = document.getElementById('productDetails');
+        
+        <script>
+            let quantity = 1;
+        
             
-            try {
-                productDetails.innerHTML = '<div class="loading">Loading product details...</div>';
-
-                const response = await fetch(`http://localhost:3000/api/products/${productId}`);
-                console.log('Raw response:', response);
+            async function fetchWholesaleDetails() {
+                const wholesaleId = new URLSearchParams(window.location.search).get('id');
+                const productDetails = document.getElementById('productDetails');
                 
-                if (!response.ok) throw new Error('Failed to fetch product details');
-                
-                const data = await response.json();
-                console.log('Product data:', data);
-                
-                const product = data.data || data;
-                
-                productDetails.innerHTML = `
-                    <div class="product-image">
-                        <img src="${product.image }" 
-                             alt="${product.name}">
-                    </div>
-                    <div class="product-info">
-                        <div class="product-header">
-                            <h1 class="product-name">${product.name}</h1>
-                            <span class="product-category">${product.category || 'Uncategorized'}</span>
-                        </div>
-                        
-                        <p class="product-description">${product.description || 'No description available'}</p>
-                        
-                        <div class="product-price">${product.price.toFixed(2)}</div>
-                        
-                        <div class="product-stock">
-                            <span>Availability:</span>
-                            <span class="stock-status ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}">
-                                ${product.stock > 0 ? `In Stock (${product.stock} units)` : 'Out of Stock'}
-                            </span>
-                        </div>
-                        
-                        ${product.stock > 0 ? `
-                        <div class="quantity-controls">
-                          <button onclick="updateQuantity(-1, ${product.stock})">
-                              <i class="fas fa-minus"></i>
-                        </button>
-                        <span id="quantity">1</span>
-                        <button onclick="updateQuantity(1, ${product.stock})">
-                            <i class="fas fa-plus"></i>
-                          </button>
-                        </div>
+                try {
+                    productDetails.innerHTML = '<div class="loading">Loading wholesale product details...</div>';
+        
+                    const response = await fetch(`http://localhost:3000/api/wholesales/${wholesaleId}`);
+                    console.log('Raw response:', response);
                     
-                        <button 
-                          class="add-to-cart" 
-                          onclick="addToCart('${product._id}')"
-                          ${product.stock <= 0 ? 'disabled' : ''}>
-                          <i class="fas fa-shopping-cart"></i>
-                          Add to Cart 
-                        </button>
-                      
-                ` : ''}
-                </div>
-              `;  
+                    if (!response.ok) throw new Error('Failed to fetch wholesale product details');
+                    
+                    const data = await response.json();
+                    console.log('Wholesale data:', data);
+                    
+                    const wholesale = data.product; // ✅ FIX THIS LINE
 
-            } catch (error) {
-                console.error('Error:', error);
-                productDetails.innerHTML = `
-                    <div class="error">
-                        Error loading product details.<br>
-                        ${error.message}<br>
-                        <button onclick="fetchProductDetails()" class="retry-button">Retry</button>
-                    </div>
-                `;
-            }
-        }
+        
+                    productDetails.innerHTML = `
+                        <div class="product-image">
+                            <img src="${wholesale.image ? 'http://localhost:3000/' + wholesale.image : 'images/default.png'}" 
+                                alt="${wholesale.name}">
 
-        function updateQuantity(change, maxStock) {
-            const quantityElement = document.getElementById('quantity');
-            let quantity = parseInt(quantityElement.textContent);
-            
-            // 计算新的数量
-            let newQuantity = quantity + change;
-            
-            // 确保数量在 1 和库存数量之间
-            newQuantity = Math.max(1, Math.min(maxStock, newQuantity));
-            
-            // 更新显示
-            quantityElement.textContent = newQuantity;
-            
-            // 根据数量启用/禁用按钮
-            const decreaseBtn = quantityElement.previousElementSibling;
-            const increaseBtn = quantityElement.nextElementSibling;
-            
-            decreaseBtn.disabled = newQuantity <= 1;
-            increaseBtn.disabled = newQuantity >= maxStock;
-        }
-
-        async function addToCart() {
-            const userData = localStorage.getItem('userData');
-            if (!userData) {
-                window.location.href = 'login.html';
-                return;
-            }
-
-            const user = JSON.parse(userData);
-            console.log('User data:', user);
-            const urlParams = new URLSearchParams(window.location.search);
-            const productId = urlParams.get('id');
-            const quantityElement = document.getElementById('quantity');
-            const quantity = parseInt(quantityElement.textContent);
-
-            try {
-                const response = await fetch(`http://localhost:3000/api/cart/${user._id}/add`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        userId: user._id,
-                        productId: productId,
-                        quantity: quantity
-                    })
-                });
-
-                const result = await response.json();
-                
-                if (result.success) {
-                    alert('Product added to cart successfully!');
-                    // 可以选择跳转到购物车页面或保持在当前页面
-                    // window.location.href = 'cart.html';
-                } else {
-                    alert(result.message || 'Failed to add product to cart');
+                        </div>
+                        <div class="product-info">
+                            <div class="product-header">
+                                <h1 class="product-name">${wholesale.name}</h1>
+                                <span class="product-category">${wholesale.category || 'Uncategorized'}</span>
+                            </div>
+                            
+                            <p class="product-description">${wholesale.description || 'No description available'}</p>
+                            
+                            <div class="product-price">${parseFloat(wholesale.price).toFixed(2)}</div>
+                            
+                            <div class="product-stock">
+                                <span>Availability:</span>
+                                <span class="stock-status ${wholesale.stock > 0 ? 'in-stock' : 'out-of-stock'}">
+                                    ${wholesale.stock > 0 ? `In Stock (${wholesale.stock} units)` : 'Out of Stock'}
+                                </span>
+                            </div>
+                            
+                            ${wholesale.stock > 0 ? `
+                            <div class="quantity-controls">
+                                <button onclick="updateQuantity(-1, ${wholesale.stock})">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <span id="quantity">1</span>
+                                <button onclick="updateQuantity(1, ${wholesale.stock})">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+        
+                            <button 
+                                id="addToCartBtn"
+                                class="add-to-cart" 
+                                onclick="addToCart('${wholesale._id}')"
+                                ${wholesale.stock <= 0 ? 'disabled' : ''}>
+                                <i class="fas fa-shopping-cart"></i>
+                                Add to Cart 
+                            </button>
+                            ` : ''}
+                        </div>
+                    `;  
+        
+                } catch (error) {
+                    console.error('Error:', error);
+                    productDetails.innerHTML = `
+                        <div class="error">
+                            Error loading product details.<br>
+                            ${error.message}<br>
+                            <button onclick="fetchWholesaleDetails()" class="retry-button">Retry</button>
+                        </div>
+                    `;
                 }
-            } catch (error) {
-                console.error('Error adding to cart:', error);
-                alert('Failed to add product to cart. Please try again.');
             }
-        }
-
-        // Load product details when the page loads
-        window.onload = fetchProductDetails;
-
-        // 页面加载时检查登录状态
-        document.addEventListener('DOMContentLoaded', () => {
-            const userData = localStorage.getItem('userData');
-            const addToCartBtn = document.getElementById('addToCartBtn');
-            
-            if (!userData) {
-                addToCartBtn.textContent = 'Login to Add to Cart';
+        
+            function updateQuantity(change, maxStock) {
+                const quantityElement = document.getElementById('quantity');
+                let quantity = parseInt(quantityElement.textContent);
+        
+                let newQuantity = quantity + change;
+                newQuantity = Math.max(1, Math.min(maxStock, newQuantity));
+        
+                quantityElement.textContent = newQuantity;
+        
+                const decreaseBtn = quantityElement.previousElementSibling;
+                const increaseBtn = quantityElement.nextElementSibling;
+        
+                decreaseBtn.disabled = newQuantity <= 1;
+                increaseBtn.disabled = newQuantity >= maxStock;
             }
-        });
-    </script>
-</body>
-</html>
+        
+            async function addToCart(wholesaleId) {
+                const userData = localStorage.getItem('userData');
+                if (!userData) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+        
+                const user = JSON.parse(userData);
+                const quantity = parseInt(document.getElementById('quantity').textContent);
+        
+                try {
+                    const response = await fetch(`http://localhost:3000/api/wholesalecart/${user._id}/add`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            userId: user._id,
+                            productId: wholesaleId,
+                            quantity: quantity
+                        })
+                    });
+        
+                    const result = await response.json();
+        
+                    if (result.success) {
+                        alert('Wholesale product added to cart successfully!');
+                    } else {
+                        alert(result.message || 'Failed to add product to cart');
+                    }
+                } catch (error) {
+                    console.error('Error adding to cart:', error);
+                    alert('Failed to add product to cart. Please try again.');
+                }
+            }
+        
+            window.onload = fetchWholesaleDetails;
+        
+            document.addEventListener('DOMContentLoaded', () => {
+                const userData = localStorage.getItem('userData');
+                const addToCartBtn = document.getElementById('addToCartBtn');
+                if (addToCartBtn && !userData) {
+                    addToCartBtn.textContent = 'Login to Add to Cart';
+                    addToCartBtn.disabled = true;
+                }
+            });
+        </script>
+        

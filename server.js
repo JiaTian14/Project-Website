@@ -470,6 +470,109 @@ app.post('/api/users/login', async (req, res) => {
     }
 });
 
+app.post('/api/wholesalecart/:userId/add', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { productId, quantity } = req.body;
+
+        // Input validation
+        if (!userId || !productId || !quantity) {
+            return res.status(400).json({
+                success: false,
+                message: 'Missing required fields: userId, productId, or quantity'
+            });
+        }
+
+        if (quantity <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Quantity must be greater than 0'
+            });
+        }
+
+        const client = await connectDB();
+        const db = client.db("techmart");
+        const carts = db.collection("carts");
+        const wholesales = db.collection("wholesales"); // Use wholesale collection
+
+        // Check if the product exists in wholesales collection
+        const wholesaleProduct = await wholesales.findOne({ _id: new ObjectId(productId) });
+
+        if (!wholesaleProduct) {
+            return res.status(404).json({
+                success: false,
+                message: 'Wholesale product not found'
+            });
+        }
+
+        // Check stock availability
+        if (wholesaleProduct.stock < quantity) {
+            return res.status(400).json({
+                success: false,
+                message: 'Not enough stock available'
+            });
+        }
+
+        // Check if user already has a cart
+        let cart = await carts.findOne({ userId });
+        const updatedCart = cart || {
+            userId,
+            products: [],
+            createdAt: new Date(),
+            updatedAt: new Date()
+        };
+
+        // Check if product is already in the cart
+        const existingIndex = updatedCart.products.findIndex(p => p.productId === productId);
+
+        if (existingIndex !== -1) {
+            // Update quantity if already in cart
+            const newQuantity = updatedCart.products[existingIndex].quantity + quantity;
+
+            if (newQuantity > wholesaleProduct.stock) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Quantity exceeds stock limit'
+                });
+            }
+
+            updatedCart.products[existingIndex].quantity = newQuantity;
+        } else {
+            // Add new wholesale product to cart
+            const cartProduct = {
+                productId,
+                name: wholesaleProduct.name,
+                price: wholesaleProduct.price,
+                image: wholesaleProduct.image || "",
+                quantity,
+                stock: wholesaleProduct.stock
+            };
+            updatedCart.products.push(cartProduct);
+        }
+
+        // Update or insert the cart
+        await carts.updateOne(
+            { userId },
+            { $set: { products: updatedCart.products, updatedAt: new Date() } },
+            { upsert: true }
+        );
+
+        res.json({
+            success: true,
+            message: 'Wholesale product added to cart successfully',
+            data: updatedCart
+        });
+
+    } catch (error) {
+        console.error('Error adding wholesale product to cart:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+});
+
 // 添加到购物车
 app.post('/api/cart/:userId/add', async (req, res) => {
   try {
@@ -1504,6 +1607,55 @@ app.get('/api/wholesalesfilter', async (req, res) => {
     });
   }
 });  
+
+// API: Get Hawker Products
+app.get('/api/hawker/products', async (req, res) => {
+    try {
+        const client = await connectDB();
+        const database = client.db("techmart");
+        const productsCollection = database.collection("products");
+      
+        console.log("🧐 Fetching products...");
+      const hawkerProducts = await productsCollection.find({ category: 'Hawker' }).toArray();
+      console.log("Fetched Hawker Products:", hawkerProducts); // Log fetched products
+  
+      if (hawkerProducts.length === 0) {
+        console.log("No products found with category 'Hawker'.");
+      }
+  
+      res.json(hawkerProducts); // Send products array as JSON
+    } catch (err) {
+      console.error("❌ Error fetching hawker products:", err);
+      res.status(500).json({ error: "Failed to fetch hawker products" });
+    }
+  });
+  
+  // ✅ API: Get Hawker Wholesales
+  app.get('/api/hawker/wholesales', async (req, res) => {
+    try {
+        const client = await connectDB();
+        const database = client.db("techmart");
+        const wholesalesCollection = database.collection("wholesales");console.log("🧐 Fetching wholesales...");
+      const hawkerWholesales = await wholesalesCollection.find({ category: 'Hawker' }).toArray();
+      console.log("Fetched Hawker Wholesales:", hawkerWholesales); // Log fetched wholesales
+  
+      if (hawkerWholesales.length === 0) {
+        console.log("No wholesales found with category 'Hawker'.");
+      }
+  
+      res.json(hawkerWholesales); // Send wholesales array as JSON
+    } catch (err) {
+      console.error("❌ Error fetching hawker wholesales:", err);
+      res.status(500).json({ error: "Failed to fetch hawker wholesales" });
+    }
+  });
+  
+  app.get('/api/wholesales/:id', async (req, res) => {
+  const id = req.params.id;
+  const wholesale = await db.collection('wholesales').findOne({ _id: new ObjectId(id) });
+  if (!wholesale) return res.status(404).json({ success: false, message: 'Product not found' });
+  res.json({ success: true, data: wholesale });
+});
 
 // Export the app for testing
 module.exports = app;

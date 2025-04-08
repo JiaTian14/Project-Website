@@ -422,6 +422,8 @@
       </div>
           <nav class="header-nav">
         <ul class="nav-links">
+          <li><a href="wholesale.html">Wholesale</a></li>
+          <li><a href="hawker.html">Hawker</a></li>
           <li><a href="products.html">Products</a></li>
           <li><a href="about.html">About</a></li>
           <li><a href="contact.html">Contact</a></li>
@@ -529,9 +531,8 @@
 
             productCard.innerHTML = `
                 <div class="product-image">
-                    <img src="${product.image || 'https://via.placeholder.com/300x250'}" 
-                        alt="${product.name}"
-                        onerror="this.src='https://via.placeholder.com/300x250'">
+                    <img src="${product.image}" 
+                        alt="${product.name}">
                 </div>
                 <div class="product-info">
                     <h3 class="product-name">${product.name}</h3>
@@ -570,7 +571,7 @@
     document.getElementById('searchInput').addEventListener('input', filterProducts);
 
     async function addToCart(event, productId) {
-        event.stopPropagation(); // 阻止事件冒泡到产品卡片
+        event.preventDefault(); // 阻止事件冒泡到产品卡片
 
         try {
             const userData = localStorage.getItem('userData');
