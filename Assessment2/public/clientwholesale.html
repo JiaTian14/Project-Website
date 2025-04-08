@@ -609,7 +609,7 @@ async function loadWholesaleProducts() {
         productsGrid.innerHTML = result.data.map(product => `
             <div class="product-card">
                 <div class="product-image">
-                    <img src="${product.image || 'https://via.placeholder.com/300x200'}" alt="${product.name}">
+                    <img src="${product.image }" alt="${product.name}">
                 </div>
                 <div class="product-info">
                     <h3 class="product-name">${product.name}</h3>
@@ -818,7 +818,7 @@ document.addEventListener('DOMContentLoaded', () => {
         productCard.classList.add('product-card');
 
         // Check if the product has an image, otherwise use a default placeholder
-        const image = product.image || 'https://via.placeholder.com/200';
+        const image = product.image;
 
         productCard.innerHTML = `
           <div class="product-image">

@@ -526,7 +526,7 @@
                 productsGrid.innerHTML = result.data.map(product => `
                     <div class="product-card">
                         <div class="product-image">
-                            <img src="${product.image || 'https://via.placeholder.com/300x200'}" 
+                            <img src="${product.image }" 
                                  alt="${product.name}">
                         </div>
                         <div class="product-info">
@@ -599,7 +599,7 @@
             document.getElementById('productModal').style.display = 'block';
 
             if (productId) {
-                loadProductData(productId);
+                loadProductData(productId); // Only fetch data if editing an existing product
             } else {
                 document.getElementById('productForm').reset();
             }
@@ -672,7 +672,7 @@
                 document.getElementById('editProductCategory').value = product.category;
                 document.getElementById('editProductImage').value = product.image;
 
-                // Show edit modal
+                // Show the edit modal
                 document.getElementById('editModal').style.display = 'block';
             } catch (error) {
                 console.error('Error loading product:', error);
@@ -956,7 +956,7 @@
         productCard.classList.add('product-card');
 
         // Check if the product has an image, otherwise use a default placeholder
-        const image = product.image || 'https://via.placeholder.com/200';
+        const image = product.image ;
 
         productCard.innerHTML = `
           <div class="product-image">
