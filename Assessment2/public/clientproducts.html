@@ -484,7 +484,7 @@
         
                 <div class="form-group">
                     <label for="editProductCategory">Category:</label>
-                    <select id="editProductCategory " required>
+                    <select id="editProductCategory" required>
                         <option value="Kitchenware">Kitchenware</option>
                         <option value="Hawker">Hawker</option>
                         <option value="Laundry & Cleaning">Laundry & Cleaning</option>
@@ -496,8 +496,6 @@
                         <option value="Tableware">Tableware</option>
                     </select>
                 </div>
-                
-                
                 
                 <label for="editProductImage">Image URL:</label>
                 <input type="text" id="editProductImage" required><br><br>
@@ -552,45 +550,7 @@
 
         // Event listener for product form submission
         document.addEventListener('DOMContentLoaded', () => {
-            // Product Form Handler
-            const productForm = document.getElementById('productForm');
-            productForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-
-                const productData = {
-                    name: document.getElementById('name').value,
-                    description: document.getElementById('description').value,
-                    price: parseFloat(document.getElementById('price').value),
-                    stock: parseInt(document.getElementById('stock').value),
-                    category: document.getElementById('category').value,
-                    image: document.getElementById('image').value
-                };
-
-                try {
-                    const response = await fetch('http://localhost:3000/api/products', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(productData)
-                    });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        alert('Product added successfully!');
-                        productForm.reset();
-                        closeModal();
-                        await loadProducts(); // Reload the products list
-                    } else {
-                        throw new Error(result.message || 'Failed to add product');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert(error.message);
-                }
-            });
-        });
+            
 
         // Open modal to add/edit product
         function openModal(productId = null) {
@@ -613,6 +573,7 @@
             document.getElementById('editForm').reset();
             currentProductId = null;
         }
+    });
 
         // Wait for the DOM to fully load
         document.addEventListener('DOMContentLoaded', function() {

@@ -10,7 +10,7 @@
           <div class="logo">
                 <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
                   <img src="images/Logo.png" alt="Company Logo" width="100" height="100">
-              <h1>We Care You</h1>
+              
             </a>
           </div>
               <nav class="header-nav">
@@ -33,18 +33,98 @@
         </div>
       </header>
     <style>
-         * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+              * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        background-color: #f8f9fa;
+        color: #070707;
+      }
+
+      /* Header Styles */
+      header {
+        background-color: #BF6900;
+        padding: 1rem;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .logo h1 {
+        color: #070707;
+        font-size: 2.0rem;
+        font-weight: 600;
+      }
+
+      .header-nav {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 20px;
+        list-style: none;
+      }
+
+      .nav-links a {
+        color: #070707;
+        text-decoration: none;
+        font-weight: 600;
+        padding: 8px 15px;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+      }
+
+      .nav-links a:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .auth-buttons a {
+        padding: 8px 20px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+      }
+
+      .login-btn {
+        color: #070707;
+        background-color: white; 
+        margin-left: 5px;
+        display: inline-block;
+      }
+
+      .register-btn {
+        color: #070707;
+        border: 1px solid white;
+        background-color: white;
+        margin-left: 10px;
+        display: inline-block;
+      }
+
         h1 {
             text-align: center;
         }
@@ -76,92 +156,14 @@
         }
         .product-price {
             font-size: 16px;
-            color: #28a745;
+            color: black;
             font-weight: bold;
         }
         .product-stock {
             font-size: 14px;
             color: #666;
         }
-        /* Header Styles */
-    header {
-      background-color: #BF6900;
-      padding: 1rem;
-      position: fixed;
-      width: 100%;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    .header-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .logo h1 {
-      color: #070707;
-      font-size: 2.0rem;
-      font-weight: 600;
-    }
-
-    .logo i {
-      color: #fff;
-      font-size: 2rem;
-    }
-
-    .header-nav {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 20px;
-      list-style: none;
-    }
-
-    .nav-links a {
-      color: #070707;
-      text-decoration: none;
-      font-weight: 900;
-      padding: 8px 15px;
-      border-radius: 4px;
-      transition: background-color 0.3s;
-    }
-
-    .nav-links a:hover {
-      background-color: rgba(255,255,255,0.1);
-    }
-
-    .auth-buttons a {
-      padding: 8px 20px;
-      border-radius: 4px;
-      text-decoration: none;
-      font-weight: 500;
-      transition: all 0.3s;
-    }
-
-    .login-btn {
-      color: #070707;
-      background-color: white;
-    }
-
-    .register-btn {
-      color: #070707;
-      background-color: white;
-      margin-left: 10px;
-    }
+        
     h2 {
       font-size: 3rem;
       margin-bottom: 20px;
@@ -213,16 +215,7 @@
       padding: 20px;
     }
 
-    .page-title {
-      text-align: center;
-      color: #070707;
-      margin: 20px 0 40px;
-      font-size: 2.5rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-top: 50px;
-    }
+    
 
     .filters {
       margin-bottom: 30px;
@@ -397,10 +390,10 @@
       margin: 20px 0 40px;
       font-size: 2.5rem;
       font-weight: 700;
-      text-transform: uppercase;
       letter-spacing: 1px;
       margin-top: 115px;
     }
+    
     </style>
 </head>
 <body>

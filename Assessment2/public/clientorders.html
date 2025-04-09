@@ -337,8 +337,8 @@
                         <td>${order.userId}</td>
                         <td>${order.products.map(product => product.name).join(', ')}</td>
                         <td>${order.products.map(product => product.quantity?.$numberInt || product.quantity).join(', ')}</td>
-                        <td>${order.products.map(product => `$${parseFloat(product.price?.$numberDouble || product.price).toFixed(2)}`).join(', ')}</td>
-                        <td>$${parseFloat(order.total?.$numberDouble || order.total).toFixed(2)}</td>
+                        <td>${order.products.map(product => `RM ${parseFloat(product.price?.$numberDouble || product.price).toFixed(2)}`).join(', ')}</td>
+                        <td>RM ${parseFloat(order.total?.$numberDouble || order.total).toFixed(2)}</td>
                         <td>
                             ${order.shippingInfo.fullName}, 
                             ${order.shippingInfo.address}, 

@@ -673,6 +673,7 @@ async function saveWholesaleProduct(product) {
         if (result.success) {
             alert('Product added successfully');
             closeModal();
+            await loadWholesaleProducts(); // Reload the products list after adding
             
         } else {
             throw new Error(result.message);
@@ -743,7 +744,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   } catch (error) {
     console.error('Error fetching categories:', error);
-    document.getElementById('messageArea').innerHTML = 'Error fetching categories. Please try again later.';
+    document.getElementById('messageArea');
   }
 }
 

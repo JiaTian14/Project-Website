@@ -196,7 +196,7 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <h3>Total Sales</h3>
-                <div class="value">$<span id="totalSales">0</span></div>
+                <div class="value">RM <span id="totalSales">0</span></div>
             </div>
             <div class="stat-card">
                 <h3>Orders</h3>
@@ -261,7 +261,7 @@
                             <td>${order._id}</td>
                             <td>${order.customerName}</td>
                             <td>${order.products.length} items</td>
-                            <td>$${order.total.toFixed(2)}</td>
+                            <td>RM ${order.total.toFixed(2)}</td>
                             <td>
                                 <span class="status-badge status-${order.status.toLowerCase()}">
                                     ${order.status || 'Unknown'}

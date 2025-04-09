@@ -572,6 +572,68 @@ app.post('/api/wholesalecart/:userId/add', async (req, res) => {
         });
     }
 });
+app.post('/api/cart/addreorder', async (req, res) => {
+    const { userId, products } = req.body;
+
+    if (!userId || !products || !Array.isArray(products)) {
+        return res.status(400).json({ success: false, message: 'Invalid request data.' });
+    }
+
+    try {
+        const client = await connectDB();
+        const db = client.db("techmart");
+        const carts = db.collection("carts");
+
+        // Find the existing cart for the user
+        const existingCart = await carts.findOne({ userId });
+
+        if (existingCart) {
+            // If cart exists, update the products array
+            for (const product of products) {
+                const existingProduct = existingCart.products.find(p => p._id.toString() === product._id.toString());
+
+                if (existingProduct) {
+                    // If the product already exists, increase the quantity
+                    existingProduct.quantity += product.quantity;
+                } else {
+                    // If the product does not exist, add it to the products array
+                    existingCart.products.push({
+                        _id: product._id,
+                        name: product.name,
+                        price: product.price,
+                        quantity: product.quantity
+                    });
+                }
+            }
+
+            // Update the cart with the new products
+            await carts.updateOne(
+                { userId },
+                { $set: { products: existingCart.products, updatedAt: new Date() } }
+            );
+        } else {
+            // If the cart does not exist, create a new cart
+            await carts.insertOne({
+                userId,
+                products: products.map(product => ({
+                    _id: product._id,
+                    name: product.name,
+                    price: product.price,
+                    quantity: product.quantity
+                })),
+                total: products.reduce((sum, product) => sum + product.price * product.quantity, 0),
+                addedAt: new Date(),
+                updatedAt: new Date()
+            });
+        }
+
+        res.json({ success: true, message: "Products added to cart." });
+    } catch (err) {
+        console.error('Error adding to cart:', err);
+        res.status(500).json({ success: false, message: 'Server error.' });
+    }
+});
+
 
 // 添加到购物车
 app.post('/api/cart/:userId/add', async (req, res) => {
@@ -669,48 +731,33 @@ app.post('/api/cart/:userId/add', async (req, res) => {
 
 
 // 从购物车中移除商品
-app.delete('/api/cart/:userId/remove', async (req, res) => {
-  try {
-      const { userId } = req.params;
-      const { productId } = req.body;
+app.delete('/api/cart/remove', async (req, res) => {
+    const { userId, productId } = req.body;
 
-      // 输入验证
-      if (!userId || !productId) {
-          return res.status(400).json({
-              success: false,
-              message: 'User ID and Product ID are required'
-          });
-      }
+    if (!userId || !productId) {
+        return res.status(400).json({ success: false, message: 'Invalid data' });
+    }
 
-      const client = await connectDB();
-      const database = client.db("techmart");
-      const carts = database.collection("carts");
+    try {
+        const client = await connectDB();
+        const db = client.db("techmart");
+        const carts = db.collection("carts");
 
-      await carts.updateOne(
-          { userId },
-          { 
-              $pull: { products: { productId } },
-              $set: { updatedAt: new Date() }
-          }
-      );
+        const result = await carts.updateOne(
+            { userId },
+            { $pull: { products: { _id: productId } } }
+        );
 
-      // 获取更新后的购物车
-      const updatedCart = await carts.findOne({ userId });
+        if (result.modifiedCount === 0) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
 
-      res.json({
-          success: true,
-          message: 'Product removed from cart successfully',
-          data: updatedCart
-      });
+        res.json({ success: true, message: 'Product removed successfully' });
 
-  } catch (error) {
-      console.error('Error removing product from cart:', error);
-      res.status(500).json({
-          success: false,
-          message: 'Error removing product from cart',
-          error: error.message
-      });
-  }
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
 });
 
 // Submit checkout
@@ -1544,8 +1591,13 @@ app.delete('/api/wholesales/:id', async (req, res) => {
     const productId = req.params.id;
 
     try {
-        // Perform deletion logic here
-        const result = await Product.deleteOne({ _id: productId });
+        // Connect to the database
+        const client = await connectDB();
+        const database = client.db("techmart");  // Access the 'techmart' database
+        const wholesalesCollection = database.collection("wholesales"); // Access the 'wholesales' collection
+
+        // Ensure that the productId is a valid ObjectId before attempting to delete
+        const result = await wholesalesCollection.deleteOne({ _id: new ObjectId(productId) });
 
         if (result.deletedCount === 1) {
             res.json({ success: true, message: 'Product deleted successfully' });
@@ -1553,7 +1605,8 @@ app.delete('/api/wholesales/:id', async (req, res) => {
             res.json({ success: false, message: 'Product not found' });
         }
     } catch (error) {
-        res.json({ success: false, message: error.message });
+        console.error('Error deleting product:', error);
+        res.status(500).json({ success: false, message: error.message });
     }
 });
 

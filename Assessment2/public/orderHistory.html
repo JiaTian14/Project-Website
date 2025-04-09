@@ -241,6 +241,20 @@
         .shop-now-btn:hover {
             background: #BF6900;
         }
+        .reorder-btn {
+            margin-top: 10px;
+            padding: 10px 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .reorder-btn:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body>
@@ -308,8 +322,24 @@
                     return;
                 }
 
-                orderHistoryDiv.innerHTML = orders.map(order => `
-                    <div class="order-card">
+                orderHistoryDiv.innerHTML = '';
+                orders.forEach(order => {
+                    const orderCard = document.createElement('div');
+                    orderCard.className = 'order-card';
+
+                    const productsHTML = order.products.map(product => `
+                        <div class="order-item">
+                            <div class="item-details">
+                                <h4>${product.name}</h4>
+                                <p>Quantity: ${product.quantity}</p>
+                            </div>
+                            <div class="item-price">
+                                RM ${(product.price * product.quantity).toFixed(2)}
+                            </div>
+                        </div>
+                    `).join('');
+
+                    orderCard.innerHTML = `
                         <div class="order-header">
                             <h3>Order #${order._id.slice(-6)}</h3>
                             <div class="order-meta">
@@ -317,25 +347,16 @@
                                 <span>Status: ${order.status || 'Completed'}</span>
                             </div>
                         </div>
-                        <div class="order-items">
-                            ${order.products.map(product => `
-                                <div class="order-item">
-                                    
-                                    <div class="item-details">
-                                        <h4>${product.name}</h4>
-                                        <p>Quantity: ${product.quantity}</p>
-                                    </div>
-                                    <div class="item-price">
-                                        RM ${(product.price * product.quantity).toFixed(2)}
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                        <div class="order-total">
-                            Total: RM ${order.total.toFixed(2)}
-                        </div>
-                    </div>
-                `).join('');
+                        <div class="order-items">${productsHTML}</div>
+                        <div class="order-total">Total: RM ${(order.total || 0).toFixed(2)}</div>
+                        <button class="reorder-btn">Reorder</button>
+                    `;
+
+                    const reorderBtn = orderCard.querySelector('.reorder-btn');
+                    reorderBtn.addEventListener('click', () => reorder(order.products));
+
+                    orderHistoryDiv.appendChild(orderCard);
+                });
 
             } catch (error) {
                 console.error('Error loading orders:', error);
@@ -347,6 +368,40 @@
                 `;
             }
         }
+
+        async function reorder(products) {
+    const userData = localStorage.getItem('userData');
+    if (!userData) {
+        alert('Please login to reorder.');
+        return;
+    }
+
+    const user = JSON.parse(userData);
+
+    try {
+        const response = await fetch('http://localhost:3000/api/cart/addreorder', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId: user._id,
+                products: products
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert("Products added to your cart!");
+        } else {
+            alert("Failed to add products to cart.");
+        }
+    } catch (error) {
+        console.error('Error during reorder:', error);
+        alert("Error occurred while reordering. Please try again.");
+    }
+}
 
         // Load orders when the page loads
         window.onload = loadOrderHistory;
