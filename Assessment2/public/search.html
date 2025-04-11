@@ -1,115 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Results</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
-    <style>
-        body { text-align: center; }
-        img { max-width: 80%; margin: 20px 0; }
-        .loading { font-size: 18px; color: gray; }
-    </style>
+  <meta charset="UTF-8">
+  <title>AR Product Search</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+  <style>
+    #preview {
+      max-width: 300px;
+      display: none;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
-    <h2>🔍 Searching for Related Products...</h2>
-    <img id="capturedImage" alt="Captured Image">
-    <p class="loading">Processing Image...</p>
-    <div id="results"></div>
+  <h2>Upload Product Image</h2>
+  <input type="file" id="imageInput" accept="image/*" />
+  <br />
+  <img id="preview" />
+  <div id="result"></div>
 
-    <script>
-        async function analyzeImage() {
-            const imageElement = document.getElementById("capturedImage");
-            const storedImage = localStorage.getItem("capturedImage");
-            if (storedImage) {
-                imageElement.src = storedImage;
-            }
+  <script>
+    const modelURL = "https://teachablemachine.withgoogle.com/models/e06WvcQGU/"; 
 
-            const model = await mobilenet.load(); // Load AI Model
-            const results = await model.classify(imageElement);
-            console.log("Detected Objects:", results);
+    let model;
+    const imageInput = document.getElementById("imageInput");
+    const preview = document.getElementById("preview");
+    const resultDiv = document.getElementById("result");
 
-            const detectedKeyword = results[0]?.className.split(",")[0]; // Get Top Result
-            if (!detectedKeyword) {
-                document.querySelector(".loading").innerText = "No objects detected.";
-                return;
-            }
-
-            document.querySelector(".loading").innerText = `🔎 Searching for: ${detectedKeyword}`;
-            searchProducts(detectedKeyword);
-        }
-
-        async function searchProducts(keyword) {
-            try {
-                const response = await fetch(`http://localhost:3000/api/products/search?query=${keyword}`);
-                const data = await response.json();
-
-                if (data.success && data.products.length > 0) {
-                    const resultsDiv = document.getElementById("results");
-                    resultsDiv.innerHTML = data.products.map(p => `
-                        <div>
-                            <h3>${p.name}</h3>
-                            <img src="${p.image}" width="150">
-                            <p>${p.price} USD</p>
-                        </div>
-                    `).join("");
-                } else {
-                    document.getElementById("results").innerHTML = "<p>No related products found.</p>";
-                }
-            } catch (error) {
-                console.error("Error fetching products:", error);
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", analyzeImage);
-
-        document.addEventListener("DOMContentLoaded", function() {
-    console.log("Search page loaded.");
-
-    // Retrieve captured image from local storage
-    const imageData = localStorage.getItem("capturedImage");
-
-    if (!imageData) {
-        console.error("No captured image found!");
-        return;
+    async function loadModel() {
+      model = await tmImage.load(modelURL + "model.json", modelURL + "metadata.json");
+      console.log("✅ Model loaded.");
     }
 
-    // DEBUG: Confirm correct image is used for search
-    console.log("Using Image for Search:", imageData.substring(0, 100) + "...");
+    imageInput.addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
 
-    // Display captured image for confirmation
-    document.getElementById("searchPreview").src = imageData;
-    document.getElementById("searchPreview").style.display = "block";
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        preview.src = e.target.result;
+        preview.style.display = "block";
+      };
+      reader.readAsDataURL(file);
 
-    // Send the image to the search API
-    performSearch(imageData);
-});
+      // Wait until image is shown
+      preview.onload = async () => {
+        resultDiv.innerHTML = "🧠 Predicting...";
+        if (!model) await loadModel();
+        
+        const prediction = await model.predict(preview);
+        const top = prediction.reduce((max, item) =>
+          item.probability > max.probability ? item : max
+        );
 
-async function performSearch(image) {
-    try {
-        const response = await fetch("http://localhost:3000/api/search", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ image: image })
+        resultDiv.innerHTML = `🔍 Prediction: <strong>${top.className}</strong> (${(top.probability * 100).toFixed(2)}%)`;
+
+        // Send to backend to find matching product
+        const res = await fetch("http://localhost:3000/api/search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ predictedLabel: top.className })
         });
 
-        const data = await response.json();
-
-        // DEBUG: Log API response
-        console.log("API Response:", data);
-
+        const data = await res.json();
         if (data.success) {
-            console.log("Search Result:", data.product);
-            document.getElementById("searchResult").innerText = "🔎 Searching for: " + data.product;
-        } else {
-            console.log("No match found.");
-            document.getElementById("searchResult").innerText = "No match found.";
-        }
-    } catch (error) {
-        console.error("Search error:", error);
-    }
-}
-    </script>
+            resultDiv.innerHTML += `
+                <br/><br/>✅ Match Found:<br/>
+                <strong>${data.product.name}</strong><br/>
+                RM ${data.product.price}<br/>
+                <img src="${data.product.image}" width="200"/><br/>
+                <p>${data.product.description}</p>
+            `;
+            } else {
+            resultDiv.innerHTML += `<br/>❌ No matching product found.`;
+            }
+      };
+    });
+  </script>
 </body>
 </html>

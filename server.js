@@ -1461,33 +1461,70 @@ app.get('/api/products/search', async (req, res) => {
       return res.status(500).json({ success: false, message: '服务器错误' });
     }
   });
-app.post('/api/search', async (req, res) => {
+  app.post('/api/search', async (req, res) => {
     try {
-        const { image } = req.body;
-        if (!image) return res.status(400).json({ success: false, message: "No image provided" });
-
-        console.log("Processing image search...");
-
-        // ✅ Step 1: Analyze Image with Google Vision API
-        const detectedLabels = await analyzeImageWithGoogleVision(image);
-        console.log("🔍 Detected Labels:", detectedLabels);
-
-        // ✅ Step 2: Search for a matching product in the database
-        const matchedProduct = await Product.findOne({
-            keywords: { $in: detectedLabels } // Check if any keyword matches
-        });
-
-        if (matchedProduct) {
-            return res.json({ success: true, product: matchedProduct.name });
-        } else {
-            return res.json({ success: false, message: "No matching product found." });
+      const client = await connectDB(); // Your MongoDB connection
+      const db = client.db("techmart");
+      const products = db.collection("products");
+  
+      const { predictedLabel } = req.body;
+      console.log("🔍 Predicted label:", predictedLabel);
+  
+      // Search for products with similar name or description
+      const matchingProducts = await products.find({
+        $or: [
+          { name: { $regex: predictedLabel, $options: 'i' } },
+          { description: { $regex: predictedLabel, $options: 'i' } },
+          { category: { $regex: predictedLabel, $options: 'i' } }
+        ]
+      }).toArray();
+  
+      if (matchingProducts.length === 0) {
+        return res.status(404).json({ success: false, message: "No matching product found." });
+      }
+  
+      // Optionally: get the first product or apply sorting
+      const topProduct = matchingProducts[0];
+  
+      res.json({
+        success: true,
+        product: {
+          name: topProduct.name,
+          price: topProduct.price,
+          image: topProduct.image,
+          description: topProduct.description
         }
+      });
     } catch (error) {
-        console.error("Search API error:", error);
-        res.status(500).json({ success: false, message: "Server error" });
+      console.error("❌ Error in /api/search:", error);
+      res.status(500).json({ success: false, message: "Internal Server Error" });
     }
-});
+  });
 
+app.post("/api/searchByLabel", async (req, res) => {
+    const label = req.body.label;
+    if (!label) return res.status(400).json({ success: false, message: "Label is required." });
+  
+    try {
+      const client = await connectDB();
+      const db = client.db(dbName);
+      const products = db.collection("products");
+  
+      const product = await products.findOne({ name: { $regex: label, $options: "i" } });
+  
+      if (product) {
+        res.json({ success: true, data: product });
+      } else {
+        res.json({ success: false, message: "No matching product found." });
+      }
+  
+      await client.close();
+    } catch (err) {
+      console.error("Search error:", err);
+      res.status(500).json({ success: false, message: "Server error", error: err.message });
+    }
+  });
+  
 
 app.get('/api/recommendations', async (req, res) => {
     try {
