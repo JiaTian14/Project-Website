@@ -327,7 +327,6 @@
               <option value="Food Containers">Food Containers</option>
               <option value="Bottles">Bottles</option>
               <option value="Tableware">Tableware</option>
-              <option value="Bottles">Bottles</option>
           </select><br><br>
           
 
@@ -433,8 +432,20 @@
                 <label for="editProductMinOrder">Minimum Order</label>
                 <input type="number" id="editProductMinOrder" name="editProductMinOrder"><br><br>
                 
-                <label for="editProductCategory">Category</label>
-                <input type="text" id="editProductCategory" name="editProductCategory"><br><br>
+                <div class="form-group">
+                    <label for="editProductCategory">Category:</label>
+                    <select id="editProductCategory" required>
+                        <option value="Kitchenware">Kitchenware</option>
+                        <option value="Hawker">Hawker</option>
+                        <option value="Laundry & Cleaning">Laundry & Cleaning</option>
+                        <option value="Pail & Dusbin">Pail & Dusbin</option>
+                        <option value="Storage & Organisation">Storage & Organisation</option>
+                        <option value="Home Improvement">Home Improvement</option>
+                        <option value="Food Containers">Food Containers</option>
+                        <option value="Bottles">Bottles</option>
+                        <option value="Tableware">Tableware</option>
+                    </select>
+                </div>
                 
                 <label for="editProductImage">Image URL</label>
                 <input type="text" id="editProductImage" name="editProductImage"><br><br>
@@ -613,7 +624,7 @@ async function loadWholesaleProducts() {
                 </div>
                 <div class="product-info">
                     <h3 class="product-name">${product.name}</h3>
-                    <div class="product-price">$${(product.price || 0).toFixed(2)}</div>
+                    <div class="product-price">RM ${(product.price || 0).toFixed(2)}</div>
                     <div class="product-stock">Stock: ${product.stock}</div>
                     <div class="product-min-order">Min Order: ${product.minOrder}</div>
                     <div class="product-actions">
@@ -773,33 +784,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Handle category selection change
   categoryFilter.addEventListener('change', async (e) => {
-    const selectedCategory = e.target.value;
-    console.log(`Selected category: ${selectedCategory}`);
+    let selectedCategory = e.target.value;  // Use `let` here instead of `const`
+  console.log(`Selected category: ${selectedCategory}`);
 
-    // When "All Products" is selected, load all products
-    if (selectedCategory === 'All Products') {
-      loadWholesaleProducts();
-    } else {
-      // Fetch filtered products based on the selected category
-      try {
-        const response = await fetch(`http://localhost:3000/api/wholesalesfilter?category=${selectedCategory}`);
-        if (!response.ok) {
-          throw new Error('Error fetching products');
-        }
+  
 
-        const result = await response.json();
+  // URL encode the category to handle spaces and special characters
+  const encodedCategory = encodeURIComponent(selectedCategory);
 
-        if (result.success) {
-          displayProducts(result.data);  // Display filtered products
-        } else {
-          document.getElementById('messageArea').textContent = 'No products found in this category.';
-        }
-      } catch (error) {
-        console.error(error);
-        document.getElementById('messageArea').textContent = 'An error occurred while fetching the products.';
+  console.log(`Encoded category: ${encodedCategory}`);
+  
+  // When "All Products" is selected, load all products
+  if (encodedCategory === 'All%20Products') {
+    loadWholesaleProducts();
+  } else {
+    // Fetch filtered products based on the selected category
+    try {
+      const response = await fetch(`http://localhost:3000/api/productsfilter?category=${encodedCategory}`);
+      console.log(`Fetching products with URL: http://localhost:3000/api/wholesalesfilter?category=${encodedCategory}`);  // Log the fetch URL
+     if (!response.ok) {
+        throw new Error('Error fetching products');
       }
+
+      const result = await response.json();
+
+      if (result.success) {
+        displayProducts(result.data);  // Display filtered products
+      } else {
+        document.getElementById('messageArea').textContent = 'No products found in this category.';
+      }
+    } catch (error) {
+      console.error(error);
+      document.getElementById('messageArea').textContent = 'An error occurred while fetching the products.';
     }
-  });
+  }
+});
 
   // Function to display products in the UI
   function displayProducts(products) {
@@ -828,7 +847,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="product-info">
             <h3 class="product-name">${product.name}</h3>
             <div class="product-details">
-              <span class="product-price">$${product.price}</span>
+              <span class="product-price">RM ${product.price}</span>
               <span class="product-stock">Stock: ${product.stock}</span><br></br>
               <span class="product-min-order">Min Order: ${product.minOrder}</span>
             </div>

@@ -1647,10 +1647,10 @@ app.delete('/api/wholesales/:id', async (req, res) => {
     }
 });
 
-// Example: GET /api/wholesalesfilter?category=Kitchen
 // GET /api/wholesalesfilter
 app.get('/api/wholesalesfilter', async (req, res) => {
     const { category } = req.query;
+    console.log("Received category:", category);
   
     try {
       // Access the database and collection
@@ -1660,11 +1660,12 @@ app.get('/api/wholesalesfilter', async (req, res) => {
       // If category is not specified, return all products
       if (!category || category === 'All Categories') {
         const products = await wholesalesCollection.find().toArray();
+        console.log("Filtered products:", products);  
         return res.json({ success: true, data: products });
       }
   
-      // Otherwise, return products filtered by category
-      const products = await wholesalesCollection.find({ category }).toArray();
+      const categoryFilter = { category: { $regex: new RegExp(category, 'i') } };  // 'i' for case-insensitive match
+      const products = await wholesalesCollection.find(categoryFilter).toArray();
       res.json({ success: true, data: products });
     } catch (err) {
       console.error('Error fetching products:', err);
