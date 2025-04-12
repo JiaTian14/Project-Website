@@ -469,6 +469,7 @@ header {
     <button id="retryBtn" class="retrybutton">🔄 Try Again</button>
     <button id="closeARBtn" class="close-ar-btn">Close AR</button>
 </div>
+
 <div id="productList" class="product-grid">
   <!-- Products will be dynamically inserted here -->
 </div>
@@ -645,6 +646,26 @@ retryBtn.addEventListener('click', () => {
     retryBtn.style.display = 'none';  // Hide retry button
 });
 
+window.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "AR_RESULT") {
+    const matchedProduct = event.data.product;
+    console.log("Received AR prediction result:", matchedProduct);
+
+    // Scroll to matched product
+    const matchedCard = document.querySelector(`[data-id='${matchedProduct._id}']`);
+    if (matchedCard) {
+      matchedCard.scrollIntoView({ behavior: "smooth", block: "center" });
+      matchedCard.style.border = "3px solid #28a745";
+      matchedCard.style.boxShadow = "0 0 10px #28a745";
+    }
+
+    // Optional: filter to show only that product
+    displayProducts([matchedProduct]);
+
+    // Close AR view
+    document.getElementById('arForm').style.display = 'none';
+  }
+});
 
 
     </script>

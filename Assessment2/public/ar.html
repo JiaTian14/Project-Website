@@ -159,16 +159,17 @@
 
         const data = await res.json();
         if (data.success) {
-          resultBox.innerHTML += `
-            <br/><br/><strong>✅ Match Found:</strong><br/>
-            ${data.product.name}<br/>
-            RM ${data.product.price}<br/>
-            <img src="${data.product.image}" width="200"/><br/>
-            <p>${data.product.description}</p>
-          `;
-        } else {
-          resultBox.innerHTML += `<br/><br/>❌ No matching product found.`;
-        }
+  resultBox.innerHTML += 
+    `<br/><br/><strong>✅ Match Found:</strong><br/>
+     ${data.product.name}<br/>
+     RM ${data.product.price}<br/>
+     <img src="${data.product.image}" width="200"/><br/>
+     <p>${data.product.description}</p>`;
+
+  // 👇 Send message to parent window
+  window.parent.postMessage({ type: "AR_RESULT", product: data.product }, "*");
+}
+
 
         retryBtn.style.display = "inline-block";
         searchBtn.style.display = "none";
