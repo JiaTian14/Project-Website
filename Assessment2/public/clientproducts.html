@@ -529,7 +529,7 @@
                         </div>
                         <div class="product-info">
                             <h3 class="product-name">${product.name}</h3>
-                            <div class="product-price">$${product.price.toFixed(2)}</div>
+                            <div class="product-price">RM${product.price.toFixed(2)}</div>
                             <div class="product-stock">Stock: ${product.stock}</div>
                             <div class="product-actions">
                                 <button class="edit-btn" onclick="editProduct('${product._id}')">
@@ -814,38 +814,29 @@
   async function populateCategories() {
   try {
     const response = await fetch('http://localhost:3000/api/productsfilter');
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch categories');
-    }
-
     const data = await response.json();
 
-    // Check if categories exist and is an array
-    if (data.success && Array.isArray(data.categories)) {
-      // Populate the dropdown with categories
-      data.categories.forEach(category => {
-        const option = document.createElement('option');
-        option.value = category;
-        option.textContent = category;
-        categoryFilter.appendChild(option);
-      });
+      if (data.success && Array.isArray(data.data)) {
+        const categories = [...new Set(data.data.map(p => p.category))]; // Unique categories
 
-      // Add "All Products" option
-      const allOption = document.createElement('option');
-      allOption.value = 'All Products';
-      allOption.textContent = 'All Products';
-      categoryFilter.appendChild(allOption);
+        categories.forEach(category => {
+          const option = document.createElement('option');
+          option.value = category;
+          option.textContent = category;
+          categoryFilter.appendChild(option);
+        });
 
-    } else {
-      console.error('Categories data is missing or not an array');
+        // Add "All Products" at the end
+        const allOption = document.createElement('option');
+        allOption.value = 'All Products';
+        allOption.textContent = 'All Products';
+        categoryFilter.appendChild(allOption);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      document.getElementById('messageArea').textContent = 'Error loading categories.';
     }
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    document.getElementById('messageArea').innerHTML = 'Error fetching categories. Please try again later.';
   }
-}
-
 
   // Fetch and display all products (for "All Products" selection)
   async function loadWholesaleProducts() {
@@ -871,11 +862,19 @@
 
   // Handle category selection change
   categoryFilter.addEventListener('change', async (e) => {
-    const selectedCategory = e.target.value;
-    console.log(`Selected category: ${selectedCategory}`);
+    let selectedCategory = e.target.value;  // Use `let` here instead of `const`
+  console.log(`Selected category: ${selectedCategory}`);
 
-    // When "All Products" is selected, load all products
-    if (selectedCategory === 'All Products') {
+  // Replace special '&' symbol with '%26' for specific categories
+  const specialCategories = ['Laundry & Cleaning', 'Pail & Dusbin', 'Storage & Organisation'];
+  if (specialCategories.includes(selectedCategory)) {
+    selectedCategory = selectedCategory.replace('&', '%26');  // Replace '&' with '%26'
+  }
+     // URL encode the category to handle spaces and special characters
+     const encodedCategory = encodeURIComponent(selectedCategory);
+
+// When "All Products" is selected, load all products
+if (encodedCategory === 'All%20Products') {
       loadWholesaleProducts();
     } else {
       // Fetch filtered products based on the selected category
@@ -926,7 +925,7 @@
           <div class="product-info">
             <h3 class="product-name">${product.name}</h3>
             <div class="product-details">
-              <span class="product-price">$${product.price}</span>
+              <span class="product-price">RM ${product.price}</span>
               <span class="product-stock">Stock: ${product.stock}</span><br></br>
               <span class="product-min-order">Min Order: ${product.minOrder}</span>
             </div>

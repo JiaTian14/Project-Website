@@ -1677,6 +1677,7 @@ app.get('/api/wholesalesfilter', async (req, res) => {
   const { category } = req.query;
 
   try {
+    const client = await connectDB();
     const database = client.db("techmart");
     const productsCollection = database.collection("products");
 
@@ -1684,8 +1685,10 @@ app.get('/api/wholesalesfilter', async (req, res) => {
       const products = await productsCollection.find().toArray();
       return res.json({ success: true, data: products });
     }
-
-    const products = await productsCollection.find({ category }).toArray();
+    
+    const products = await productsCollection.find({
+        category: { $regex: `^${category}$`, $options: 'i' }
+      }).toArray();      
     res.json({ success: true, data: products });
 
   } catch (err) {
