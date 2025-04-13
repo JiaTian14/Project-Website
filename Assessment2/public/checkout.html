@@ -332,15 +332,15 @@ header {
                 </div>
                 <div class="summary-item">
                     <span>Subtotal</span>
-                    <span id="subtotal">$0.00</span>
+                    <span id="subtotal">RM 0.00</span>
                 </div>
                 <div class="summary-item">
                     <span>Shipping</span>
-                    <span id="shipping">$0.00</span>
+                    <span id="shipping">RM 00.00</span>
                 </div>
                 <div class="summary-item total">
                     <span>Total</span>
-                    <span id="total">$0.00</span>
+                    <span id="total">RM0.00</span>
                 </div>
                 <button onclick="placeOrder()" class="place-order-btn">
                     Place Order
@@ -358,7 +358,7 @@ header {
             try {
                 const user = JSON.parse(localStorage.getItem('userData'));
                 const cartSummary = JSON.parse(localStorage.getItem('cartSummary'));
-                
+
                 if (!cartSummary) {
                     window.location.href = 'cart.html';
                     return;
@@ -371,20 +371,27 @@ header {
                 orderItems.innerHTML = cart.products.map(item => `
                     <div class="summary-item">
                         <span>${item.name} x ${item.quantity}</span>
-                        <span>$${(item.price * item.quantity).toFixed(2)}</span>
+                        <span>RM ${(item.price * item.quantity).toFixed(2)}</span>
                     </div>
                 `).join('');
 
-                // Use the values from cartSummary
-                document.getElementById('subtotal').textContent = `$${cartSummary.subtotal.toFixed(2)}`;
-                document.getElementById('shipping').textContent = `$${cartSummary.shipping.toFixed(2)}`;
-                document.getElementById('total').textContent = `$${cartSummary.total.toFixed(2)}`;
+                updateCartSummary(cart);
+
             } catch (error) {
                 console.error('Error loading cart:', error);
             }
         }
 
+        function updateCartSummary(cartData) {
+            const subtotal = cartData.products.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const shipping = subtotal > 50 ? 0 : 10;
+            const total = subtotal + shipping;
 
+            document.getElementById('subtotal').textContent = `RM ${subtotal.toFixed(2)}`;
+            document.getElementById('shipping').textContent = `RM ${shipping.toFixed(2)}`;
+            document.getElementById('total').textContent = `RM ${total.toFixed(2)}`;
+            document.querySelector('.cart-summary').style.display = 'block';
+        }
         function selectPayment(method) {
             selectedPayment = method;
             document.querySelectorAll('.payment-method').forEach(el => {

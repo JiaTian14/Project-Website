@@ -194,18 +194,67 @@ button:active {
     }
 
     .product-image {
-      width: 100%;
+      width: 80%;
       height: 250px;
-      position: relative;
+      justify-content: center;
+      position: center;
       overflow: hidden;
     }
 
     .product-image img {
-      width: 100%;
+      width: 80%;
       height: 100%;
+      justify-content: center;
+      position: center;
       object-fit: cover;
       transition: transform 0.5s ease;
     }
+
+    .wholesale-image {
+      width: 80%;
+      height: 250px;
+      justify-content: center;
+      position: center;
+      overflow: hidden;
+    }
+
+    .wholesale img {
+      width: 80%;
+      height: 100%;
+      justify-content: center;
+      position: center;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .wholesale-info {
+      padding: 20px;
+      position: relative;
+      background: linear-gradient(to bottom, transparent, white 10%);
+      margin-top: -20px;
+      justify-content: center;
+      position: center;
+    }
+
+    .wholesale-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #070707;
+      margin-bottom: 12px;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .wholesale-category {
+      color: #6c757d;
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
 
     .product-card:hover .product-image img {
       transform: scale(1.08);
@@ -216,6 +265,8 @@ button:active {
       position: relative;
       background: linear-gradient(to bottom, transparent, white 10%);
       margin-top: -20px;
+      justify-content: center;
+      position: center;
     }
 
     .product-name {

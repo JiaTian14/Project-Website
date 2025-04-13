@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details - We Care You</title>
+    <title>Wholesale Details - We Care You</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
@@ -70,7 +70,7 @@
     .nav-links a {
       color: #070707;
       text-decoration: none;
-      font-weight: 900;
+      font-weight: 600;
       padding: 8px 15px;
       border-radius: 4px;
       transition: background-color 0.3s;
@@ -386,7 +386,7 @@
           <div class="logo">
             <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
                 <img src="images/Logo.png" alt="Company Logo" width="100" height="100">
-                <h1>We Care You</h1>
+                
             </a>
           </div>
           <nav class="header-nav">
@@ -443,10 +443,8 @@
         
                     productDetails.innerHTML = `
                         <div class="product-image">
-                            <img src="${wholesale.image ? 'http://localhost:3000/' + wholesale.image : 'images/default.png'}" 
-                                alt="${wholesale.name}">
-
-                        </div>
+                    <img src="${wholesale.image }" alt="${wholesale.name}">
+                </div>
                         <div class="product-info">
                             <div class="product-header">
                                 <h1 class="product-name">${wholesale.name}</h1>
@@ -456,7 +454,8 @@
                             <p class="product-description">${wholesale.description || 'No description available'}</p>
                             
                             <div class="product-price">${parseFloat(wholesale.price).toFixed(2)}</div>
-                            
+                            <div class="product-min-order">Min Order: ${wholesale.minOrder}</div>
+                
                             <div class="product-stock">
                                 <span>Availability:</span>
                                 <span class="stock-status ${wholesale.stock > 0 ? 'in-stock' : 'out-of-stock'}">
