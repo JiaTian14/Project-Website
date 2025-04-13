@@ -1654,6 +1654,7 @@ app.get('/api/wholesalesfilter', async (req, res) => {
   
     try {
       // Access the database and collection
+      const client = await connectDB();
       const database = client.db("techmart");
       const wholesalesCollection = database.collection("wholesales");
   
@@ -1764,6 +1765,66 @@ app.post('/get-similar-product', async (req, res) => {
     }
   });  
 
+  // POST: Simulate a sale and reduce stock
+  app.post('/api/wholesales/sell', async (req, res) => {
+    const { productId } = req.body; // Expecting productId in request body
+    
+    try {
+      const product = await collection.findOne({ _id: ObjectId(productId) });
+  
+      if (!product || product.stock <= 0) {
+        return res.status(400).json({ success: false, message: "Product out of stock" });
+      }
+  
+      const newStock = product.stock - 1;
+  
+      // Update the stock in the database
+      await collection.updateOne(
+        { _id: ObjectId(productId) },
+        { $set: { stock: newStock } }
+      );
+  
+      // Send response
+      res.json({ success: true, message: "Stock updated", newStock });
+  
+      // Check for low stock and alert if necessary
+      if (newStock <= 5) {
+        console.log(`🔔 Low stock alert for ${product.name}: Stock is now ${newStock}`);
+      }
+  
+    } catch (err) {
+      console.error('Error updating stock:', err);
+      res.status(500).json({ success: false, message: "Server error" });
+    }
+  });
+  
+  // Background task to automatically decrease stock every minute
+  cron.schedule('*/1 * * * *', async () => {
+    try {
+      const products = await collection.find({ stock: { $gt: 0 } }).toArray();
+      if (products.length === 0) return;
+  
+      const randomProduct = products[Math.floor(Math.random() * products.length)];
+      const newStock = randomProduct.stock - 1;
+  
+      // Update stock in the database
+      await collection.updateOne(
+        { _id: randomProduct._id },
+        { $set: { stock: newStock } }
+      );
+  
+      console.log(`Auto-decremented stock for: ${randomProduct.name}. New stock: ${newStock}`);
+  
+      // Auto restock alert if stock is low
+      if (newStock <= 5) {
+        console.log(`🔔 Low stock alert: ${randomProduct.name} is now low (Stock: ${newStock})`);
+      }
+  
+    } catch (err) {
+      console.error('Error in auto stock reduction:', err);
+    }
+  });
+  
 // Export the app for testing
 module.exports = app;
 
