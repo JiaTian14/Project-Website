@@ -12,6 +12,8 @@ const Product = require('./Assessment2/models/product'); // Corrected the path t
 const cartRoutes = require('./Assessment2/routes/cartRoutes'); // Import cart routes
 const http = require('http');
 const WebSocket = require('ws');
+const cron = require('node-cron');
+
 
 // Middleware
 app.use(express.json());
@@ -326,6 +328,42 @@ app.get('/api/products', async (req, res) => {
         });
     }
 });
+
+// Intelligent Inventory Forecasting Endpoint
+app.get('/api/products/forecast/:id', async (req, res) => {
+    const productId = req.params.id;
+  
+    if (!ObjectId.isValid(productId)) {
+      return res.status(400).json({ success: false, message: 'Invalid product ID' });
+    }
+  
+    try {
+      const client = await connectDB();
+      const db = client.db("techmart");
+      const collection = db.collection("products");
+  
+      const product = await collection.findOne({ _id: new ObjectId(productId) });
+  
+      if (!product) {
+        return res.status(404).json({ success: false, message: "Product not found" });
+      }
+  
+      // Simple forecast: Predict decrease by 1 per day for 7 days
+      const forecast = [];
+      let predictedStock = product.stock;
+  
+      for (let i = 1; i <= 7; i++) {
+        predictedStock = predictedStock > 0 ? predictedStock - 1 : 0;
+        forecast.push({ day: `Day ${i}`, predictedStock });
+      }
+  
+      res.json({ success: true, forecast });
+  
+    } catch (err) {
+      console.error("Error generating forecast:", err);
+      res.status(500).json({ success: false, message: "Server error" });
+    }
+  });
 
 // 添加获取单个产品的路由
 app.get('/api/products/:id', async (req, res) => {
@@ -1563,6 +1601,41 @@ app.get('/wholesaleProducts', async (req, res) => {
         res.status(500).json({ message: 'Failed to fetch wholesale products' });
     }
 });
+// Intelligent Inventory Forecasting Endpoint
+app.get('/api/wholesales/forecast/:id', async (req, res) => {
+    const productId = req.params.id;
+  
+    if (!ObjectId.isValid(productId)) {
+      return res.status(400).json({ success: false, message: 'Invalid product ID' });
+    }
+  
+    try {
+      const client = await connectDB();
+      const db = client.db("techmart");
+      const collection = db.collection("wholesales");
+  
+      const product = await collection.findOne({ _id: new ObjectId(productId) });
+  
+      if (!product) {
+        return res.status(404).json({ success: false, message: "Product not found" });
+      }
+  
+      // Simple forecast: Predict decrease by 1 per day for 7 days
+      const forecast = [];
+      let predictedStock = product.stock;
+  
+      for (let i = 1; i <= 7; i++) {
+        predictedStock = predictedStock > 0 ? predictedStock - 1 : 0;
+        forecast.push({ day: `Day ${i}`, predictedStock });
+      }
+  
+      res.json({ success: true, forecast });
+  
+    } catch (err) {
+      console.error("Error generating forecast:", err);
+      res.status(500).json({ success: false, message: "Server error" });
+    }
+  });
 
 // Get a single wholesale product by ID
 app.get('/api/wholesales/:id', async (req, res) => {
@@ -1677,7 +1750,7 @@ app.get('/api/wholesalesfilter', async (req, res) => {
   // GET all products or filter by category
   app.get('/api/productsfilter', async (req, res) => {
   const { category } = req.query;
-
+  console.log("Received category:", category);
   try {
     const client = await connectDB();
     const database = client.db("techmart");
@@ -1685,23 +1758,17 @@ app.get('/api/wholesalesfilter', async (req, res) => {
 
     if (!category || category === 'All Categories' || category === 'All Products') {
       const products = await productsCollection.find().toArray();
+      console.log("Filtered products:", products);  
       return res.json({ success: true, data: products });
     }
-    
-    const products = await productsCollection.find({
-        category: { $regex: `^${category}$`, $options: 'i' }
-      }).toArray();      
+    const categoryFilter = { category: { $regex: new RegExp(category, 'i') } };  // 'i' for case-insensitive match
+    const products = await productsCollection.find(categoryFilter).toArray();
     res.json({ success: true, data: products });
-
   } catch (err) {
     console.error('Error fetching products:', err);
-    res.status(500).json({
-      success: false,
-      message: "Server error while fetching products",
-      error: err.message
-    });
+    res.status(500).json({ success: false, message: "Server error while fetching products" });
   }
-});  
+});
 
 // API: Get Hawker Products
 app.get('/api/hawker/products', async (req, res) => {
@@ -1801,6 +1868,9 @@ app.post('/get-similar-product', async (req, res) => {
   // Background task to automatically decrease stock every minute
   cron.schedule('*/1 * * * *', async () => {
     try {
+    const client = await connectDB(); // Make a DB connection
+    const db = client.db("techmart");
+    const collection = db.collection("wholesales");
       const products = await collection.find({ stock: { $gt: 0 } }).toArray();
       if (products.length === 0) return;
   
@@ -1824,6 +1894,9 @@ app.post('/get-similar-product', async (req, res) => {
       console.error('Error in auto stock reduction:', err);
     }
   });
+
+
+
   
 // Export the app for testing
 module.exports = app;
