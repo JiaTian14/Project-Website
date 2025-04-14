@@ -509,6 +509,7 @@ let quantity = 1;
 
             } catch (error) {
                 console.error('Error:', error);
+               
                 productDetails.innerHTML = `
                     <div class="error">
                         Error loading product details.<br>
@@ -594,6 +595,76 @@ let quantity = 1;
                 addToCartBtn.textContent = 'Login to Add to Cart';
             }
         });
+
+       document.addEventListener('DOMContentLoaded', function() {
+    console.log("Product details page loaded");
+    
+    // Get product ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+    const source = urlParams.get('source');
+    
+    console.log("URL params - ID:", productId, "Source:", source);
+    
+    if (!productId || productId === 'undefined') {
+        console.error("Invalid product ID in URL");
+        displayError("Invalid product ID. Please return to the products page.");
+        return;
+    }
+    
+    // Check if we came from AR scan
+    if (source === 'ar') {
+        console.log("Loading from AR source");
+        // Try to get product data from sessionStorage
+        const arProductJson = sessionStorage.getItem('arProduct');
+        if (arProductJson) {
+            try {
+                const arProduct = JSON.parse(arProductJson);
+                console.log("Loaded AR product from session:", arProduct);
+                
+                if (arProduct && arProduct._id === productId) {
+                    // Use the AR product data
+                    displayProductDetails(arProduct);
+                    return; // Exit early, no need to fetch
+                }
+            } catch (e) {
+                console.error("Error parsing AR product data:", e);
+            }
+        }
+    }
+    
+    // If not from AR or AR data not available/matching, fetch as usual
+    console.log("Fetching product data from API for ID:", productId);
+    
+    // Your existing fetch code
+    fetch(`/api/products/${productId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Product not found');
+            }
+            return response.json();
+        })
+        .then(product => {
+            displayProductDetails(product);
+        })
+        .catch(error => {
+            console.error('Error loading product:', error);
+            displayError("Product could not be loaded. Please try again later.");
+        });
+});
+
+// Function to display error message
+function displayError(message) {
+    const productDetailsElement = document.getElementById('productDetails');
+    if (productDetailsElement) {
+        productDetailsElement.innerHTML = `
+            <div class="error-message">
+                <p>${message}</p>
+                <a href="index.html" class="btn btn-primary">Return to Products</a>
+            </div>
+        `;
+    }
+}
     </script>
 </body>
 </html>

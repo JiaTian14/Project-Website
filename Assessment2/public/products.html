@@ -580,7 +580,7 @@ header {
         `;
 
         productCard.addEventListener('click', () => {
-            window.location.href = `productDetails.html?id=${product._id}`;
+    window.location.href = `productDetails.html?id=${product._id}`;
         });
 
         productGrid.appendChild(productCard);
@@ -615,7 +615,7 @@ header {
             const user = JSON.parse(userData);
             console.log('Adding product to cart:', productId);
 
-            const response = await fetch('http://localhost:3000/api/cart/add', {
+            const response = await fetch('http://localhost:3000/api/cart/${user._id}/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -679,25 +679,282 @@ retryBtn.addEventListener('click', () => {
 });
 
 window.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "AR_RESULT") {
-    const matchedProduct = event.data.product;
-    console.log("Received AR prediction result:", matchedProduct);
+    if (event.data && event.data.type === "AR_RESULT") {
+        const matchedProduct = event.data.product;
+        console.log("Received AR prediction result:", matchedProduct);
 
-    // Optional: Scroll to matched product
-    const matchedCard = document.querySelector(`[data-id='${matchedProduct._id}']`);
-    if (matchedCard) {
-      matchedCard.scrollIntoView({ behavior: "smooth", block: "center" });
-      matchedCard.style.border = "3px solid #28a745";
-      matchedCard.style.boxShadow = "0 0 10px #28a745";
+        // Log the full product data to debug
+        console.log("Full AR product data:", JSON.stringify(matchedProduct));
+
+        // Fix any missing data in the product object
+        const fixedProduct = ensureValidProductData(matchedProduct);
+        
+        // Store the complete product data in sessionStorage
+        sessionStorage.setItem('arProduct', JSON.stringify(fixedProduct));
+        
+        // Create a special section for the AR result
+        const productList = document.getElementById("productList");
+        if (!productList) {
+            console.error("Product list element not found");
+            return;
+        }
+        
+        const parentContainer = productList.parentElement;
+        
+        // Create or get AR result section
+        let arResultSection = document.getElementById('arResultSection');
+        if (!arResultSection) {
+            arResultSection = document.createElement('div');
+            arResultSection.id = 'arResultSection';
+            arResultSection.className = 'ar-result-container';
+            
+            const heading = document.createElement('h2');
+            heading.textContent = 'AR Scan Result';
+            heading.className = 'ar-result-title';
+            arResultSection.appendChild(heading);
+            
+            const resultList = document.createElement('div');
+            resultList.id = 'arResultList';
+            resultList.className = 'product-grid';
+            arResultSection.appendChild(resultList);
+            
+            // Insert before the main product list
+            parentContainer.insertBefore(arResultSection, productList);
+            
+            // Add styles for AR results
+            const styleElement = document.createElement('style');
+            styleElement.id = 'arResultStyles';
+            styleElement.textContent = `
+                .ar-result-container {
+                    margin: 20px 0;
+                    padding: 15px;
+                    background-color: #f0fff0;
+                    border-radius: 8px;
+                    border: 1px solid #28a745;
+                }
+                .ar-result-title {
+                    color: #28a745;
+                    margin-bottom: 15px;
+                    font-size: 1.5rem;
+                }
+                #arResultList .product-card {
+                    border: 1px solid #ddd;
+                    position: relative;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    transition: transform 0.2s;
+                    cursor: pointer;
+                    padding: 12px;
+                    margin: 10px 0;
+                }
+                #arResultList .product-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                }
+                .ar-match-badge {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background-color: #28a745;
+                    color: white;
+                    padding: 3px 10px;
+                    border-radius: 15px;
+                    font-size: 12px;
+                    font-weight: bold;
+                }
+                .product-card .product-image {
+                    position: relative;
+                    overflow: hidden;
+                    height: 200px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .product-card .product-image img {
+                    max-width: 100%;
+                    max-height: 100%;
+                    object-fit: contain;
+                }
+                .product-card .product-info {
+                    padding: 10px 0;
+                }
+                .product-card .product-name {
+                    font-size: 1.2rem;
+                    margin-bottom: 5px;
+                    font-weight: 600;
+                }
+                .product-card .product-category {
+                    color: #666;
+                    margin-bottom: 5px;
+                    font-size: 0.9rem;
+                }
+                .product-card .product-price {
+                    font-weight: bold;
+                    font-size: 1.1rem;
+                    margin-bottom: 5px;
+                }
+                .product-card .product-stock {
+                    margin-bottom: 10px;
+                    font-size: 0.9rem;
+                }
+                .product-card .out-of-stock {
+                    color: #dc3545;
+                }
+                .product-card .add-to-cart-btn {
+                    width: 100%;
+                    padding: 8px;
+                    background-color: #ff8c00;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    transition: background-color 0.2s;
+                }
+                .product-card .add-to-cart-btn:hover {
+                    background-color: #e67e00;
+                }
+                .product-card .add-to-cart-btn:disabled {
+                    background-color: #cccccc;
+                    cursor: not-allowed;
+                }
+            `;
+            document.head.appendChild(styleElement);
+        }
+        
+        // Clear previous AR results
+        const arResultList = document.getElementById('arResultList');
+        if (arResultList) {
+            arResultList.innerHTML = '';
+        }
+        
+        // Display the AR result product
+        displayARProduct(fixedProduct);
+        
+        // Hide the AR form after showing the result
+        const arForm = document.getElementById('arForm');
+        if (arForm) {
+            arForm.style.display = 'none';
+        }
     }
-
-    // Show the matched product as part of the product grid (like a regular product)
-    displayProducts([matchedProduct]);
-
-    // Optionally, close the AR view after the result is displayed
-    document.getElementById('arForm').style.display = 'none';
-  }
 });
+
+// Function to ensure product data has valid values
+function ensureValidProductData(product) {
+    if (!product) return null;
+    
+    // Create a copy to avoid modifying the original
+    const fixedProduct = {...product};
+    
+    // Make sure the product has an ID
+    if (!fixedProduct._id && fixedProduct.id) {
+        fixedProduct._id = fixedProduct.id;
+    } else if (!fixedProduct._id) {
+        fixedProduct._id = generateObjectId(); // Generate a temporary ID
+    }
+    
+    function generateObjectId() {
+    const timestamp = Math.floor(new Date().getTime() / 1000).toString(16);
+    const machineId = Math.floor(Math.random() * 16777216).toString(16).padStart(6, '0');
+    const processId = Math.floor(Math.random() * 65536).toString(16).padStart(4, '0');
+    const counter = Math.floor(Math.random() * 16777216).toString(16).padStart(6, '0');
+    return timestamp + machineId + processId + counter;
+}
+    // Make sure category is not undefined
+    if (!fixedProduct.category || fixedProduct.category === 'UNDEFINED') {
+        fixedProduct.category = fixedProduct.productType || "KITCHENWARE";
+    }
+    
+    // Make sure stock is a number and not undefined
+    if (fixedProduct.stock === undefined || fixedProduct.stock === null) {
+        fixedProduct.stock = 10; // Default to some stock
+    } else {
+        fixedProduct.stock = parseInt(fixedProduct.stock, 10);
+    }
+    
+    // Make sure price is a number
+    if (fixedProduct.price === undefined || fixedProduct.price === null) {
+        if (fixedProduct.price_per_unit) {
+            fixedProduct.price = fixedProduct.price_per_unit;
+        } else {
+            fixedProduct.price = 0;
+        }
+    } else {
+        fixedProduct.price = parseFloat(fixedProduct.price);
+    }
+    
+    return fixedProduct;
+}
+
+// Function to display AR product
+function displayARProduct(product) {
+    const arResultList = document.getElementById("arResultList");
+    if (!arResultList) return;
+    
+    if (!product) {
+        arResultList.innerHTML = '<p>No product found from AR scan.</p>';
+        return;
+    }
+    
+    // Use our fixed product data
+    const price = parseFloat(product.price_per_unit || product.price || 0);
+    const stock = parseInt(product.stock || 0, 10);
+    const image = product.image_url || product.image || '';
+    const category = product.category || 'KITCHENWARE';
+    
+    const productCard = document.createElement('div');
+    productCard.classList.add('product-card');
+    productCard.setAttribute('data-id', product._id);
+    
+    productCard.innerHTML = `
+        <div class="product-image">
+            <img src="${image}" alt="${product.name}">
+            <div class="ar-match-badge">AR Match</div>
+        </div>
+        <div class="product-info">
+            <h3 class="product-name">${product.name}</h3>
+            <p class="product-category">${category}</p>
+            <p class="product-price">RM ${price.toFixed(2)}</p>
+            <p class="product-stock ${stock <= 0 ? 'out-of-stock' : ''}">
+                ${stock > 0 ? `In Stock (${stock})` : 'Out of Stock'}
+            </p>
+            <button class="add-to-cart-btn" data-id="${product._id}" ${stock <= 0 ? 'disabled' : ''}>
+                ${stock > 0 ? 'Add to Cart' : 'Out of Stock'}
+            </button>
+        </div>
+    `;
+    
+    // Add click handler to the card for navigation to details
+    productCard.addEventListener('click', (e) => {
+        // Don't navigate if clicking on the add to cart button
+        if (e.target.tagName === 'BUTTON' || e.target.classList.contains('add-to-cart-btn')) {
+            e.preventDefault();
+            e.stopPropagation();
+        } else {
+            // Navigate to product details with source=ar parameter
+    window.location.href = `productDetails.html?id=${product._id}`;
+        }
+    });
+    
+    // Add specific click handler for the add to cart button
+    const addToCartBtn = productCard.querySelector('.add-to-cart-btn');
+    if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent navigation
+            const productId = addToCartBtn.getAttribute('data-id');
+            if (typeof addToCart === 'function') {
+                addToCart(e, productId);
+            } else {
+                console.error("addToCart function not defined");
+                // Fallback implementation
+                alert(`Added ${product.name} to cart!`);
+            }
+        });
+    }
+    
+    arResultList.appendChild(productCard);
+    
+    // Scroll to AR result
+    arResultList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 
 
 document.addEventListener('DOMContentLoaded', () => {

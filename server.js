@@ -1524,6 +1524,7 @@ app.get('/api/products/search', async (req, res) => {
       res.json({
         success: true,
         product: {
+          _id: topProduct._id, // Include the product's _id
           name: topProduct.name,
           price: topProduct.price,
           image: topProduct.image,
@@ -1534,8 +1535,25 @@ app.get('/api/products/search', async (req, res) => {
       console.error("❌ Error in /api/search:", error);
       res.status(500).json({ success: false, message: "Internal Server Error" });
     }
-  });
+});
 
+// In server.js
+app.post("/api/search-wholesale", async (req, res) => {
+    const { predictedLabel } = req.body;
+  
+    try {
+      const product = await db.collection("wholesales").findOne({ category: predictedLabel });
+  
+      if (product) {
+        res.json({ success: true, product });
+      } else {
+        res.json({ success: false, message: "No match found" });
+      }
+    } catch (err) {
+      res.status(500).json({ success: false, message: "Server error" });
+    }
+  });
+  
 app.post("/api/searchByLabel", async (req, res) => {
     const label = req.body.label;
     if (!label) return res.status(400).json({ success: false, message: "Label is required." });
@@ -1892,7 +1910,20 @@ app.post('/get-similar-product', async (req, res) => {
     }
   });
 
-
+// Backend: Search by name (case-insensitive)
+app.get("/api/products/searchByName", async (req, res) => {
+    const name = req.query.name;
+    const product = await db.collection("products").findOne({
+      name: { $regex: new RegExp("^" + name + "$", "i") } // case-insensitive exact match
+    });
+  
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+  
+    res.json(product); // includes correct _id
+  });
+  
 
   
 // Export the app for testing
