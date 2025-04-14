@@ -394,6 +394,8 @@
 
         if (data.success) {
             alert("Products added to your cart!");
+            // Redirect to cart page after adding products to cart
+            window.location.href = 'cart.html';
         } else {
             alert("Failed to add products to cart.");
         }
@@ -402,6 +404,7 @@
         alert("Error occurred while reordering. Please try again.");
     }
 }
+
 
         // Load orders when the page loads
         window.onload = loadOrderHistory;

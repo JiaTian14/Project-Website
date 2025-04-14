@@ -613,62 +613,59 @@ app.post('/api/wholesalecart/:userId/add', async (req, res) => {
 app.post('/api/cart/addreorder', async (req, res) => {
     const { userId, products } = req.body;
 
-    if (!userId || !products || !Array.isArray(products)) {
-        return res.status(400).json({ success: false, message: 'Invalid request data.' });
+    if (!userId || !products || products.length === 0) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid input data.'
+        });
     }
 
+    let client;
     try {
+        // Establish MongoDB connection inside the route handler
+        
         const client = await connectDB();
         const db = client.db("techmart");
-        const carts = db.collection("carts");
+        const carts = db.collection("carts");// Access the 'carts' collection
 
-        // Find the existing cart for the user
+        // Check if the user has an existing cart
         const existingCart = await carts.findOne({ userId });
 
-        if (existingCart) {
-            // If cart exists, update the products array
-            for (const product of products) {
-                const existingProduct = existingCart.products.find(p => p._id.toString() === product._id.toString());
-
-                if (existingProduct) {
-                    // If the product already exists, increase the quantity
-                    existingProduct.quantity += product.quantity;
-                } else {
-                    // If the product does not exist, add it to the products array
-                    existingCart.products.push({
-                        _id: product._id,
-                        name: product.name,
-                        price: product.price,
-                        quantity: product.quantity
-                    });
-                }
-            }
-
-            // Update the cart with the new products
-            await carts.updateOne(
-                { userId },
-                { $set: { products: existingCart.products, updatedAt: new Date() } }
-            );
-        } else {
-            // If the cart does not exist, create a new cart
-            await carts.insertOne({
-                userId,
-                products: products.map(product => ({
-                    _id: product._id,
-                    name: product.name,
-                    price: product.price,
-                    quantity: product.quantity
-                })),
-                total: products.reduce((sum, product) => sum + product.price * product.quantity, 0),
-                addedAt: new Date(),
-                updatedAt: new Date()
+        if (!existingCart) {
+            return res.status(404).json({
+                success: false,
+                message: 'Cart not found for this user.'
             });
         }
 
-        res.json({ success: true, message: "Products added to cart." });
-    } catch (err) {
-        console.error('Error adding to cart:', err);
-        res.status(500).json({ success: false, message: 'Server error.' });
+        // Add products to the user's cart
+        const result = await carts.updateOne(
+            { userId },
+            { $push: { products: { $each: products } } } // Push products into the cart
+        );
+
+        if (result.modifiedCount > 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'Products added to cart successfully.'
+            });
+        } else {
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to update the cart.'
+            });
+        }
+    } catch (error) {
+        console.error('Error adding products to cart:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error occurred while adding products to cart.'
+        });
+    } finally {
+        // Close the MongoDB client connection after the operation is done
+        if (client) {
+            await client.close();
+        }
     }
 });
 

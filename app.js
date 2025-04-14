@@ -176,7 +176,7 @@ app.post('/api/cart/:userId/update', async (req, res) => {
       }
   
       // Validate shipping info
-      if (!shippingInfo.fullName || !shippingInfo.address || 
+      if (!shippingInfo.fullName || !shippingInfo.address ||
           !shippingInfo.city || !shippingInfo.postalCode) {
         return res.status(400).json({
           success: false,
@@ -193,51 +193,60 @@ app.post('/api/cart/:userId/update', async (req, res) => {
         });
       }
   
+      // Initialize validProducts and subtotal
+      let validProducts = [];
+      let subtotal = 0;
+  
       // Verify stock availability for all products
       for (const cartItem of cart.products) {
         const product = await products.findOne({ _id: new ObjectId(cartItem.productId) });
         if (!product) {
-          return res.status(404).json({
-            success: false,
-            message: `Product ${cartItem.productId} not found`
-          });
+          console.warn(`Product with ID ${cartItem.productId} not found. Skipping...`);
+          continue;
         }
         if (product.stock < cartItem.quantity) {
-          return res.status(400).json({
-            success: false,
-            message: `Insufficient stock for product ${cartItem.name}`
-          });
+          console.warn(`Insufficient stock for product ${cartItem.productId}. Skipping...`);
+          continue;
         }
+  
+        // Include valid product and calculate subtotal
+        validProducts.push(cartItem);
+        subtotal += cartItem.price * cartItem.quantity;
       }
   
-      // Calculate total
-      const total = cart.products.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      // Abort if no valid items
+      if (validProducts.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'No valid products to place an order.'
+        });
+      }
   
-      // Create order
+      // Create order using valid items and recalculated totals
       const newOrder = {
         userId,
-        products: cart.products,
-        subtotal: orderTotal - shippingFee,
-        total: orderTotal,
+        products: validProducts,
+        subtotal,
+        total: subtotal + (shippingFee || 0),
         shippingInfo,
         paymentMethod,
         status: "Pending", // Initial status
         date: new Date(),
       };
   
-      // Insert order
+      // Insert order into database
       const result = await orders.insertOne(newOrder);
   
       if (result.acknowledged) {
-        // Update product stock
-        for (const item of cart.products) {
+        // Update stock for valid products
+        for (const item of validProducts) {
           await products.updateOne(
             { _id: new ObjectId(item.productId) },
             { $inc: { stock: -item.quantity } }
           );
         }
   
-        // Clear user's cart
+        // Clear user's cart after successful order
         await carts.updateOne(
           { userId },
           { $set: { products: [], total: 0 } }
@@ -265,6 +274,7 @@ app.post('/api/cart/:userId/update', async (req, res) => {
       });
     }
   });
+  
   
   
 
