@@ -350,12 +350,13 @@ app.get('/api/products/forecast/:id', async (req, res) => {
   
       // Simple forecast: Predict decrease by 1 per day for 7 days
       const forecast = [];
-      let predictedStock = product.stock;
-  
-      for (let i = 1; i <= 7; i++) {
-        predictedStock = predictedStock > 0 ? predictedStock - 1 : 0;
+        let predictedStock = product.stock;
+        for (let i = 1; i <= 7; i++) {
+        const decrease = Math.floor(Math.random() * 3) + 1; // random number between 1 and 3
+        predictedStock = predictedStock - decrease;
+        predictedStock = predictedStock < 0 ? 0 : predictedStock;
         forecast.push({ day: `Day ${i}`, predictedStock });
-      }
+        }
   
       res.json({ success: true, forecast });
   
@@ -1637,13 +1638,13 @@ app.get('/api/wholesales/forecast/:id', async (req, res) => {
   
       // Simple forecast: Predict decrease by 1 per day for 7 days
       const forecast = [];
-      let predictedStock = product.stock;
-  
-      for (let i = 1; i <= 7; i++) {
-        predictedStock = predictedStock > 0 ? predictedStock - 1 : 0;
+        let predictedStock = product.stock;
+        for (let i = 1; i <= 7; i++) {
+        const decrease = Math.floor(Math.random() * 3) + 1; // random number between 1 and 3
+        predictedStock = predictedStock - decrease;
+        predictedStock = predictedStock < 0 ? 0 : predictedStock;
         forecast.push({ day: `Day ${i}`, predictedStock });
-      }
-  
+        }
       res.json({ success: true, forecast });
   
     } catch (err) {

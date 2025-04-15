@@ -485,11 +485,6 @@ header {
     <option value="Tableware">Tableware</option>
 </select>
 
-<div id="forecast-section" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
-  <h3>📦 Inventory Forecast</h3>
-  <p id="forecastMessage">Analyzing stock levels...</p>
-</div>
-
 <div id="messageArea" style="color: red; font-weight: bold;"></div>
 
 <div id="productList" class="product-grid">
@@ -1055,31 +1050,7 @@ categoryFilter.addEventListener('change', async (e) => {
 });
 
 
-async function loadForecast() {
-  try {
-    // Define the productId (you can get this from the URL, or pass it dynamically)
-    const productId = "6762801947e0fea81dd20116"; // Example product ID
 
-    const url = `http://localhost:3000/api/products/forecast/${productId}`;
-    const res = await fetch(url);  // Fetching the forecast data from the backend
-    const data = await res.json(); // Parsing the response to JSON
-
-    const forecastDiv = document.getElementById("forecastMessage");
-
-    if (data.success && data.forecast.length > 0) {
-      forecastDiv.innerHTML = data.forecast.map(item => 
-        `<strong>${item.day}</strong>: Predicted Stock = ${item.predictedStock}`
-      ).join("<br>");
-    } else {
-      forecastDiv.textContent = "✅ All products are sufficiently stocked.";
-    }
-  } catch (err) {
-    document.getElementById("forecastMessage").textContent = "❌ Error loading forecast.";
-    console.error("Forecast fetch failed:", err);
-  }
-}
-
-document.addEventListener("DOMContentLoaded", loadForecast); 
 
     // Load products when the page loads
     
