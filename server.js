@@ -1747,7 +1747,7 @@ app.get('/api/wholesalesfilter', async (req, res) => {
       const wholesalesCollection = database.collection("wholesales");
   
       if (!category || category === 'All Categories') {
-        const products = await productsCollection.find().toArray();
+        const products = await wholesalesCollection.find().toArray();
         console.log("Filtered products:", products);  
         return res.json({ success: true, data: products });
       }

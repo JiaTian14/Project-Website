@@ -1165,44 +1165,6 @@ function displayResults(products) {
     }
   });
 
-  // Function to display products in the UI
-  function displayProducts(products) {
-  const wholesaleGrid = document.getElementById("wholesale-products");
-  const messageArea = document.getElementById('messageArea');
-
-  wholesaleGrid.innerHTML = ""; // Clear previous products
-
-  if (Array.isArray(products) && products.length > 0) {
-    // ✅ Clear any previous "no products" message
-    messageArea.innerHTML = '';
-
-    products.forEach(product => {
-      const price = product.price_per_unit ?? 0;
-      wholesaleGrid.innerHTML += `
-        <div class="product-card">
-          <div class="product-image">
-                    <img src="${product.image }" alt="${product.name}">
-                </div>
-          </div>
-          <div class="product-info">
-            <h3 class="product-name">${product.name}</h3>
-            <div class="product-price">RM ${(product.price || 0).toFixed(2)}</div>
-            <div class="product-min-order">Min Order: ${product.minOrder}</div>
-            <div class="product-stock">Stock: ${product.stock}</div>
-            <button onclick="addToCart(event, '${product._id}', '${product.type === 'Wholesale' ? product._id : ''}', 1)" class="add-to-cart-btn" 
-              ${product.stock <= 0 ? 'disabled' : ''}>
-              ${product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
-            </button>
-
-          </div>
-        </div>
-      `;
-    });
-  } else {
-    // ✅ Show message if no products
-    messageArea.innerHTML = 'No products found.';
-  }
-}
 
 
   // Initialize categories
