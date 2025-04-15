@@ -560,5 +560,117 @@
                     addToCartBtn.disabled = true;
                 }
             });
+
+            document.addEventListener('DOMContentLoaded', function() {
+    console.log("Wholesale product page loaded");
+    
+    // Get wholesale product ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+    const source = urlParams.get('source');
+    
+    console.log("URL params - ID:", productId, "Source:", source);
+    
+    if (!productId || productId === 'undefined') {
+        console.error("Invalid product ID in URL");
+        displayError("Invalid product ID. Please return to the wholesale products page.");
+        return;
+    }
+    
+    // Check if we came from AR scan
+    if (source === 'ar') {
+        console.log("Loading from AR source");
+        // Try to get product data from sessionStorage
+        const arProductJson = sessionStorage.getItem('arProduct');
+        if (arProductJson) {
+            try {
+                const arProduct = JSON.parse(arProductJson);
+                console.log("Loaded AR wholesale product from session:", arProduct);
+                
+                if (arProduct && arProduct._id === productId) {
+                    // Use the AR product data
+                    displayWholesaleProductDetails(arProduct);
+                    return; // Exit early, no need to fetch
+                }
+            } catch (e) {
+                console.error("Error parsing AR wholesale product data:", e);
+            }
+        }
+    }
+    
+    // If not from AR or AR data not available/matching, fetch as usual
+    console.log("Fetching wholesale product data from API for ID:", productId);
+});
+    // Your updated fetch code for wholesale products
+    document.addEventListener('DOMContentLoaded', function() {
+    console.log("Product details page loaded");
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+
+    if (!productId) {
+        console.error('Product ID is missing');
+        return;
+    }
+
+    fetch(`/api/wholesales/${productId}`)
+        .then(response => response.json())
+        .then(product => {
+            const productDetails = document.getElementById('product-details');
+            productDetails.innerHTML = `
+                <h2>${product.name}</h2>
+                <img src="${product.image_url}" alt="${product.name}">
+                <p>Category: ${product.category}</p>
+                <p>Price: RM ${product.price}</p>
+                <p>Description: ${product.description}</p>
+                <p>Stock: ${product.stock}</p>
+                <a href="wholesale.html" class="btn">Back to Products</a>
+            `;
+        })
+        .catch(error => {
+            console.error('Error loading product details:', error);
+        });
+    });
+
+
+// Function to display wholesale product details
+function displayWholesaleProductDetails(product) {
+    const productDetailsElement = document.getElementById('productDetails');
+    if (productDetailsElement) {
+        // Construct the HTML content for wholesale product details
+        productDetailsElement.innerHTML = `
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="${product.image_url || '/path/to/default/image.jpg'}" alt="${product.name}">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">${product.name}</h3>
+                    <p class="product-category">${product.category}</p>
+                    <p class="product-price">RM ${product.price.toFixed(2)}</p>
+                    <p class="product-stock ${product.stock === 0 ? 'out-of-stock' : ''}">
+                        ${product.stock === 0 ? 'Out of stock' : `${product.stock} available`}
+                    </p>
+                    <button class="add-to-cart-btn" ${product.stock === 0 ? 'disabled' : ''}>
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+}
+
+// Function to display error message
+function displayError(message) {
+    const productDetailsElement = document.getElementById('productDetails');
+    if (productDetailsElement) {
+        productDetailsElement.innerHTML = `
+            <div class="error-message">
+                <p>${message}</p>
+                <a href="wholesale.html" class="btn btn-primary">Return to Wholesale Products</a>
+            </div>
+        `;
+    }
+}
+
         </script>
         

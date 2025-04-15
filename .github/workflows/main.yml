@@ -60,7 +60,7 @@ jobs:
         fi
     - name: Run tests
       env:
-        MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        MONGODB_URI: mongodb://localhost:27017/test
         NODE_ENV: test
         DEBUG: mongodb:*,mongoose:*
       run: |

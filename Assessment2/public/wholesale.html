@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wholesale Products</title>
+    <script src="https://aframe.io/releases/0.9.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
     <header>
         <div class="header-container">
@@ -626,40 +629,452 @@
 
     // Event listener for search input
     document.getElementById('searchInput').addEventListener('input', filterProducts);
-
-    // Open AR function
+// 修改AR.html以与wholesales集合一起工作的函数
+document.addEventListener('DOMContentLoaded', () => {
     const openARBtn = document.getElementById('openARBtn');
     const closeARBtn = document.getElementById('closeARBtn');
     const arForm = document.getElementById('arForm');
     const arFrame = document.getElementById('arFrame');
     const retryBtn = document.getElementById('retryBtn');
 
+    // 打开AR功能
     openARBtn.addEventListener('click', () => {
-        arForm.style.display = 'block';  // Show AR container
+        arForm.style.display = 'block';  // 显示AR容器
         arFrame.style.display = 'block';
-        arFrame.src = 'ar.html';  // Load the external AR scene
+        arFrame.src = 'ar.html?collection=wholesales';  // 加载带有wholesales集合参数的外部AR场景
     });
 
-    // Close AR form
+    // 关闭AR功能
     closeARBtn.addEventListener('click', () => {
-        arForm.style.display = 'none';  // Hide AR form
+        arForm.style.display = 'none';  // 隐藏AR表单
         arFrame.style.display = 'none';
-        arFrame.src = '';  // Unload AR scene
+        arFrame.src = '';  // 卸载AR场景
     });
 
     retryBtn.addEventListener('click', () => {
-        // Hide AR form and frame
+        // 隐藏AR表单和框架
         arForm.style.display = 'none';  
         arFrame.style.display = 'none';
 
-        // Reload the AR scene instantly
-        arFrame.src = 'about:blank'; // Reset iframe
-        arFrame.src = 'ar.html';  // Reload AR scene
+        // 立即重新加载AR场景
+        arFrame.src = 'about:blank'; // 完全重置iframe
+        arFrame.src = 'ar.html?collection=wholesales';  // 重新加载带有wholesales集合参数的AR场景
 
-        // Show AR view again
+        // 再次显示AR视图
         arFrame.style.display = 'block';
         arForm.style.display = 'block';
     });
+});
+    window.addEventListener("message", (event) => {
+    if (event.data && event.data.type === "AR_RESULT") {
+        // Get matched wholesale item, prioritize wholesaleProduct field
+        const matchedWholesale = event.data.wholesaleProduct || event.data.product;
+        console.log("Received AR prediction result (wholesale):", matchedWholesale);
+
+        // Log full wholesale data for debugging
+        console.log("Full AR wholesale data:", JSON.stringify(matchedWholesale));
+
+        // Ensure wholesale object data is valid and matches collection structure
+        const fixedWholesale = ensureValidWholesaleData(matchedWholesale);
+        
+        // Log the fixed structure to verify it matches the database format
+        console.log("Fixed wholesale structure:", JSON.stringify(fixedWholesale));
+        
+        // Store complete wholesale data in sessionStorage
+        sessionStorage.setItem('arWholesale', JSON.stringify(fixedWholesale));
+        
+        // Display the AR result with the proper structure
+        displayARWholesale(fixedWholesale);
+        
+        
+      
+        // 创建AR结果的特殊部分
+        const wholesaleGrid = document.getElementById("wholesale-products");
+        if (!wholesaleGrid) {
+            console.error("Wholesale products grid element not found");
+            return;
+        }
+        
+        const parentContainer = wholesaleGrid.parentElement;
+        
+        // 创建或获取AR结果部分
+        let arResultSection = document.getElementById('arResultSection');
+        if (!arResultSection) {
+            arResultSection = document.createElement('div');
+            arResultSection.id = 'arResultSection';
+            arResultSection.className = 'ar-result-container';
+            
+            const heading = document.createElement('h2');
+            heading.textContent = 'AR Scan Result';
+            heading.className = 'ar-result-title';
+            arResultSection.appendChild(heading);
+            
+            const resultList = document.createElement('div');
+            resultList.id = 'arResultList';
+            resultList.className = 'product-grid';
+            arResultSection.appendChild(resultList);
+            
+            // 在主产品列表前插入
+            parentContainer.insertBefore(arResultSection, wholesaleGrid);
+            
+            // 为AR结果添加样式
+            const styleElement = document.createElement('style');
+            styleElement.id = 'arResultStyles';
+            styleElement.textContent = `
+                .ar-result-container {
+                    margin: 20px 0;
+                    padding: 15px;
+                    background-color: #f0fff0;
+                    border-radius: 8px;
+                    border: 1px solid #28a745;
+                }
+                .ar-result-title {
+                    color: #28a745;
+                    margin-bottom: 15px;
+                    font-size: 1.5rem;
+                }
+                #arResultList .product-card {
+                    border: 1px solid #ddd;
+                    position: relative;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    transition: transform 0.2s;
+                    cursor: pointer;
+                    padding: 12px;
+                    margin: 10px 0;
+                }
+                #arResultList .product-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                }
+                .ar-match-badge {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background-color: #28a745;
+                    color: white;
+                    padding: 3px 10px;
+                    border-radius: 15px;
+                    font-size: 12px;
+                    font-weight: bold;
+                }
+                .product-card .product-image {
+                    position: relative;
+                    overflow: hidden;
+                    height: 200px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .product-card .product-image img {
+                    max-width: 100%;
+                    max-height: 100%;
+                    object-fit: contain;
+                }
+                .product-card .product-info {
+                    padding: 10px 0;
+                }
+                .product-card .product-name {
+                    font-size: 1.2rem;
+                    margin-bottom: 5px;
+                    font-weight: 600;
+                }
+                .product-card .product-category {
+                    color: #666;
+                    margin-bottom: 5px;
+                    font-size: 0.9rem;
+                }
+                .product-card .product-price {
+                    font-weight: bold;
+                    font-size: 1.1rem;
+                    margin-bottom: 5px;
+                }
+                .product-card .product-stock {
+                    margin-bottom: 10px;
+                    font-size: 0.9rem;
+                }
+                .product-card .out-of-stock {
+                    color: #dc3545;
+                }
+                .product-card .product-min-order {
+                    margin-bottom: 5px;
+                    font-size: 0.9rem;
+                    color: #555;
+                }
+                .product-card .add-to-cart-btn {
+                    width: 100%;
+                    padding: 8px;
+                    background-color: #ff8c00;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    transition: background-color 0.2s;
+                }
+                .product-card .add-to-cart-btn:hover {
+                    background-color: #e67e00;
+                }
+                .product-card .add-to-cart-btn:disabled {
+                    background-color: #cccccc;
+                    cursor: not-allowed;
+                }
+            `;
+            document.head.appendChild(styleElement);
+        }
+        
+        // 清除先前的AR结果
+        const arResultList = document.getElementById('arResultList');
+        if (arResultList) {
+            arResultList.innerHTML = '';
+        }
+        
+        // 显示AR结果产品
+        displayARWholesale(fixedWholesale);
+        
+        // 显示结果后隐藏AR表单
+        const arForm = document.getElementById('arForm');
+        if (arForm) {
+            arForm.style.display = 'none';
+        }
+    }
+});
+
+function generateObjectId() {
+    const timestamp = Math.floor(new Date().getTime() / 1000).toString(16);
+    const machineId = Math.floor(Math.random() * 16777216).toString(16).padStart(6, '0');
+    const processId = Math.floor(Math.random() * 65536).toString(16).padStart(4, '0');
+    const counter = Math.floor(Math.random() * 16777216).toString(16).padStart(6, '0');
+    return timestamp + machineId + processId + counter;
+}
+// 确保批发产品数据有效的函数，匹配真实的wholesales集合结构
+function ensureValidWholesaleData(wholesale) {
+    if (!wholesale) return null;
+    
+    // 创建副本以避免修改原始数据
+    const fixedWholesale = {...wholesale};
+    
+    // 处理MongoDB ObjectId格式
+    if (fixedWholesale._id && typeof fixedWholesale._id === 'object' && fixedWholesale._id.$oid) {
+        // 保持原样，已经是正确的格式
+    } else if (fixedWholesale._id) {
+        try {
+            // 尝试将现有ID转换为正确的MongoDB格式
+            fixedWholesale._id = { $oid: fixedWholesale._id.toString() };
+        } catch (e) {
+            console.error("Error converting _id to string:", e);
+            fixedWholesale._id = { $oid: generateObjectId() };
+        }
+    } else if (fixedWholesale.id) {
+        // 如果使用id而不是_id
+        try {
+            fixedWholesale._id = typeof fixedWholesale.id === 'object' && fixedWholesale.id.$oid ? 
+                fixedWholesale.id : { $oid: fixedWholesale.id.toString() };
+        } catch (e) {
+            console.error("Error converting id to _id:", e);
+            fixedWholesale._id = { $oid: generateObjectId() };
+        }
+    } else {
+        // 生成临时ID
+        fixedWholesale._id = { $oid: generateObjectId() };
+    }
+    
+    // 处理价格（确保它是MongoDB NumberInt格式）
+    if (fixedWholesale.price && typeof fixedWholesale.price === 'object' && fixedWholesale.price.$numberInt) {
+        // 保持原样，已经是正确的格式
+    } else if (fixedWholesale.price !== undefined) {
+        fixedWholesale.price = { $numberInt: String(parseInt(fixedWholesale.price, 10)) };
+    } else {
+        fixedWholesale.price = { $numberInt: "0" };
+    }
+    
+    // 处理最小订单量
+    if (fixedWholesale.minOrder && typeof fixedWholesale.minOrder === 'object' && fixedWholesale.minOrder.$numberInt) {
+        // 保持原样
+    } else if (fixedWholesale.minOrder !== undefined) {
+        fixedWholesale.minOrder = { $numberInt: String(parseInt(fixedWholesale.minOrder, 10)) };
+    } else {
+        fixedWholesale.minOrder = { $numberInt: "6" }; // 默认最小订单量
+    }
+    
+    // 处理库存
+    if (fixedWholesale.stock && typeof fixedWholesale.stock === 'object' && fixedWholesale.stock.$numberInt) {
+        // 保持原样
+    } else if (fixedWholesale.stock !== undefined) {
+        fixedWholesale.stock = { $numberInt: String(parseInt(fixedWholesale.stock, 10)) };
+    } else {
+        fixedWholesale.stock = { $numberInt: "0" }; // 默认库存
+    }
+    
+    // 确保其他字段存在
+    if (!fixedWholesale.description) fixedWholesale.description = "No description available.";
+    if (!fixedWholesale.category) fixedWholesale.category = "Uncategorized";
+    if (!fixedWholesale.image) fixedWholesale.image = "default-image.jpg"; // Replace with a valid placeholder path
+
+    return fixedWholesale;
+}
+
+
+
+// 显示AR批发产品的函数
+function displayARWholesale(wholesale) {
+    const arResultList = document.getElementById("arResultList");
+    if (!arResultList) return;
+    
+    if (!wholesale) {
+        arResultList.innerHTML = '<p>No wholesale item found from AR scan.</p>';
+        return;
+    }
+    
+    // 正确提取产品ID - 处理各种格式的ID
+    let productId;
+    if (wholesale._id && wholesale._id.$oid) {
+        // 如果是MongoDB格式的ObjectId，使用$oid值
+        productId = wholesale._id.$oid;
+    } else if (typeof wholesale._id === 'string') {
+        // 如果已经是字符串
+        productId = wholesale._id;
+    } else if (wholesale._id) {
+        // 如果是其他对象形式，尝试提取字符串
+        productId = wholesale._id.toString();
+        // 处理toString可能返回"[object Object]"的情况
+        if (productId === '[object Object]') {
+            // 尝试获取对象上的任何有效ID字符串
+            for (const key in wholesale._id) {
+                if (typeof wholesale._id[key] === 'string') {
+                    productId = wholesale._id[key];
+                    break;
+                }
+            }
+        }
+    } else if (wholesale.id) {
+        // 尝试使用替代ID字段
+        productId = typeof wholesale.id === 'object' && wholesale.id.$oid ? 
+            wholesale.id.$oid : wholesale.id.toString();
+    } else {
+        // 如果没有有效ID，生成一个唯一ID
+        console.warn("No valid ID found for wholesale product, generating temporary ID");
+        productId = generateObjectId();
+    }
+    
+    // 提取其他值
+    const price = wholesale.price && wholesale.price.$numberInt 
+        ? parseInt(wholesale.price.$numberInt, 10) 
+        : (typeof wholesale.price === 'number' ? wholesale.price : 0);
+        
+    const stock = wholesale.stock && wholesale.stock.$numberInt 
+        ? parseInt(wholesale.stock.$numberInt, 10) 
+        : (typeof wholesale.stock === 'number' ? wholesale.stock : 0);
+        
+    const minOrder = wholesale.minOrder && wholesale.minOrder.$numberInt 
+        ? parseInt(wholesale.minOrder.$numberInt, 10) 
+        : (typeof wholesale.minOrder === 'number' ? wholesale.minOrder : 6);
+        
+    const image = wholesale.image || '';
+    const category = wholesale.category || 'Wholesale';
+    
+    const wholesaleCard = document.createElement('div');
+    wholesaleCard.classList.add('product-card');
+    wholesaleCard.setAttribute('data-id', productId);
+    
+    wholesaleCard.innerHTML = `
+        <div class="product-image">
+            <img src="${image}" alt="${wholesale.name}">
+            <div class="ar-match-badge">Wholesale Item</div>
+        </div>
+        <div class="product-info">
+            <h3 class="product-name">${wholesale.name}</h3>
+            <p class="product-category">${category}</p>
+            <p class="product-price">RM ${price.toFixed(2)}</p>
+            <p class="product-min-order">Min Order: ${minOrder}</p>
+            <p class="product-stock ${stock <= 0 ? 'out-of-stock' : ''}">
+                ${stock > 0 ? `In Stock (${stock})` : 'Out of Stock'}
+            </p>
+            <button class="add-to-cart-btn" data-id="${productId}" ${stock <= 0 ? 'disabled' : ''}>
+                ${stock > 0 ? 'Add to Cart' : 'Out of Stock'}
+            </button>
+        </div>
+    `;
+    
+    // 为卡片添加点击处理程序，使用提取的产品ID
+    wholesaleCard.addEventListener('click', (e) => {
+        // 如果点击的是添加到购物车按钮，则不导航
+        if (e.target.tagName === 'BUTTON' || e.target.classList.contains('add-to-cart-btn')) {
+            e.preventDefault();
+            e.stopPropagation();
+        } else {
+            // 导航到批发产品详细信息页面，使用提取的产品ID
+            console.log(`Navigating to product details with ID: ${productId}`);
+            window.location.href = `wholesaleDetails.html?id=${productId}`;
+        }
+    });
+    
+    // 为添加到购物车按钮添加特定的点击处理程序
+    const addToCartBtn = wholesaleCard.querySelector('.add-to-cart-btn');
+    if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // 防止导航
+            if (typeof addToCart === 'function') {
+                // 使用产品ID和数量调用添加到购物车函数
+                addToCart(e, productId, productId, minOrder);
+            } else {
+                console.error("addToCart function not defined");
+                // 后备实现
+                alert(`Added ${wholesale.name} to cart (Min Order: ${minOrder})!`);
+            }
+        });
+    }
+    
+    arResultList.appendChild(wholesaleCard);
+    
+    // 滚动到AR结果
+    arResultList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+// 上传图片并从后端获取相似产品
+function handleUpload() {
+  const fileInput = document.getElementById('uploadInput');
+  const file = fileInput.files[0];
+
+  // 创建FormData对象，将文件附加到请求中
+  const formData = new FormData();
+  formData.append('image', file);
+
+  // 发送请求到后端API获取相似的批发产品
+  fetch('/search-wholesale', {
+    method: 'POST',
+    body: JSON.stringify({ image: formData }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    displayResults(data);  // 显示返回的批发产品
+  })
+  .catch(error => console.error('Error:', error));
+}
+
+// 显示查询结果
+function displayResults(products) {
+  const resultContainer = document.getElementById('results');
+  resultContainer.innerHTML = '';  // 清空现有的显示内容
+
+  // 遍历结果并生成产品列表
+  products.forEach(product => {
+    const productDiv = document.createElement('div');
+    productDiv.className = 'product';
+
+    const productImage = document.createElement('img');
+    productImage.src = product.image;
+    productDiv.appendChild(productImage);
+
+    const productName = document.createElement('p');
+    productName.textContent = product.name;
+    productDiv.appendChild(productName);
+
+    resultContainer.appendChild(productDiv);
+  });
+}
+
+
 
     document.addEventListener('DOMContentLoaded', () => {
   const categoryFilter = document.getElementById('categoryFilter');

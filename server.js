@@ -1746,13 +1746,11 @@ app.get('/api/wholesalesfilter', async (req, res) => {
       const database = client.db("techmart");
       const wholesalesCollection = database.collection("wholesales");
   
-      // If category is not specified, return all products
       if (!category || category === 'All Categories') {
-        const products = await wholesalesCollection.find().toArray();
+        const products = await productsCollection.find().toArray();
         console.log("Filtered products:", products);  
         return res.json({ success: true, data: products });
       }
-  
       const categoryFilter = { category: { $regex: new RegExp(category, 'i') } };  // 'i' for case-insensitive match
       const products = await wholesalesCollection.find(categoryFilter).toArray();
       res.json({ success: true, data: products });
@@ -1924,7 +1922,30 @@ app.get("/api/products/searchByName", async (req, res) => {
     res.json(product); // includes correct _id
   });
   
-
+  app.post('/search-wholesale', async (req, res) => {
+    const { image } = req.body; // 假设传递的是图像数据
+  
+    try {
+         const client = await connectDB(); // Make a DB connection
+    const db = client.db("techmart");
+    const collection = db.collection("wholesales");
+      // 假设这里通过Teachable Machine或者其他方法进行图像识别和比较
+      // 用识别到的标签进行查询
+      const result = await Wholesale.find({ category: image.category }); // 这里需要根据图片特征进行调整
+  
+      // 返回查询到的结果
+      res.json(result);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Server error");
+    }
+  });
+  
+  app.get('/ar-prediction', async (req, res) => {
+    const predictionResult = req.query.prediction;  // Assuming you send the AR model prediction result
+    const wholesaleData = await db.collection('wholesales').find({ name: predictionResult }).toArray();
+    res.json(wholesaleData);
+});
   
 // Export the app for testing
 module.exports = app;
