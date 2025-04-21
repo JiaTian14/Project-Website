@@ -1539,21 +1539,46 @@ app.get('/api/products/search', async (req, res) => {
 });
 
 // In server.js
-app.post("/api/search-wholesale", async (req, res) => {
-    const { predictedLabel } = req.body;
-  
+app.post('/api/search-wholesale', async (req, res) => {
     try {
-      const product = await db.collection("wholesales").findOne({ category: predictedLabel });
-  
-      if (product) {
-        res.json({ success: true, product });
-      } else {
-        res.json({ success: false, message: "No match found" });
-      }
-    } catch (err) {
-      res.status(500).json({ success: false, message: "Server error" });
+        const client = await connectDB(); // Your MongoDB connection
+        const db = client.db("techmart");
+        const wholesales = db.collection("wholesales"); // Change to wholesales collection
+
+        const { predictedLabel } = req.body;
+        console.log("🔍 Predicted label:", predictedLabel);
+
+        // Search for wholesale products with similar name or description
+        const matchingWholesales = await wholesales.find({
+            $or: [
+                { name: { $regex: predictedLabel, $options: 'i' } },
+                { description: { $regex: predictedLabel, $options: 'i' } },
+                { category: { $regex: predictedLabel, $options: 'i' } }
+            ]
+        }).toArray();
+
+        if (matchingWholesales.length === 0) {
+            return res.status(404).json({ success: false, message: "No matching wholesale product found." });
+        }
+
+        // Optionally: get the first product or apply sorting
+        const topWholesale = matchingWholesales[0];
+
+        res.json({
+            success: true,
+            product: {
+                _id: topWholesale._id, // Include the product's _id
+                name: topWholesale.name,
+                price: topWholesale.price,
+                image: topWholesale.image,
+                description: topWholesale.description
+            }
+        });
+    } catch (error) {
+        console.error("❌ Error in /api/search-wholesale:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
-  });
+});
   
 app.post("/api/searchByLabel", async (req, res) => {
     const label = req.body.label;

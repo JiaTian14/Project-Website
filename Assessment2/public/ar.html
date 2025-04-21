@@ -149,9 +149,18 @@
 
       resultBox.innerHTML = `🔍 Prediction: <strong>${label}</strong> (${confidence}%)<br/>Searching...`;
 
+      const urlParams = new URLSearchParams(window.location.search);
+      const collection = urlParams.get('collection') || 'products';
+
+      let endpoint;
+      if (collection === 'wholesales') {
+        endpoint = "http://localhost:3000/api/search-wholesale";
+      } else {
+        endpoint = "http://localhost:3000/api/search";
+      }
       // Search product in backend
       try {
-        const res = await fetch("http://localhost:3000/api/search", {
+        const res = await fetch(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ predictedLabel: label })

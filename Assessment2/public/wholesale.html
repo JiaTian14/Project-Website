@@ -550,6 +550,7 @@
             if (!response.ok) throw new Error('HTTP error! Status: ${response.status}');
             
             const result = await response.json();
+            console.log("API Response:", result);
             if (!result.success || !result.data.length) throw new Error("No wholesale products found!");
 
             allProducts = result.data; // Store all products globally
@@ -950,15 +951,62 @@ function displayARWholesale(wholesale) {
         productId = generateObjectId();
     }
     
-    // 提取其他值
-    const price = wholesale.price && wholesale.price.$numberInt 
-        ? parseInt(wholesale.price.$numberInt, 10) 
-        : (typeof wholesale.price === 'number' ? wholesale.price : 0);
-        
-    const stock = wholesale.stock && wholesale.stock.$numberInt 
-        ? parseInt(wholesale.stock.$numberInt, 10) 
-        : (typeof wholesale.stock === 'number' ? wholesale.stock : 0);
-        
+    // 提取价格
+    // 提取价格 - 添加详细调试
+console.log("Raw wholesale price:", wholesale.price);
+let price = 0;
+
+if (wholesale.price && wholesale.price.$numberInt) {
+    price = parseFloat(wholesale.price.$numberInt);
+    console.log("Parsed from $numberInt:", price);
+} else if (wholesale.price && wholesale.price.$numberDouble) {
+    price = parseFloat(wholesale.price.$numberDouble);
+    console.log("Parsed from $numberDouble:", price);
+} else if (typeof wholesale.price === 'number') {
+    price = wholesale.price;
+    console.log("Using number price directly:", price);
+} else if (typeof wholesale.price === 'string') {
+    price = parseFloat(wholesale.price);
+    console.log("Parsed from string:", price);
+} else {
+    console.log("Unknown price format:", wholesale.price);
+}
+
+// 检查最终价格值
+console.log("Final price before display:", price);
+console.log("Formatted price for display:", price.toFixed(2));
+
+// 直接尝试访问可能的原始小数值
+if (wholesale.price && wholesale.price.$numberDouble) {
+    console.log("Original $numberDouble value:", wholesale.price.$numberDouble);
+
+}
+    // 提取库存
+    let stock = 0;
+    if (typeof wholesale.stock === 'number') {
+        stock = wholesale.stock;
+    } else if (wholesale.stock && wholesale.stock.$numberInt) {
+        stock = parseInt(wholesale.stock.$numberInt, 10);
+    } else if (wholesale.stock && wholesale.stock.$numberDouble) {
+        stock = parseInt(wholesale.stock.$numberDouble, 10);
+    } else if (wholesale.stock && typeof wholesale.stock === 'string') {
+        stock = parseInt(wholesale.stock, 10);
+    }
+    
+    // 调试库存值
+    console.log("Product ID:", productId);
+    console.log("Raw stock value:", wholesale.stock);
+    console.log("Parsed stock value:", stock);
+    
+    // 批发商品：即使库存为0，也允许添加到购物车
+    // 对于批发商品，我们允许即使库存为0也可以添加到购物车（可能是预订或备货订单）
+    const isOutOfStock = false; // 批发商品始终可添加到购物车
+    
+    // 显示库存状态 - 但不影响按钮可用性
+    const stockDisplay = stock <= 0 ? 'Back Order Available' : `In Stock (${stock})`;
+    const stockClass = stock <= 0 ? 'low-stock' : '';
+    
+    // 提取最小订单数量
     const minOrder = wholesale.minOrder && wholesale.minOrder.$numberInt 
         ? parseInt(wholesale.minOrder.$numberInt, 10) 
         : (typeof wholesale.minOrder === 'number' ? wholesale.minOrder : 6);
@@ -980,11 +1028,11 @@ function displayARWholesale(wholesale) {
             <p class="product-category">${category}</p>
             <p class="product-price">RM ${price.toFixed(2)}</p>
             <p class="product-min-order">Min Order: ${minOrder}</p>
-            <p class="product-stock ${stock <= 0 ? 'out-of-stock' : ''}">
-                ${stock > 0 ? `In Stock (${stock})` : 'Out of Stock'}
+            <p class="product-stock ${stockClass}">
+                ${stockDisplay}
             </p>
-            <button class="add-to-cart-btn" data-id="${productId}" ${stock <= 0 ? 'disabled' : ''}>
-                ${stock > 0 ? 'Add to Cart' : 'Out of Stock'}
+            <button class="add-to-cart-btn" data-id="${productId}">
+                Add to Cart
             </button>
         </div>
     `;
@@ -1033,7 +1081,7 @@ function handleUpload() {
   formData.append('image', file);
 
   // 发送请求到后端API获取相似的批发产品
-  fetch('/search-wholesale', {
+  fetch('/api/search-wholesale', {
     method: 'POST',
     body: JSON.stringify({ image: formData }),
     headers: {
