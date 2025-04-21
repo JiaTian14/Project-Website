@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hawker Category</title>
+  <style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  background-color: #f8f9fa;
+  color: #070707;
+}
+
+/* Header Styles */
+header {
+  background-color: #BF6900;
+  padding: 1rem;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo h1 {
+  color: #070707;
+  font-size: 2.0rem;
+  font-weight: 600;
+}
+
+.header-nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: #070707;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 15px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.nav-links a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.auth-buttons a {
+  padding: 8px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.login-btn {
+  color: #070707;
+  background-color: white; 
+  margin-left: 5px;
+  display: inline-block;
+}
+
+.register-btn {
+  color: #070707;
+  border: 1px solid white;
+  background-color: white;
+  margin-left: 10px;
+  display: inline-block;
+}
+
+    h2 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      padding-top: 140px;
+      text-align: center;
+    }
+    
+    .section {
+  margin-top: 10px;
+  padding: 20px;
+  padding-top: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  transition: opacity 0.3s ease;
+}
+    .product, .wholesale {
+      border: 1px solid #ddd;
+      padding: 10px;
+      background-color: #f8f9fa;
+      margin: 10px 0;
+    }
+
+    /* Button Container to align buttons properly */
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* Space between buttons */
+  margin-top: 20px; /* Space from the top */
+}
+
+/* Button Styles */
+button {
+  background-color: #BF6900; /* Button background color */
+  color: white; /* Text color */
+  border: none;
+  padding: 12px 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  display: inline-block;
+}
+
+/* Hover Effect */
+button:hover {
+  background-color: #D9821D; /* Lighter color on hover */
+  transform: translateY(-2px); /* Button lifts slightly on hover */
+}
+
+/* Focus Effect */
+button:focus {
+  outline: none; /* Removes the focus outline */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Adds a subtle box shadow */
+}
+
+/* Active Button Effect */
+button:active {
+  transform: translateY(1px); /* Button presses down on click */
+  background-color: #A85B00; /* Slightly darker color on click */
+}
+
+  button {
+    width: 30%; /* Make buttons fill the container on small screens */
+    padding: 12px;
+    font-size: 1.1rem;
+    height: 50px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 25px;
+      padding: 10px;
+    }
+
+    /* 改进的产品卡片样式 */
+    .product-card {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .product-image {
+      width: 80%;
+      height: 250px;
+      justify-content: center;
+      position: center;
+      overflow: hidden;
+    }
+
+    .product-image img {
+      width: 80%;
+      height: 100%;
+      justify-content: center;
+      position: center;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .wholesale-image {
+      width: 80%;
+      height: 250px;
+      justify-content: center;
+      position: center;
+      overflow: hidden;
+    }
+
+    .wholesale img {
+      width: 80%;
+      height: 100%;
+      justify-content: center;
+      position: center;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .wholesale-info {
+      padding: 20px;
+      position: relative;
+      background: linear-gradient(to bottom, transparent, white 10%);
+      margin-top: -20px;
+      justify-content: center;
+      position: center;
+    }
+
+    .wholesale-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #070707;
+      margin-bottom: 12px;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .wholesale-category {
+      color: #6c757d;
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+
+    .product-card:hover .product-image img {
+      transform: scale(1.08);
+    }
+
+    .product-info {
+      padding: 20px;
+      position: relative;
+      background: linear-gradient(to bottom, transparent, white 10%);
+      margin-top: -20px;
+      justify-content: center;
+      position: center;
+    }
+
+    .product-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #070707;
+      margin-bottom: 12px;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .product-category {
+      color: #6c757d;
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .product-stock:not(.out-of-stock) {
+      background-color: rgba(40, 167, 69, 0.1);
+      color: #28a745;
+    }
+
+    .wholesale-stock:not(.out-of-stock) {
+      background-color: rgba(40, 167, 69, 0.1);
+      color: #28a745;
+    }
+
+    .out-of-stock {
+      background-color: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">
+            <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+              <img src="images/Logo.png" alt="Company Logo" width="100" height="100">
+          
+        </a>
+      </div>
+          <nav class="header-nav">
+        <ul class="nav-links">
+          <li><a href="wholesale.html">Wholesale</a></li>
+          <li><a href="hawker.html">Hawker</a></li>
+          <li><a href="products.html">Product</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="profile.html">Profile</a></li>
+          <li><a href="cart.html">Cart</a></li>
+
+              
+        </ul>
+            <div class="auth-buttons">
+              <a href="login.html" class="login-btn">Login</a>
+              <a href="clientlogin.html" class="login-btn">Seller Login</a>
+            </div>
+      </nav>
+    </div>
+  </header>
+  <h2>Hawker Category</h2>
+
+  <!-- Buttons to show Products or Wholesales -->
+  <div class="button-container">
+    <button id="showProductsBtn" onclick="toggleContent('products')">Show Hawker Products</button>
+    <button id="showWholesalesBtn" onclick="toggleContent('wholesales')">Show Hawker Wholesales</button>
+  </div>
+  <!-- Sections to display Products and Wholesales -->
+  <div id="productsSection" class="section"></div>
+  <div id="wholesalesSection" class="section"></div>
+
+  <script>
+    const userId = "user123"; // Replace this with the actual user ID
+
+    // Function to fetch and show Hawker Products
+    function showProducts() {
+  fetch('http://localhost:3000/api/hawker/products')
+    .then(response => response.json())
+    .then(data => {
+      const productsSection = document.getElementById('productsSection');
+      productsSection.innerHTML = "<h2>Hawker Products</h2>";
+      
+      if (Array.isArray(data) && data.length > 0) {
+        data.forEach(product => {
+          // Create product card container
+          const productCard = document.createElement('div');
+          productCard.classList.add('product-card');
+          productCard.setAttribute('data-id', product._id);
+
+          // Add the HTML content for the product card
+          productCard.innerHTML = `
+            <div class="product-image">
+              <img src="${product.image}" 
+                alt="${product.name}">
+            </div>
+            <div class="product-info">
+              <h3 class="product-name">${product.name}</h3>
+              <p class="product-category">${product.category}</p>
+              <p class="product-price">RM ${product.price.toFixed(2)}</p>
+              <p class="product-stock ${product.stock <= 0 ? 'out-of-stock' : ''}">
+                ${product.stock > 0 ? `In Stock (${product.stock})` : 'Out of Stock'}
+              </p>
+              <button onclick="addToCart(event, '${product._id}')" class="add-to-cart-btn" 
+                ${product.stock <= 0 ? 'disabled' : ''}>
+                ${product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
+              </button>
+            </div>
+          `;
+
+          // Add event listener for redirecting to product details
+          productCard.addEventListener('click', () => {
+            window.location.href = `productDetails.html?id=${product._id}`;
+          });
+
+          // Append the product card to the products section
+          productsSection.appendChild(productCard);
+        });
+      } else {
+        productsSection.innerHTML += "<p>No hawker products available</p>";
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching products:', error);
+      const productsSection = document.getElementById('productsSection');
+      productsSection.innerHTML = "<p>Error fetching products</p>";
+    });
+}
+
+
+function showWholesales() {
+  fetch('http://localhost:3000/api/hawker/wholesales')
+    .then(response => response.json())
+    .then(data => {
+      const wholesalesSection = document.getElementById('wholesalesSection');
+      wholesalesSection.innerHTML = "<h2>Hawker Wholesales</h2>";
+      
+      if (Array.isArray(data) && data.length > 0) {
+        data.forEach(wholesale => {
+          // Create wholesale card container
+          const wholesaleCard = document.createElement('div');
+          wholesaleCard.classList.add('wholesale-card');
+          wholesaleCard.setAttribute('data-id', wholesale._id);
+
+          // Add the HTML content for the wholesale card
+          wholesaleCard.innerHTML = `
+            <div class="wholesale-image">
+              <img src="${wholesale.image}" 
+                alt="${wholesale.name}">
+            </div>
+            <div class="wholesale-info">
+              <h3 class="wholesale-name">${wholesale.name}</h3>
+              <p class="wholesale-category">${wholesale.category}</p>
+              <p class="wholesale-price">RM ${wholesale.price.toFixed(2)}</p>
+              <p class="wholesale-stock ${wholesale.stock <= 0 ? 'out-of-stock' : ''}">
+                ${wholesale.stock > 0 ? `In Stock (${wholesale.stock})` : 'Out of Stock'}
+              </p>
+              <button onclick="addToCart(event, '${wholesale._id}')" class="add-to-cart-btn" 
+                ${wholesale.stock <= 0 ? 'disabled' : ''}>
+                ${wholesale.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
+              </button>
+            </div>
+          `;
+
+          // Add event listener for redirecting to wholesale details
+          wholesaleCard.addEventListener('click', () => {
+            window.location.href = `wholesaleDetails.html?id=${wholesale._id}`;
+          });
+
+          // Append the wholesale card to the wholesales section
+          wholesalesSection.appendChild(wholesaleCard);
+        });
+      } else {
+        wholesalesSection.innerHTML += "<p>No hawker wholesales available</p>";
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching wholesales:', error);
+      const wholesalesSection = document.getElementById('wholesalesSection');
+      wholesalesSection.innerHTML = "<p>Error fetching wholesales</p>";
+    });
+}
+
+    // Function to add an item to the cart
+    function addToCart(itemId, itemType) {
+      fetch('http://localhost:3000/api/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: userId,
+          itemId: itemId,
+          itemType: itemType
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert(data.message);
+      })
+      .catch(error => {
+        console.error('Error adding to cart:', error);
+      });
+    }
+    function toggleContent(type) {
+      document.getElementById('productsSection').style.display = 'none';
+      document.getElementById('wholesalesSection').style.display = 'none';
+
+      // Show the relevant section based on the clicked button
+      if (type === 'products') {
+        showProducts();
+        document.getElementById('productsSection').style.display = 'block';
+      } else if (type === 'wholesales') {
+        showWholesales();
+        document.getElementById('wholesalesSection').style.display = 'block';
+      }
+    }
+  </script>
+
+</body>
+</html>

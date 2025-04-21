@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - TechMart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  background-color: #f8f9fa;
+  color: #070707;
+}
+
+/* Header Styles */
+header {
+  background-color: #BF6900;
+  padding: 1rem;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo h1 {
+  color: #070707;
+  font-size: 2.0rem;
+  font-weight: 600;
+}
+
+.header-nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: #070707;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 15px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.nav-links a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.auth-buttons a {
+  padding: 8px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.login-btn {
+  color: #070707;
+  background-color: white; 
+  margin-left: 5px;
+  display: inline-block;
+}
+
+.register-btn {
+  color: #070707;
+  border: 1px solid white;
+  background-color: white;
+  margin-left: 10px;
+  display: inline-block;
+}
+
+
+        /* Profile Styles */
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+            padding-top: 130px;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+        }
+
+        .profile-sidebar {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            overflow: hidden;
+            border: 3px solid #BF6900;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-menu {
+            list-style: none;
+            margin-top: 30px;
+        }
+
+        .profile-menu li {
+            margin-bottom: 10px;
+        }
+
+        .profile-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            color: #495057;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .profile-menu a:hover {
+            background: #e9ecef;
+            color: #BF6900;
+        }
+
+        .profile-menu a.active {
+            background: #BF6900;
+            color: white;
+        }
+
+        .profile-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+
+        .page-title {
+            color: #070707;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #BF6900;
+        }
+
+        .btn {
+            background: #BF6900;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background: #BF6900;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            margin-top: 20px;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+          <div class="logo">
+            <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                <img src="images/Logo.png" alt="Company Logo" width="100" height="100">
+                
+            </a>
+          </div>
+          <nav class="header-nav">
+            <ul class="nav-links">
+              <li><a href="wholesale.html">Wholesale</a></li>
+              <li><a href="hawker.html">Hawker</a></li>    
+              <li><a href="products.html">Products</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="contact.html">Contact</a></li>
+              <li><a href="profile.html">Profile</a></li>
+              <li><a href="cart.html">Cart</a></li>
+            </ul>
+            <div class="auth-buttons">
+              <a href="login.html" class="login-btn">Login</a>
+              <a href="clientlogin.html" class="login-btn">Seller Login</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+    <div class="container">
+        <div class="profile-grid">
+            <div class="profile-sidebar">
+                <div class="profile-avatar">
+                    <img id="userAvatar" src="data:image/jpeg;base64,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">
+                </div>
+                <h2 id="userName">Loading...</h2>
+                <p id="userEmail">Loading...</p>
+                <p>Member since: <span id="userJoinDate">Loading...</span></p>
+                
+                <ul class="profile-menu">
+                    <li><a href="#" class="active"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="orderHistory.html"><i class="fas fa-shopping-bag"></i> Orders History</a></li>
+                    <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+
+            <div class="profile-content">
+                <h2 class="page-title">Edit Profile</h2>
+                <div id="message" class="message" style="display: none;"></div>
+                
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">New Password (leave blank to keep current)</label>
+                        <input type="password" id="password" name="password">
+                    </div>
+                    
+                    <button type="submit" class="btn">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 处理表单提交
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = document.getElementById('message');
+            const user = checkLogin();
+            
+            try {
+                const formData = {
+                    username: document.getElementById('username').value.trim(),
+                    email: document.getElementById('email').value.trim()
+                };
+
+                const password = document.getElementById('password').value.trim();
+                if (password) {
+                    formData.password = password;
+                }
+
+                console.log('Updating profile with data:', { ...formData, userId: user._id });
+
+                const response = await fetch('http://localhost:3000/api/profile/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: user._id,
+                        updateData: formData
+                    })
+                });
+
+                const result = await response.json();
+                console.log('Update response:', result);
+
+                if (result.success) {
+                    // 更新本地存储的用户数据
+                    const updatedUserData = {
+                        ...user,
+                        ...formData,
+                        updatedAt: new Date()
+                    };
+                    delete updatedUserData.password; // 不保存密码
+                    localStorage.setItem('userData', JSON.stringify(updatedUserData));
+                    
+                    showMessage('Profile updated successfully!', 'success');
+                    
+                    // 清除密码字段
+                document.getElementById('password').value = '';
+                
+                    // 重新加载用户数据
+                loadUserData();
+                } else {
+                    throw new Error(result.message || 'Failed to update profile');
+                }
+
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showMessage(error.message || 'Failed to update profile. Please try again.', 'error');
+            }
+        });
+
+        // 显示消息的函数
+        function showMessage(text, type = 'success') {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = `message ${type}-message`;
+            message.style.display = 'block';
+            
+            if (type === 'success') {
+                message.style.backgroundColor = '#d4edda';
+                message.style.color = '#155724';
+            } else {
+                message.style.backgroundColor = '#f8d7da';
+                message.style.color = '#721c24';
+            }
+
+            // 3秒后自动隐藏消息
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 3000);
+        }
+
+        // 登出功能
+        function logout() {
+            localStorage.removeItem('userData');
+            window.location.href = 'login.html';
+        }
+
+        // 页面加载时执行
+        document.addEventListener('DOMContentLoaded', loadUserData);
+
+        // Replace the existing loadUserData function with this one
+        async function loadUserData() {
+            const userData = localStorage.getItem('userData');
+            if (!userData) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const user = JSON.parse(userData);
+                
+                // Update form fields
+                document.getElementById('username').value = user.username || '';
+                document.getElementById('email').value = user.email || '';
+                
+                // Update sidebar info
+                document.getElementById('userName').textContent = user.username || 'User';
+                document.getElementById('userEmail').textContent = user.email || '';
+                
+                // Set avatar
+                const avatarUrl = user.avatar || 'data:image/jpeg;base64,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';
+                document.getElementById('userAvatar').src = avatarUrl;
+                
+                // Set join date
+                if (user.createdAt) {
+                    const joinDate = new Date(user.createdAt).toLocaleDateString();
+                    document.getElementById('userJoinDate').textContent = `Member Since: ${joinDate}`;
+                }
+
+                console.log('User data loaded successfully');
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showMessage('Error loading user data. Please try again.', 'error');
+            }
+        }
+
+        // Add this function to check login status
+        function checkLogin() {
+            const userData = localStorage.getItem('userData');
+            if (!userData) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            return JSON.parse(userData);
+        }
+
+        // Add this function to handle logout
+        function logout() {
+            localStorage.removeItem('userData');
+            window.location.href = 'login.html';
+        }
+
+        // Add this function to show messages
+        function showMessage(text, type = 'success') {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = `message ${type}-message`;
+            message.style.display = 'block';
+            
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 3000);
+        }
+
+        
+    </script>
+
+    <div id="profileError" class="error-message" style="display: none;"></div>
+</body>
+</html>

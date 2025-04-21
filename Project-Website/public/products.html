@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products - We Care You </title>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+<script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
+
+
+  <style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  background-color: #f8f9fa;
+  color: #070707;
+}
+
+/* Header Styles */
+header {
+  background-color: #BF6900;
+  padding: 1rem;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo h1 {
+  color: #070707;
+  font-size: 2.0rem;
+  font-weight: 600;
+}
+
+.header-nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: #070707;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 15px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.nav-links a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.auth-buttons a {
+  padding: 8px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.login-btn {
+  color: #070707;
+  background-color: white; 
+  margin-left: 5px;
+  display: inline-block;
+}
+
+.register-btn {
+  color: #070707;
+  border: 1px solid white;
+  background-color: white;
+  margin-left: 10px;
+  display: inline-block;
+}
+
+
+    /* Hero Section */
+    .hero {
+      margin-top: 80px;
+      background: linear-gradient(rgba(45, 106, 79, 0.9), rgba(45, 106, 79, 0.9)),
+                  url('https://images.unsplash.com/photo-1607082349566-187342175e2f?ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      text-align: center;
+      padding: 100px 20px;
+    }
+
+    .hero h2 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      max-width: 600px;
+      margin: 0 auto 30px;
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 15px 30px;
+      background-color: #fff;
+      color: #2d6a4f;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: transform 0.3s;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+    }
+
+    /* 改进的产品区域样式 */
+    .products-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .page-title {
+      text-align: center;
+      color: #070707;
+      margin: 20px 0 40px;
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-top: 130px;
+    }
+
+    .filters {
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .search-bar {
+      flex: 1;
+      max-width: 500px;
+      position: relative;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 12px 40px 12px 15px;
+      border: 2px solid #e9ecef;
+      border-radius: 25px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .search-bar input:focus {
+      outline: none;
+      border-color: #2d6a4f;
+      box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.2);
+    }
+
+    .search-bar i {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d;
+    }
+
+    /* 改进的产品网格布局 */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 25px;
+      padding: 10px;
+    }
+
+    /* 改进的产品卡片样式 */
+    .product-card {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 250px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .product-card:hover .product-image img {
+      transform: scale(1.08);
+    }
+
+    .product-info {
+      padding: 20px;
+      position: relative;
+      background: linear-gradient(to bottom, transparent, white 10%);
+      margin-top: -20px;
+    }
+
+    .product-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #070707;
+      margin-bottom: 12px;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .product-category {
+      color: #6c757d;
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .product-price {
+      font-size: 1.5rem;
+      color: #070707;
+      font-weight: 800;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .product-price::before {
+      content: 'RM';
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .product-stock {
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-top: 5px;
+    }
+
+    .product-stock:not(.out-of-stock) {
+      background-color: rgba(40, 167, 69, 0.1);
+      color: #28a745;
+    }
+
+    .out-of-stock {
+      background-color: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+    }
+
+    /* Loading 和 Error 状态样式 */
+    .loading, .error {
+      text-align: center;
+      padding: 40px;
+      font-size: 1.2rem;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+
+    .loading {
+      color: #070707;
+      background: rgba(45, 106, 79, 0.1);
+    }
+
+    .error {
+      color: #dc3545;
+      background: rgba(220, 53, 69, 0.1);
+    }
+
+    /* 添加到 style ��分 */
+    .add-to-cart-btn {
+      background: #BF6900;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      margin-top: 10px;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+
+    .add-to-cart-btn:hover {
+      background: #BF6900;
+    }
+
+    .add-to-cart-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+     /* AR Form Styling */
+    .ar-form {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 500px;
+        margin: 20px auto;
+        text-align: center;
+    }
+
+    .ar-container {
+        width: 100%;
+        height: 300px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    a-scene {
+        width: 100% !important;
+        height: 100% !important;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .ar-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .close-ar-btn {
+        background: red;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .close-ar-btn:hover {
+        background: darkred;
+    }
+    .retrybutton {
+        background: green;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .retrybutton:hover {
+        background: darkgreen;
+    }
+    
+    .camera-icon {
+    position: absolute;
+    left: 510px;
+    top: 40%;
+    transform: translateY(-50%);
+    width: 30px; /* Adjust icon size */
+    height: 30px;
+    opacity: 1.0; /* Faded effect to keep it in the background */
+}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">
+            <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+              <img src="images/Logo.png" alt="Company Logo" width="100" height="100">
+          
+        </a>
+      </div>
+          <nav class="header-nav">
+        <ul class="nav-links">
+          <li><a href="wholesale.html">Wholesale</a></li>
+          <li><a href="hawker.html">Hawker</a></li>
+          <li><a href="products.html">Products</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="profile.html">Profile</a></li>
+          <li><a href="cart.html">Cart</a></li>
+
+              
+        </ul>
+            <div class="auth-buttons">
+              <a href="login.html" class="login-btn">Login</a>
+              <a href="clientlogin.html" class="login-btn">Seller Login</a>
+            </div>
+      </nav>
+    </div>
+  </header>
+
+  <div class="products-container">
+    <h1 class="page-title">Products</h1>
+    
+    <div class="filters">
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search products..."oninput="filterProducts()">
+        <button id="openARBtn">
+          <img src="images/camera.png" alt="Camera Icon" class="camera-icon">
+      </button>
+       
+        
+      </div>
+    </div>
+    <!-- Camera Icon Button -->
+    
+</div>
+
+   <!-- AR Form (Initially Hidden) -->
+   <div id="arForm" class="ar-form" style="display: none;">
+    <h2>Augmented Reality View</h2>
+
+    <!-- AR Camera Container -->
+    <div class="ar-container">
+        <iframe id="arFrame" class="ar-frame" style="display: none;"></iframe>
+    </div>
+    
+    <!-- Close AR Button -->
+    <button id="retryBtn" class="retrybutton">🔄 Try Again</button>
+    <button id="closeARBtn" class="close-ar-btn">Close AR</button>
+</div>
+
+<!-- Category Filter -->
+<label for="categoryFilter">Filter by Category:</label>
+<select id="categoryFilter" required>
+    <option value="All Categories">All Categories</option>
+    <option value="Hawker">Hawker</option>
+    <option value="Kitchenware">Kitchenware</option>
+    <option value="Laundry & Cleaning">Laundry & Cleaning</option>
+    <option value="Pail & Dusbin">Pail & Dusbin</option>
+    <option value="Storage & Organisation">Storage & Organisation</option>
+    <option value="Home Improvement">Home Improvement</option>
+    <option value="Food Containers">Food Containers</option>
+    <option value="Bottles">Bottles</option>
+    <option value="Tableware">Tableware</option>
+</select>
+
+<div id="messageArea" style="color: red; font-weight: bold;"></div>
+
+<div id="productList" class="product-grid">
+  <!-- Products will be dynamically inserted here -->
+</div>
+
+  <script>
+    let allProducts = []; // Store all products
+
+    async function fetchProducts() {
+        try {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = '<div class="loading">Loading products...</div>';
+
+            console.log('Fetching products from API...');
+            const response = await fetch('http://localhost:3000/api/products');
+            console.log('Response status:', response.status);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Products data:', data);
+
+            if (!data.success) {
+                throw new Error(data.message || 'Failed to fetch products');
+            }
+
+            allProducts = data.data; // Store fetched products
+
+            if (!Array.isArray(allProducts) || allProducts.length === 0) {
+                productList.innerHTML = '<div class="error">No products found</div>';
+                return;
+            }
+
+            // Display products
+            displayProducts(allProducts);
+
+        } catch (error) {
+            console.error('Error fetching products:', error);
+            const productList = document.getElementById('productList');
+            productList.innerHTML = `
+                <div class="error">
+                    Error loading products. Please try again later.<br>
+                    Details: ${error.message}<br>
+                    <button onclick="fetchProducts()" class="retry-button">Retry</button>
+                </div>
+            `;
+        }
+    }
+
+    function displayProducts(products) {
+    const productGrid = document.getElementById("productList");
+    const messageArea = document.getElementById('messageArea');
+    if (!productGrid) return;
+
+    productGrid.innerHTML = ""; // Clear existing products
+
+    if (!Array.isArray(products) || products.length === 0) {
+        productGrid.innerHTML = '<p>No products found in this category.</p>';
+        return;
+    }
+
+    products.forEach(product => {
+        const price = product.price_per_unit ?? product.price ?? 0;
+        const stock = product.stock ?? 0;
+        const image = product.image_url ?? product.image ?? '';
+
+        const productCard = document.createElement('div');
+        productCard.classList.add('product-card');
+        productCard.setAttribute('data-id', product._id);
+        productCard.innerHTML = `
+            <div class="product-image">
+                <img src="${image}" alt="${product.name}">
+            </div>
+            <div class="product-info">
+                <h3 class="product-name">${product.name}</h3>
+                <p class="product-category">${product.category}</p>
+                <p class="product-price">${price.toFixed(2)}</p>
+                <p class="product-stock ${stock <= 0 ? 'out-of-stock' : ''}">
+                    ${stock > 0 ? `In Stock (${stock})` : 'Out of Stock'}
+                </p>
+                <button onclick="addToCart(event, '${product._id}')" class="add-to-cart-btn" ${stock <= 0 ? 'disabled' : ''}>
+                    ${stock > 0 ? 'Add to Cart' : 'Out of Stock'}
+                </button>
+            </div>
+        `;
+
+        productCard.addEventListener('click', () => {
+    window.location.href = `productDetails.html?id=${product._id}`;
+        });
+
+        productGrid.appendChild(productCard);
+    });
+}
+
+
+    function filterProducts() {
+        const searchInput = document.getElementById('searchInput').value.toLowerCase();
+        const filteredProducts = allProducts.filter(product => 
+            product.name.toLowerCase().includes(searchInput)
+        );
+        displayProducts(filteredProducts);
+    }
+
+    // Load products when the page loads
+    document.addEventListener('DOMContentLoaded', fetchProducts);
+
+    // Add event listener to the search input
+    document.getElementById('searchInput').addEventListener('input', filterProducts);
+
+    async function addToCart(event, productId) {
+        event.preventDefault(); // 阻止事件冒泡到产品卡片
+
+        try {
+            const userData = localStorage.getItem('userData');
+            if (!userData) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const user = JSON.parse(userData);
+            console.log('Adding product to cart:', productId);
+
+            const response = await fetch('http://localhost:3000/api/cart/${user._id}/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: user._id,
+                    productId: productId,
+                    quantity: 1
+                })
+            });
+
+            const data = await response.json();
+            console.log('Cart response:', data);
+
+            if (data.success) {
+                alert('Product added to cart successfully!');
+            } else {
+                throw new Error(data.message || 'Failed to add product to cart');
+            }
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            alert('Failed to add product to cart. Please try again.');
+        }
+    }
+
+    const openARBtn = document.getElementById('openARBtn');
+    const closeARBtn = document.getElementById('closeARBtn');
+    const arForm = document.getElementById('arForm');
+    const arFrame = document.getElementById('arFrame');
+    const retryBtn = document.getElementById('retryBtn');
+    // Open AR function
+    openARBtn.addEventListener('click', () => {
+    arForm.style.display = 'block';  // Show AR container
+    arFrame.style.display = 'block';
+    arFrame.src = 'ar.html';  // Load the external AR scene
+});
+
+// Close AR function
+closeARBtn.addEventListener('click', () => {
+    arForm.style.display = 'none';  // Hide AR form
+    arFrame.style.display = 'none';
+    arFrame.src = '';  // Unload the AR scene
+});
+
+retryBtn.addEventListener('click', () => {
+    // Hide AR form and frame
+    arForm.style.display = 'none';  
+    arFrame.style.display = 'none';
+
+    // Reload the AR scene instantly
+    arFrame.src = 'about:blank'; // Reset the iframe completely
+    arFrame.src = 'ar.html';  // Reload the AR scene
+
+    // Show the AR view again
+    arFrame.style.display = 'block';
+    arForm.style.display = 'block';
+
+    // Reset UI for new search
+    searchBtn.style.display = 'block';  // Show search button
+    retryBtn.style.display = 'none';  // Hide retry button
+});
+
+window.addEventListener("message", (event) => {
+    if (event.data && event.data.type === "AR_RESULT") {
+        const matchedProduct = event.data.product;
+        console.log("Received AR prediction result:", matchedProduct);
+
+        // Log the full product data to debug
+        console.log("Full AR product data:", JSON.stringify(matchedProduct));
+
+        // Fix any missing data in the product object
+        const fixedProduct = ensureValidProductData(matchedProduct);
+        
+        // Store the complete product data in sessionStorage
+        sessionStorage.setItem('arProduct', JSON.stringify(fixedProduct));
+        
+        // Create a special section for the AR result
+        const productList = document.getElementById("productList");
+        if (!productList) {
+            console.error("Product list element not found");
+            return;
+        }
+        
+        const parentContainer = productList.parentElement;
+        
+        // Create or get AR result section
+        let arResultSection = document.getElementById('arResultSection');
+        if (!arResultSection) {
+            arResultSection = document.createElement('div');
+            arResultSection.id = 'arResultSection';
+            arResultSection.className = 'ar-result-container';
+            
+            const heading = document.createElement('h2');
+            heading.textContent = 'AR Scan Result';
+            heading.className = 'ar-result-title';
+            arResultSection.appendChild(heading);
+            
+            const resultList = document.createElement('div');
+            resultList.id = 'arResultList';
+            resultList.className = 'product-grid';
+            arResultSection.appendChild(resultList);
+            
+            // Insert before the main product list
+            parentContainer.insertBefore(arResultSection, productList);
+            
+            // Add styles for AR results
+            const styleElement = document.createElement('style');
+            styleElement.id = 'arResultStyles';
+            styleElement.textContent = `
+                .ar-result-container {
+                    margin: 20px 0;
+                    padding: 15px;
+                    background-color: #f0fff0;
+                    border-radius: 8px;
+                    border: 1px solid #28a745;
+                }
+                .ar-result-title {
+                    color: #28a745;
+                    margin-bottom: 15px;
+                    font-size: 1.5rem;
+                }
+                #arResultList .product-card {
+                    border: 1px solid #ddd;
+                    position: relative;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    transition: transform 0.2s;
+                    cursor: pointer;
+                    padding: 12px;
+                    margin: 10px 0;
+                }
+                #arResultList .product-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                }
+                .ar-match-badge {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background-color: #28a745;
+                    color: white;
+                    padding: 3px 10px;
+                    border-radius: 15px;
+                    font-size: 12px;
+                    font-weight: bold;
+                }
+                .product-card .product-image {
+                    position: relative;
+                    overflow: hidden;
+                    height: 200px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .product-card .product-image img {
+                    max-width: 100%;
+                    max-height: 100%;
+                    object-fit: contain;
+                }
+                .product-card .product-info {
+                    padding: 10px 0;
+                }
+                .product-card .product-name {
+                    font-size: 1.2rem;
+                    margin-bottom: 5px;
+                    font-weight: 600;
+                }
+                .product-card .product-category {
+                    color: #666;
+                    margin-bottom: 5px;
+                    font-size: 0.9rem;
+                }
+                .product-card .product-price {
+                    font-weight: bold;
+                    font-size: 1.1rem;
+                    margin-bottom: 5px;
+                }
+                .product-card .product-stock {
+                    margin-bottom: 10px;
+                    font-size: 0.9rem;
+                }
+                .product-card .out-of-stock {
+                    color: #dc3545;
+                }
+                .product-card .add-to-cart-btn {
+                    width: 100%;
+                    padding: 8px;
+                    background-color: #ff8c00;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    transition: background-color 0.2s;
+                }
+                .product-card .add-to-cart-btn:hover {
+                    background-color: #e67e00;
+                }
+                .product-card .add-to-cart-btn:disabled {
+                    background-color: #cccccc;
+                    cursor: not-allowed;
+                }
+            `;
+            document.head.appendChild(styleElement);
+        }
+        
+        // Clear previous AR results
+        const arResultList = document.getElementById('arResultList');
+        if (arResultList) {
+            arResultList.innerHTML = '';
+        }
+        
+        // Display the AR result product
+        displayARProduct(fixedProduct);
+        
+        // Hide the AR form after showing the result
+        const arForm = document.getElementById('arForm');
+        if (arForm) {
+            arForm.style.display = 'none';
+        }
+    }
+});
+
+// Function to ensure product data has valid values
+function ensureValidProductData(product) {
+    if (!product) return null;
+    
+    // Create a copy to avoid modifying the original
+    const fixedProduct = {...product};
+    
+    // Make sure the product has an ID
+    if (!fixedProduct._id && fixedProduct.id) {
+        fixedProduct._id = fixedProduct.id;
+    } else if (!fixedProduct._id) {
+        fixedProduct._id = generateObjectId(); // Generate a temporary ID
+    }
+    
+    function generateObjectId() {
+    const timestamp = Math.floor(new Date().getTime() / 1000).toString(16);
+    const machineId = Math.floor(Math.random() * 16777216).toString(16).padStart(6, '0');
+    const processId = Math.floor(Math.random() * 65536).toString(16).padStart(4, '0');
+    const counter = Math.floor(Math.random() * 16777216).toString(16).padStart(6, '0');
+    return timestamp + machineId + processId + counter;
+}
+    // Make sure category is not undefined
+    if (!fixedProduct.category || fixedProduct.category === 'UNDEFINED') {
+        fixedProduct.category = fixedProduct.productType || "KITCHENWARE";
+    }
+    
+    // Make sure stock is a number and not undefined
+    if (fixedProduct.stock === undefined || fixedProduct.stock === null) {
+        fixedProduct.stock = 10; // Default to some stock
+    } else {
+        fixedProduct.stock = parseInt(fixedProduct.stock, 10);
+    }
+    
+    // Make sure price is a number
+    if (fixedProduct.price === undefined || fixedProduct.price === null) {
+        if (fixedProduct.price_per_unit) {
+            fixedProduct.price = fixedProduct.price_per_unit;
+        } else {
+            fixedProduct.price = 0;
+        }
+    } else {
+        fixedProduct.price = parseFloat(fixedProduct.price);
+    }
+    
+    return fixedProduct;
+}
+
+// Function to display AR product
+function displayARProduct(product) {
+    const arResultList = document.getElementById("arResultList");
+    if (!arResultList) return;
+    
+    if (!product) {
+        arResultList.innerHTML = '<p>No product found from AR scan.</p>';
+        return;
+    }
+    
+    // Use our fixed product data
+    const price = parseFloat(product.price_per_unit || product.price || 0);
+    const stock = parseInt(product.stock || 0, 10);
+    const image = product.image_url || product.image || '';
+    const category = product.category || 'KITCHENWARE';
+    
+    const productCard = document.createElement('div');
+    productCard.classList.add('product-card');
+    productCard.setAttribute('data-id', product._id);
+    
+    productCard.innerHTML = `
+        <div class="product-image">
+            <img src="${image}" alt="${product.name}">
+            <div class="ar-match-badge">AR Match</div>
+        </div>
+        <div class="product-info">
+            <h3 class="product-name">${product.name}</h3>
+            <p class="product-category">${category}</p>
+            <p class="product-price">RM ${price.toFixed(2)}</p>
+            <p class="product-stock ${stock <= 0 ? 'out-of-stock' : ''}">
+                ${stock > 0 ? `In Stock (${stock})` : 'Out of Stock'}
+            </p>
+            <button class="add-to-cart-btn" data-id="${product._id}" ${stock <= 0 ? 'disabled' : ''}>
+                ${stock > 0 ? 'Add to Cart' : 'Out of Stock'}
+            </button>
+        </div>
+    `;
+    
+    // Add click handler to the card for navigation to details
+    productCard.addEventListener('click', (e) => {
+        // Don't navigate if clicking on the add to cart button
+        if (e.target.tagName === 'BUTTON' || e.target.classList.contains('add-to-cart-btn')) {
+            e.preventDefault();
+            e.stopPropagation();
+        } else {
+            // Navigate to product details with source=ar parameter
+    window.location.href = `productDetails.html?id=${product._id}`;
+        }
+    });
+    
+    // Add specific click handler for the add to cart button
+    const addToCartBtn = productCard.querySelector('.add-to-cart-btn');
+    if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent navigation
+            const productId = addToCartBtn.getAttribute('data-id');
+            if (typeof addToCart === 'function') {
+                addToCart(e, productId);
+            } else {
+                console.error("addToCart function not defined");
+                // Fallback implementation
+                alert(`Added ${product.name} to cart!`);
+            }
+        });
+    }
+    
+    arResultList.appendChild(productCard);
+    
+    // Scroll to AR result
+    arResultList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+const categoryFilter = document.getElementById('categoryFilter');
+const messageArea = document.getElementById('messageArea');
+  const productGrid = document.getElementById('productList');
+  let allProducts = [];
+    
+  // Fetch all categories and populate the dropdown
+  async function populateCategories() {
+  try {
+    const response = await fetch('http://localhost:3000/api/productsfilter');
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch categories');
+    }
+
+    const data = await response.json();
+
+    // Check if categories exist and is an array
+    if (data.success && Array.isArray(data.categories)) {
+      // Populate the dropdown with categories
+      const categoryFilter = document.getElementById('categoryFilter');
+      data.categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        categoryFilter.appendChild(option);
+      });
+
+      // Add "All Products" option
+      const allOption = document.createElement('option');
+      allOption.value = 'All Products';
+      allOption.textContent = 'All Products';
+      categoryFilter.appendChild(allOption);
+    } else {
+      console.error('Categories data is missing or not an array');
+      document.getElementById('messageArea');
+    }
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    document.getElementById('messageArea').innerHTML = 'Error fetching categories. Please try again later.';
+  }
+}
+
+  // Fetch and display all products (for "All Products" selection)
+  async function loadProducts() {
+  try {
+    const response = await fetch('http://localhost:3000/api/products');
+    if (!response.ok) throw new Error('HTTP error! Status: ${response.status}');
+    
+    const result = await response.json();
+    if (!result.success || !Array.isArray(result.data)) throw new Error("No products found!");
+
+    allProducts = result.data; // Store all products globally
+    displayProducts(allProducts); // Display all products initially
+  } catch (error) {
+    console.error("❌ Error loading products:", error);
+    alert("Error loading products: " + error.message);
+    document.getElementById('messageArea').innerHTML = 'Error loading products. Please try again later.';
+  }
+}
+
+// Handle category selection change
+categoryFilter.addEventListener('change', async (e) => {
+    const selectedCategory = e.target.value;
+    console.log(`Selected category: ${selectedCategory}`);
+
+    // When "All Products" is selected, load all products
+    if (selectedCategory === 'All Products') {
+      loadProducts();
+    } else {
+      // Fetch filtered products based on the selected category
+      try {
+        const response = await fetch(`http://localhost:3000/api/productsfilter?category=${encodeURIComponent(selectedCategory)}`)
+
+        if (!response.ok) {
+          throw new Error('Error fetching products');
+        }
+
+        const result = await response.json();
+
+        if (result.success) {
+          displayProducts(result.data);  // Display filtered products
+        } else {
+          document.getElementById('messageArea').textContent = 'No products found in this category.';
+        }
+      } catch (error) {
+        console.error(error);
+        document.getElementById('messageArea').textContent = 'An error occurred while fetching the products.';
+      }
+    }
+  });
+
+
+  // Initialize categories
+  populateCategories();
+});
+
+
+
+
+    // Load products when the page loads
+    
+
+    </script>
+
+</body>
+</html>

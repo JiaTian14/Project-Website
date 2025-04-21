@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - We care You</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Include the same header styles as other pages */
+        * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  background-color: #f8f9fa;
+  color: #070707;
+}
+
+/* Header Styles */
+header {
+  background-color: #BF6900;
+  padding: 1rem;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo h1 {
+  color: #070707;
+  font-size: 2.0rem;
+  font-weight: 600;
+}
+
+.header-nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: #070707;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 15px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.nav-links a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.auth-buttons a {
+  padding: 8px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.login-btn {
+  color: #070707;
+  background-color: white; 
+  margin-left: 5px;
+  display: inline-block;
+}
+
+.register-btn {
+  color: #070707;
+  border: 1px solid white;
+  background-color: white;
+  margin-left: 10px;
+  display: inline-block;
+}
+
+    
+        .logo a {
+            color: white;
+            transition: opacity 0.3s;
+        }
+
+        .logo a:hover {
+            opacity: 0.9;
+        }
+
+
+        /* Checkout Specific Styles */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            padding-top: 60px;
+        }
+
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+        }
+
+        .checkout-form {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .order-summary {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            height: fit-content;
+            margin-top: 50px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h2 {
+            color: #070707;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            margin-top: 50px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #070707;
+        
+        }
+
+        .payment-methods {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .payment-method {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-method:hover {
+            border-color: #070707;
+        }
+
+        .payment-method.selected {
+            border-color: #070707;
+            background: #f8f9fa;
+        }
+
+        .payment-method i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #070707;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #070707;
+            margin-top: 30px;
+        }
+
+        .place-order-btn {
+            width: 100%;
+            padding: 15px;
+            background: #BF6900;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .place-order-btn:hover {
+            background: #070707;
+        }
+
+        .place-order-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                    <img src="images/Logo.png" alt="Company Logo" width="100" height="100">
+                    
+                </a>
+            </div>
+            <nav class="header-nav">
+                <ul class="nav-links">
+                    <li><a href="wholesale.html">Wholesale</a></li>
+                    <li><a href="hawker.html">Hawker</a></li>
+                    <li><a href="products.html">Products</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                    <li><a href="cart.html">Cart</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <a href="login.html" class="login-btn">Login</a>
+                    <a href="clientlogin.html" class="login-btn">Seller Login</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="checkout-grid">
+            <div class="checkout-form">
+                <div class="form-section">
+                    <h2>Shipping Information</h2>
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" id="address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="postalCode">Postal Code</label>
+                        <input type="text" id="postalCode" required>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>Payment Method</h2>
+                    <div class="payment-methods">
+                        <div class="payment-method" onclick="selectPayment('card')">
+                            <i class="fas fa-credit-card"></i>
+                            <p>Credit Card</p>
+                        </div>
+                        <div class="payment-method" onclick="selectPayment('paypal')">
+                            <i class="fab fa-paypal"></i>
+                            <p>PayPal</p>
+                        </div>
+                    </div>
+
+                    <div id="cardPaymentForm">
+                        <div class="form-group">
+                            <label for="cardNumber">Card Number</label>
+                            <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456">
+                        </div>
+                        <div class="form-group">
+                            <label for="cardExpiry">Expiry Date</label>
+                            <input type="text" id="cardExpiry" placeholder="MM/YY">
+                        </div>
+                        <div class="form-group">
+                            <label for="cardCVV">CVV</label>
+                            <input type="text" id="cardCVV" placeholder="123">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-summary">
+                <h2>Order Summary</h2>
+                <div id="orderItems">
+                    <!-- Order items will be dynamically inserted here -->
+                </div>
+                <div class="summary-item">
+                    <span>Subtotal</span>
+                    <span id="subtotal">RM 0.00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Shipping</span>
+                    <span id="shipping">RM 00.00</span>
+                </div>
+                <div class="summary-item total">
+                    <span>Total</span>
+                    <span id="total">RM0.00</span>
+                </div>
+                <button onclick="placeOrder()" class="place-order-btn">
+                    Place Order
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+
+        let selectedPayment = '';
+
+        async function loadOrderSummary() {
+            try {
+                const user = JSON.parse(localStorage.getItem('userData'));
+                const cartSummary = JSON.parse(localStorage.getItem('cartSummary'));
+
+                if (!cartSummary) {
+                    window.location.href = 'cart.html';
+                    return;
+                }
+
+                const response = await fetch(`http://localhost:3001/api/cart/${user._id}`);
+                const cart = await response.json();
+
+                const orderItems = document.getElementById('orderItems');
+                orderItems.innerHTML = cart.products.map(item => `
+                    <div class="summary-item">
+                        <span>${item.name} x ${item.quantity}</span>
+                        <span>RM ${(item.price * item.quantity).toFixed(2)}</span>
+                    </div>
+                `).join('');
+
+                updateCartSummary(cart);
+
+            } catch (error) {
+                console.error('Error loading cart:', error);
+            }
+        }
+
+        function updateCartSummary(cartData) {
+            const subtotal = cartData.products.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const shipping = subtotal > 50 ? 0 : 10;
+            const total = subtotal + shipping;
+
+            document.getElementById('subtotal').textContent = `RM ${subtotal.toFixed(2)}`;
+            document.getElementById('shipping').textContent = `RM ${shipping.toFixed(2)}`;
+            document.getElementById('total').textContent = `RM ${total.toFixed(2)}`;
+            document.querySelector('.cart-summary').style.display = 'block';
+        }
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+
+        async function placeOrder() {
+            if (!selectedPayment) {
+                alert('Please select a payment method');
+                return;
+            }
+
+            const shippingInfo = {
+                fullName: document.getElementById('fullName').value,
+                address: document.getElementById('address').value,
+                city: document.getElementById('city').value,
+                postalCode: document.getElementById('postalCode').value
+            };
+
+            if (!shippingInfo.fullName || !shippingInfo.address || !shippingInfo.city || !shippingInfo.postalCode) {
+                alert('Please fill in all shipping information');
+                return;
+            }
+
+            try {
+                const user = JSON.parse(localStorage.getItem('userData'));
+                const cartSummary = JSON.parse(localStorage.getItem('cartSummary'));
+                const response = await fetch('http://localhost:3001/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: user._id,
+                        shippingInfo,
+                        paymentMethod: selectedPayment,
+                        orderTotal: cartSummary.total,
+                        shippingFee: cartSummary.shipping
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || 'Failed to place order');
+                }
+
+                // Clear cart summary from localStorage
+                localStorage.removeItem('cartSummary');
+                
+                alert('Order placed successfully!');
+                window.location.href = 'orderHistory.html';
+
+            } catch (error) {
+                console.error('Error placing order:', error);
+                alert(error.message || 'Error placing order. Please try again.');
+            }
+        }
+        
+        // Check if user is logged in
+        const userData = localStorage.getItem('userData');
+        if (!userData) {
+            window.location.href = 'login.html';
+        }
+
+        // Load order summary when page loads
+        window.onload = loadOrderSummary;
+    </script>
+</body>
+</html>

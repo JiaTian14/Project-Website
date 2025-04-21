@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AR Product Search</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+  <style>
+    #preview {
+      max-width: 300px;
+      display: none;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Upload Product Image</h2>
+  <input type="file" id="imageInput" accept="image/*" />
+  <br />
+  <img id="preview" />
+  <div id="result"></div>
+
+  <script>
+    const modelURL = "https://teachablemachine.withgoogle.com/models/e06WvcQGU/"; 
+
+    let model;
+    const imageInput = document.getElementById("imageInput");
+    const preview = document.getElementById("preview");
+    const resultDiv = document.getElementById("result");
+
+    async function loadModel() {
+      model = await tmImage.load(modelURL + "model.json", modelURL + "metadata.json");
+      console.log("✅ Model loaded.");
+    }
+
+    imageInput.addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        preview.src = e.target.result;
+        preview.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+
+      // Wait until image is shown
+      preview.onload = async () => {
+        resultDiv.innerHTML = "🧠 Predicting...";
+        if (!model) await loadModel();
+        
+        const prediction = await model.predict(preview);
+        const top = prediction.reduce((max, item) =>
+          item.probability > max.probability ? item : max
+        );
+
+        resultDiv.innerHTML = `🔍 Prediction: <strong>${top.className}</strong> (${(top.probability * 100).toFixed(2)}%)`;
+
+        // Send to backend to find matching product
+        const res = await fetch("http://localhost:3000/api/search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ predictedLabel: top.className })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            resultDiv.innerHTML += `
+                <br/><br/>✅ Match Found:<br/>
+                <strong>${data.product.name}</strong><br/>
+                RM ${data.product.price}<br/>
+                <img src="${data.product.image}" width="200"/><br/>
+                <p>${data.product.description}</p>
+            `;
+            } else {
+            resultDiv.innerHTML += `<br/>❌ No matching product found.`;
+            }
+      };
+    });
+  </script>
+</body>
+</html>

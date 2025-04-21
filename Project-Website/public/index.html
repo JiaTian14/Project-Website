@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>We Care You Sdn.Bhd</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    /* Global Styles */
+    /* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  background-color: #f8f9fa;
+  color: #070707;
+}
+
+/* Header Styles */
+header {
+  background-color: #BF6900;
+  padding: 1rem;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo h1 {
+  color: #070707;
+  font-size: 2.0rem;
+  font-weight: 600;
+}
+
+.header-nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: #070707;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 15px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.nav-links a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.auth-buttons a {
+  padding: 8px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.login-btn {
+  color: #070707;
+  background-color: white; 
+  margin-left: 5px;
+  display: inline-block;
+}
+
+.register-btn {
+  color: #070707;
+  border: 1px solid white;
+  background-color: white;
+  margin-left: 10px;
+  display: inline-block;
+}
+
+/* Hero Section */
+.hero {
+  margin-top: 150px;
+  background: url('images/banner.png') no-repeat center center/cover;
+  color: black;
+  text-align: center;
+  padding: 100px 20px;
+}
+
+.hero h2 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  margin-top: 40px;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin: 0 auto 30px;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 15px 30px;
+  background-color: #fff;
+  color: #070707;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: transform 0.3s;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+}
+
+/* Features Section */
+.features {
+  padding: 80px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.features h3 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 50px;
+  color: #070707;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+}
+
+.feature-card {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.feature-card i {
+  font-size: 2.5rem;
+  color: #070707;
+  margin-bottom: 20px;
+}
+
+.feature-card h4 {
+  margin-bottom: 15px;
+  color: #070707;
+}
+
+/* Categories Section */
+.categories {
+  background-color: #f1f3f5;
+  padding: 80px 20px;
+}
+
+.categories-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.categories h3 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 50px;
+  color: #070707;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.category-card {
+  position: relative;
+  height: 200px;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.category-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.category-card:hover img {
+  transform: scale(1.1);
+}
+
+.category-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  color: white;
+}
+
+/* Footer */
+footer {
+  background-color: #BF6900;
+  color: #070707;
+  padding: 50px 20px 20px;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+}
+
+.footer-section h4 {
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+.footer-section ul {
+  list-style: none;
+}
+
+.footer-section ul li {
+  margin-bottom: 10px;
+}
+
+.footer-section ul li a {
+  color: white;
+  text-decoration: none;
+  transition: opacity 0.3s;
+}
+
+.footer-section ul li a:hover {
+  opacity: 0.8;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 50px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.social-links {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.social-links a {
+  color: white;
+  font-size: 1.5rem;
+  transition: transform 0.3s;
+}
+
+.social-links a:hover {
+  transform: translateY(-3px);
+}
+
+/* Product Section */
+.product-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.product-item {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  width: 220px;
+  text-align: center;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-item img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.product-item h3 {
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+.product-item p {
+  font-size: 14px;
+  color: #555;
+}
+
+.product-item .price {
+  font-size: 16px;
+  font-weight: bold;
+  color: #e44d26;
+}
+
+/* Recommendations Section */
+.recommendations-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding: 10px 0;
+  background-color: #f8f8f8;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.product-scroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  gap: 20px;
+  padding: 10px;
+  width: 100%;
+  scrollbar-width: none;
+}
+
+.product-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.product-item {
+  display: inline-block;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  width: 300px;
+  text-align: center;
+  justify-content: center;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  transition: transform 0.3s ease;
+}
+
+.product-item:hover {
+  transform: translateY(-10px);
+}
+
+.product-item img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.product-item h3 {
+  font-size: 18px;
+  margin: 10px 0;
+  color: #333;
+}
+
+.product-item p {
+  font-size: 14px;
+  color: #555;
+}
+
+.product-item .price {
+  font-size: 16px;
+  font-weight: bold;
+  color: #e44d26;
+}
+
+.add-to-cart {
+  padding: 8px 12px;
+  background-color: #BF6900;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.add-to-cart:hover {
+  background-color: #e44d26;
+}
+
+/* Scroll Button */
+.left-btn, .right-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+  color: #333;
+  background-color: rgba(255, 255, 255, 0.6);
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.left-btn {
+  left: 10px;
+}
+
+.right-btn {
+  right: 10px;
+}
+
+.left-btn:hover, .right-btn:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">
+        <img src="images/Logo.png" alt="Company Logo" width="100" height="100">
+
+      </div>
+      <nav class="header-nav">
+        <ul class="nav-links">
+          <li><a href="wholesale.html">Wholesale</a></li>
+          <li><a href="hawker.html">Hawker</a></li>
+          <li><a href="products.html">Products</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="profile.html">Profile</a></li>
+          <li><a href="cart.html">Cart</a></li>
+        </ul>
+        <div class="auth-buttons">
+          <a href="login.html" class="login-btn">Login</a>
+          <a href="clientlogin.html" class="login-btn">Seller Login</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h2>Welcome to We Care You</h2>
+    <a href="products.html" class="cta-button">Shop Now</a>
+  </section>
+
+  <h2>Recommended Products</h2>
+<div class="recommendations-wrapper">
+    <button class="scroll-btn left-btn" onclick="scrollRecommendations(-200)">&#8249;</button>
+    <div id="recommendations-container" class="product-scroll">
+        <p>Loading recommendations...</p>
+    </div>
+    <button class="scroll-btn right-btn" onclick="scrollRecommendations(200)">&#8250;</button>
+</div>
+
+
+
+    
+
+
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>We Care You Sdn.Bhd.</h4>
+        <ul>
+          <li><i class="fas fa-building"></i> HQ</li>
+          <li>571, Jalan Kubang Semang 14000 Bukit Mertajam, Pulau Pinang</li>
+          <li>Business Hour: Mon-Sat 9:00AM - 7:00PM</li>
+          <br>
+          <li><i class="fas fa-store"></i>Outlet</li>
+          <li>NO.69 & 70 Persiaran 1 Kulim Avenue, Kulim Hi-Tech, 09000 Kulim Kedah</li>
+          <li>Business Hour: Mon-Sun 10:00AM - 8:00PM</li>
+          <br>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Customer Service</h4>
+        <ul>
+          <li><i class="fas fa-envelope"></i> Email</li>
+          <li>wecareyousdnbhd@gmail.com</li>
+          <br>
+          <li><i class="fa fa-phone"></i>Call Us</li>
+          <li>Tel: 011-11937602</li>
+        </ul>
+        <br>
+        <ul>Follow Us</ul>
+        <div class="social-links">
+          <a href="https://www.facebook.com/WeCareYou20/" target="_blank">
+            <i class="fab fa-facebook"></i>
+        </a>
+        <a href="https://www.instagram.com/wecareyou20?igsh=aTUzbnhjeDVraXN1" target="_blank">
+          <i class="fab fa-instagram"></i>
+      </a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 We Care You. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    async function fetchRecommendations() {
+        try {
+            const response = await fetch("http://localhost:3000/api/recommendations");
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (!data.success || !data.data.length) {
+                document.getElementById("recommendations-container").innerHTML = "<p>No recommendations available.</p>";
+                return;
+            }
+
+            let recommendationsHTML = "";
+            data.data.forEach(product => {
+                recommendationsHTML += `
+                    <div class="product-item" onclick="goToProductDetails('${product._id}')">
+                        <img src="${product.image || 'default-image.jpg'}" alt="${product.name}">
+                        <h3>${product.name}</h3>
+                        <p class="price">RM ${product.price}</p>
+                        <button class="add-to-cart" onclick="event.stopPropagation(); addToCart('${product._id}', '${product.name}', ${product.price})">Add to Cart</button>
+                    </div>
+                `;
+            });
+
+            document.getElementById("recommendations-container").innerHTML = recommendationsHTML;
+
+        } catch (error) {
+            console.error("Error fetching recommendations:", error);
+            document.getElementById("recommendations-container").innerHTML = "<p>Failed to load recommendations.</p>";
+        }
+    }
+
+    // Redirect to product detail page
+    function goToProductDetails(productId) {
+        window.location.href = `productDetails.html?id=${productId}`;
+    }
+
+    // Function to check if user is logged in
+    function isLoggedIn() {
+        return localStorage.getItem("user") !== null;
+    }
+
+    // Function to add product to cart (with login check)
+    function addToCart(productId, productName, productPrice) {
+        if (!isLoggedIn()) {
+            alert("You must log in to add items to the cart.");
+            window.location.href = "login.html";
+            return;
+        }
+
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let existingProduct = cart.find(item => item.id === productId);
+
+        if (existingProduct) {
+            existingProduct.quantity += 1;
+        } else {
+            cart.push({ id: productId, name: productName, price: productPrice, quantity: 1 });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        alert(`${productName} added to cart!`);
+    }
+
+    // Run function when the page loads
+    document.addEventListener("DOMContentLoaded", fetchRecommendations);
+
+
+    // Connect to WebSocket server
+    const socket = new WebSocket('ws://localhost:3000'); // Update the endpoint to match the server
+
+    // WebSocket connection opened
+    socket.addEventListener('open', (event) => {
+        console.log('Connected to WebSocket server');
+    });
+
+    // Handle incoming WebSocket messages
+    socket.addEventListener('message', (event) => {
+        const message = JSON.parse(event.data);
+        console.log('Received message:', message);
+
+        if (message.type === 'NEW_PRODUCT') {
+            // Handle new product notification
+            const newProduct = message.data;
+            alert(`New product added: ${newProduct.name}`);
+            // Optionally, update the UI with the new product details
+        }
+    });
+
+    // WebSocket connection closed
+    socket.addEventListener('close', (event) => {
+        console.log('WebSocket connection closed');
+    });
+
+    // WebSocket error
+    socket.addEventListener('error', (event) => {
+        console.error('WebSocket error:', event);
+    });
+  </script>
+</body>
+</html>

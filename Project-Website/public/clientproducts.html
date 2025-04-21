@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management - We Care You Seller</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+        }
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 250px;
+            background: #2d6a4f;
+            padding: 20px;
+            color: white;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .sidebar-header i {
+            font-size: 2rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .add-product-btn {
+            background: #2d6a4f;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .product-image {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-name {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            color: #2d6a4f;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .product-stock {
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .edit-btn {
+            background: #ffd43b;
+            color: #664d03;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 600px;
+            margin: 50px auto;
+            height: 80vh; /* Set a fixed height */
+            overflow-y: auto; /* Enable scrolling */
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #495057;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            background: #f8f9fa;
+        }
+
+        textarea {
+            height: 100px;
+            resize: none;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-actions button {
+            padding: 10px 22px; /* Increase padding for a bigger button */
+            font-size: 15px; /* Increase font size */
+            width: 100px; /* Set a fixed width */
+            border-radius: 8px; /* Make edges rounded */
+            font-weight: bold; /* Make text bolder */
+        }
+
+        .option {
+            display: block;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 0;
+            padding: 15px;
+            background: #ffffff;
+            border-radius: 8px;
+            border: 2px solid #ccc;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Hover effect */
+        .option:hover {
+            background: #e9ecef;
+            border-color: #007bff;
+        }
+
+         /* Checkbox hover effect */
+         .form-group label:hover {
+            background: #e9ecef;
+            border-color: #007bff;
+
+        }
+
+        /* Checked effect */
+        .form-group input[type="radio"]:checked + label {
+            background: #007bff;
+            color: white;
+            border: 5px solid;
+            border-color: #007bff;
+        }
+
+        /* Hide default radio buttons */
+        .form-group input[type="radio"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-store"></i>
+            <h1>We Care You Seller</h1>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="clientdashboard.html" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="clientproducts.html" class="nav-link active">
+                    <i class="fas fa-box"></i>
+                    Products
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="clientwholesale.html" class="nav-link">
+                    <i class="fas fa-box"></i>
+                    Wholesales Products
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="clientorders.html" class="nav-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    Orders
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="clientlogin.html" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Product Management</h1>
+            <button class="add-product-btn" onclick="openModal('product')">
+                <i class="fas fa-plus"></i> Add Product
+            </button>
+        </div>
+        <!-- Category Filter -->
+        <label for="categoryFilter">Filter by Category:</label>
+        <select id="categoryFilter" required>
+            <option value="All Categories">All Categories</option>
+            <option value="Hawker">Hawker</option>
+            <option value="Kitchenware">Kitchenware</option>
+            <option value="Laundry & Cleaning">Laundry & Cleaning</option>
+            <option value="Pail & Dusbin">Pail & Dusbin</option>
+            <option value="Storage & Organisation">Storage & Organisation</option>
+            <option value="Home Improvement">Home Improvement</option>
+            <option value="Food Containers">Food Containers</option>
+            <option value="Bottles">Bottles</option>
+            <option value="Tableware">Tableware</option>
+            <option value="Bottles">Bottles</option>
+        </select><br></br>
+
+        <div id="forecast-section" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
+            <h3>📦 Inventory Forecast</h3>
+            <p id="forecastMessage">Analyzing stock levels...</p>
+          </div>
+          
+        <div id="product-list"></div>
+        <div id="messageArea" style="color: red;"></div>
+        <div class="products-grid" id="productsGrid">
+            <!-- Products will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <!-- Type Selection Modal -->
+<div id="typeSelectionModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h2>Select Product Type</h2>
+        <button onclick="openModal('wholesale')">Wholesale</button>
+        <button onclick="openModal('product')">Product</button>
+        <button onclick="closeTypeSelectionModal()">Cancel</button>
+    </div>
+</div>
+    
+    <!-- Product Modal -->
+    <div id="productModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2 id="modalTitle">Add Product</h2>
+            <form id="productForm">
+                <div class="form-group">
+                    <label for="name">Product Name</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    <input type="number" id="price" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="stock">Stock</label>
+                    <input type="number" id="stock" required>
+                </div>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" required>
+                        <option value="Kitchenware">Kitchenware</option>
+                        <option value="Hawker">Hawker</option>
+                        <option value="Laundry & Cleaning">Laundry & Cleaning</option>
+                        <option value="Pail & Dusbin">Pail & Dusbin</option>
+                        <option value="Storage & Organisation">Storage & Organisation</option>
+                        <option value="Home Improvement">Home Improvement</option>
+                        <option value="Food Containers">Food Containers</option>
+                        <option value="Bottles">Bottles</option>
+                        <option value="Tableware">Tableware</option>
+                        <option value="Bottles">Bottles</option>
+
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="Type">Type</label>
+                    <select id="Type" required>
+                        <option value="" disabled selected>Select Type</option>
+                        <option value="wholesale">Wholesale</option>
+                        <option value="product">Product</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image">Upload Image</label>
+                    <input type="file" id="image" accept="image/*">
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" id="cancelBtn">Cancel</button>
+                    <button type="submit">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Wholesale Modal -->
+    <div id="wholesaleModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Add Wholesale Product</h2>
+            <form id="wholesaleForm">
+                <div class="form-group">
+                    <label for="wholesaleName">Product Name</label>
+                    <input type="text" id="wholesaleName" required>
+                </div>
+                <div class="form-group">
+                    <label for="wholesaleDescription">Description</label>
+                    <textarea id="wholesaleDescription" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="wholesalePrice">Wholesale Price</label>
+                    <input type="number" id="wholesalePrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="wholesaleMinOrder">Minimum Order Quantity</label>
+                    <input type="number" id="wholesaleMinOrder" required>
+                </div>
+                <div class="form-group">
+                    <label for="wholesaleStock">Wholesale Stock</label>
+                    <input type="number" id="wholesaleStock" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" required>
+                        <option value="Kitchenware">Kitchenware</option>
+                        <option value="Hawker">Hawker</option>
+                        <option value="Laundry & Cleaning">Laundry & Cleaning</option>
+                        <option value="Pail & Dusbin">Pail & Dusbin</option>
+                        <option value="Storage & Organisation">Storage & Organisation</option>
+                        <option value="Home Improvement">Home Improvement</option>
+                        <option value="Food Containers">Food Containers</option>
+                        <option value="Bottles">Bottles</option>
+                        <option value="Tableware">Tableware</option>
+                        <option value="Bottles">Bottles</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="type">Type</label>
+                    <select id="type" required>
+                        <option value="Wholesale">Wholesale</option>
+                        <option value="Product">Product</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="wholesaleImage">Upload Image</label>
+                    <input type="file" id="wholesaleImage" accept="image/*">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="cancelBtn">Cancel</button>
+                    <button type="submit">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeEditModal()">&times;</span>
+            <h2>Edit Product</h2>
+            <form id="editForm">
+                <input type="hidden" id="editProductId" name="editProductId">
+                <label for="editProductName">Name:</label>
+                <input type="text" id="editProductName" required><br><br>
+        
+                <label for="editProductDescription">Description:</label>
+                <textarea id="editProductDescription" required></textarea><br><br>
+        
+                <label for="editProductPrice">Price:</label>
+                <input type="number" step="0.01" id="editProductPrice" required><br><br>
+        
+                <label for="editProductStock">Stock:</label>
+                <input type="number" id="editProductStock" required><br><br>
+        
+                <div class="form-group">
+                    <label for="editProductCategory">Category:</label>
+                    <select id="editProductCategory" required>
+                        <option value="Kitchenware">Kitchenware</option>
+                        <option value="Hawker">Hawker</option>
+                        <option value="Laundry & Cleaning">Laundry & Cleaning</option>
+                        <option value="Pail & Dusbin">Pail & Dusbin</option>
+                        <option value="Storage & Organisation">Storage & Organisation</option>
+                        <option value="Home Improvement">Home Improvement</option>
+                        <option value="Food Containers">Food Containers</option>
+                        <option value="Bottles">Bottles</option>
+                        <option value="Tableware">Tableware</option>
+                    </select>
+                </div>
+                
+                <label for="editProductImage">Image URL:</label>
+                <input type="text" id="editProductImage" required><br><br>
+        
+                <button type="submit" class="save-btn" >Save Changes</button>
+                <button type="button" onclick="closeModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentProductId = null;
+
+        async function loadProducts() {
+            try {
+                const response = await fetch('http://localhost:3000/api/products');
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.message || 'Failed to load products');
+                }
+
+                const productsGrid = document.getElementById('productsGrid');
+                productsGrid.innerHTML = ''; // Clear the product grid before appending new products
+
+                productsGrid.innerHTML = result.data.map(product => `
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="${product.image }" 
+                                 alt="${product.name}">
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">${product.name}</h3>
+                            <div class="product-price">RM${product.price.toFixed(2)}</div>
+                            <div class="product-stock">Stock: ${product.stock}</div>
+                            <div class="product-actions">
+                                <button class="edit-btn" onclick="editProduct('${product._id}')">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="delete-btn" onclick="deleteProduct('${product._id}')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading products:', error);
+                alert('Error loading products: ' + error.message);
+            }
+        }
+
+        // Event listener for product form submission
+        document.addEventListener('DOMContentLoaded', () => {
+            
+
+        // Open modal to add/edit product
+        function openModal(productId = null) {
+            currentProductId = productId;
+            document.getElementById('modalTitle').textContent = productId ? 'Edit Product' : 'Add Product';
+            document.getElementById('productModal').style.display = 'block';
+
+            if (productId) {
+                loadProductData(productId); // Only fetch data if editing an existing product
+            } else {
+                document.getElementById('productForm').reset();
+            }
+        }
+
+        // Close modal and reset the form
+        function closeModal() {
+            document.getElementById('productModal').style.display = 'none';
+            document.getElementById('editModal').style.display = 'none';
+            document.getElementById('productForm').reset();
+            document.getElementById('editForm').reset();
+            currentProductId = null;
+        }
+    });
+
+        // Wait for the DOM to fully load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ensure the cancel button is present and functional
+            const cancelBtn = document.getElementById('cancelBtn');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', closeModal);
+            } else {
+                console.error("Cancel button not found");
+            }
+        });
+
+        const submitButton = document.querySelector('#editForm button[type="submit"]');
+        submitButton.disabled = true;
+        try {
+            // ... your update code ...
+        } finally {
+            submitButton.disabled = false;
+        }
+
+        async function loadProductData(productId) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/products/${productId}`);
+                const product = await response.json();
+
+                document.getElementById('editProductId').value = product._id.$oid;
+                document.getElementById('editProductName').value = product.name;
+                document.getElementById('editProductPrice').value = product.price.$numberDouble;
+                document.getElementById('editProductStock').value = product.stock.$numberInt;
+
+                document.getElementById('editModal').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading product:', error);
+            }
+        }
+
+        // Add this function to handle editing products
+        async function editProduct(productId) {
+            try {
+                console.log('Loading product:', productId);
+                const response = await fetch(`http://localhost:3000/api/products/${productId}`);
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.message || 'Failed to fetch product');
+                }
+
+                const product = result.data;
+                console.log('Loaded product data:', product); // Debug log
+
+                // Populate edit form
+                document.getElementById('editProductId').value = product._id;
+                document.getElementById('editProductName').value = product.name;
+                document.getElementById('editProductDescription').value = product.description;
+                document.getElementById('editProductPrice').value = product.price;
+                document.getElementById('editProductStock').value = product.stock;
+                document.getElementById('editProductCategory').value = product.category;
+                document.getElementById('editProductImage').value = product.image;
+
+                // Show the edit modal
+                document.getElementById('editModal').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading product:', error);
+                alert(error.message);
+            }
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            const productId = document.getElementById('editProductId').value; // Get the product ID
+            console.log('Updating product ID:', productId); // Debug log
+
+            const updatedProduct = {
+                name: document.getElementById('editProductName').value,
+                description: document.getElementById('editProductDescription').value,
+                price: parseFloat(document.getElementById('editProductPrice').value),
+                stock: parseInt(document.getElementById('editProductStock').value),
+                category: document.getElementById('editProductCategory').value,
+                image: document.getElementById('editProductImage').value,
+            };
+
+            console.log('Update data:', updatedProduct); // Debug log
+
+            // Validate the data
+            if (!productId || !updatedProduct.name || isNaN(updatedProduct.price) || isNaN(updatedProduct.stock)) {
+                alert('Please fill all fields with valid values');
+                return; // Exit if validation fails
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3000/api/products/${productId}`, {
+                    method: 'PUT', // Use PUT to update the product
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedProduct)
+                });
+                const result = await response.json();
+                console.log('Server response:', result); // Debug log
+
+                alert('Product updated successfully');
+                closeModal();
+                await loadProducts(); // Refresh the product list
+
+            } catch (error) {
+                console.error('Error during update:', error);
+                alert(`Failed to update product: ${error.message}`);
+            }
+        });
+
+        async function deleteProduct(productId) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                try {
+                    const response = await fetch(`http://localhost:3000/api/products/${productId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        loadProducts();
+                    }
+                } catch (error) {
+                    console.error('Error deleting product:', error);
+                }
+            }
+        }
+        window.onload = loadProducts;
+
+        function showTypeSelection() {
+        document.getElementById('typeSelectionModal').style.display = 'block';
+    }
+
+    function closeTypeSelectionModal() {
+        document.getElementById('typeSelectionModal').style.display = 'none';
+    }
+
+    function openModal(type) {
+        closeTypeSelectionModal(); // Close type selection modal
+
+        if (type === "wholesale") {
+            document.getElementById('wholesaleModal').style.display = 'block';
+        } else {
+            document.getElementById('productModal').style.display = 'block';
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('productModal').style.display = 'none';
+        document.getElementById('wholesaleModal').style.display = 'none';
+        document.getElementById('typeSelectionModal').style.display = 'none';
+        document.getElementById('editModal').style.display = 'none';
+        document.getElementById('editForm').reset();
+        document.getElementById('productForm').reset();
+        document.getElementById('wholesaleForm').reset();
+    }
+
+    document.getElementById('productForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const productData = {
+            name: document.getElementById('name').value,
+            description: document.getElementById('description').value,
+            price: parseFloat(document.getElementById('price').value),
+            stock: parseInt(document.getElementById('stock').value),
+            category: document.getElementById('category').value,
+            image: document.getElementById('image').value || ''
+        };
+
+        try {
+            const response = await fetch('http://localhost:3000/api/products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(productData)
+            });
+            const result = await response.json();
+            if (result.success) {
+                alert('Product added successfully!');
+                closeModal();
+                await loadProducts();
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert(error.message);
+        }
+    });
+
+    document.getElementById('wholesaleForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const wholesaleData = {
+            name: document.getElementById('wholesaleName').value,
+            description: document.getElementById('wholesaleDescription').value,
+            price: parseFloat(document.getElementById('wholesalePrice').value),
+            minOrder: parseInt(document.getElementById('wholesaleMinOrder').value),
+            stock: parseInt(document.getElementById('wholesaleStock').value), // Added stock field
+            category: document.getElementById('category').value,
+            type: document.getElementById('type').value, // Added type field
+            image: document.getElementById('wholesaleImage').value || ''
+        };
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+        const cancelButton = document.getElementById("cancel-button");
+        if (cancelButton) {
+            cancelButton.addEventListener("click", function() {
+                document.getElementById("wholesale-form").style.display = "none";
+            });
+        } else {
+            console.error("Cancel button not found.");
+        }
+    });
+
+
+        try {
+            const response = await fetch('http://localhost:3000/api/wholesales', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(wholesaleData)
+            });
+            const result = await response.json();
+            if (result.success) {
+                alert('Wholesale product added successfully!');
+                closeModal();
+                await loadProducts();
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert(error.message);
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+  const categoryFilter = document.getElementById('categoryFilter');
+  
+  // Fetch all categories and populate the dropdown
+  async function populateCategories() {
+  try {
+    const response = await fetch('http://localhost:3000/api/productsfilter');
+    const data = await response.json();
+
+      if (data.success && Array.isArray(data.data)) {
+        const categories = [...new Set(data.data.map(p => p.category))]; // Unique categories
+
+        categories.forEach(category => {
+          const option = document.createElement('option');
+          option.value = category;
+          option.textContent = category;
+          categoryFilter.appendChild(option);
+        });
+
+        // Add "All Products" at the end
+        const allOption = document.createElement('option');
+        allOption.value = 'All Products';
+        allOption.textContent = 'All Products';
+        categoryFilter.appendChild(allOption);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      document.getElementById('messageArea').textContent = 'Error loading categories.';
+    }
+  }
+
+  // Fetch and display all products (for "All Products" selection)
+  async function loadWholesaleProducts() {
+    try {
+      const response = await fetch('http://localhost:3000/api/productsfilter'); // No category filter for all products
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        displayProducts(data.data);  // Display all products
+      } else {
+        document.getElementById('messageArea').textContent = 'No products found.';
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      document.getElementById('messageArea').innerHTML = 'Error fetching products. Please try again later.';
+    }
+  }
+
+  // Handle category selection change
+  categoryFilter.addEventListener('change', async (e) => {
+    let selectedCategory = e.target.value;  // Use `let` here instead of `const`
+  console.log(`Selected category: ${selectedCategory}`);
+
+  // Replace special '&' symbol with '%26' for specific categories
+  const specialCategories = ['Laundry & Cleaning', 'Pail & Dusbin', 'Storage & Organisation'];
+  if (specialCategories.includes(selectedCategory)) {
+    selectedCategory = selectedCategory.replace('&', '%26');  // Replace '&' with '%26'
+  }
+     // URL encode the category to handle spaces and special characters
+     const encodedCategory = encodeURIComponent(selectedCategory);
+
+// When "All Products" is selected, load all products
+if (encodedCategory === 'All%20Products') {
+      loadWholesaleProducts();
+    } else {
+      // Fetch filtered products based on the selected category
+      try {
+        const response = await fetch(`http://localhost:3000/api/productsfilter?category=${selectedCategory}`);
+        if (!response.ok) {
+          throw new Error('Error fetching products');
+        }
+
+        const result = await response.json();
+
+        if (result.success) {
+          displayProducts(result.data);  // Display filtered products
+        } else {
+          document.getElementById('messageArea').textContent = 'No products found in this category.';
+        }
+      } catch (error) {
+        console.error(error);
+        document.getElementById('messageArea').textContent = 'An error occurred while fetching the products.';
+      }
+    }
+  });
+
+  // Function to display products in the UI
+  function displayProducts(products) {
+    const productsGrid = document.getElementById('productsGrid');
+    const messageArea = document.getElementById('messageArea');
+    
+    productsGrid.innerHTML = ''; // Clear previous products
+    messageArea.innerHTML = ''; // Clear previous message
+
+    // Log to debug the content of products
+    console.log("Products received: ", products);
+
+    // Check if products is an array and has items
+    if (Array.isArray(products) && products.length > 0) {
+      products.forEach(product => {
+        const productCard = document.createElement('div');
+        productCard.classList.add('product-card');
+
+        // Check if the product has an image, otherwise use a default placeholder
+        const image = product.image ;
+
+        productCard.innerHTML = `
+          <div class="product-image">
+            <img src="${image}" alt="${product.name}">
+          </div>
+          <div class="product-info">
+            <h3 class="product-name">${product.name}</h3>
+            <div class="product-details">
+              <span class="product-price">RM ${product.price}</span>
+              <span class="product-stock">Stock: ${product.stock}</span><br></br>
+              <span class="product-min-order">Min Order: ${product.minOrder}</span>
+            </div>
+            <div class="product-actions">
+              <button class="edit-btn" onclick="editWholesaleProduct('${product._id}')">
+                  <i class="fas fa-edit"></i> Edit
+              </button>
+              <button class="delete-btn" onclick="deleteWholesaleProduct('${product._id}')">
+                  <i class="fas fa-trash"></i> Delete
+              </button>
+            </div>
+        `;
+        
+        productsGrid.appendChild(productCard);
+      });
+    } else {
+      // Show the message if no products found
+      messageArea.innerHTML = 'No products found for the selected category.';
+    }
+  }
+
+  // Initialize categories
+  populateCategories();
+});
+
+async function loadForecast() {
+  try {
+    // Define the productId (you can get this from the URL, or pass it dynamically)
+    const productId = "6762801947e0fea81dd20116"; // Example product ID
+
+    const url = `http://localhost:3000/api/products/forecast/${productId}`;
+    const res = await fetch(url);  // Fetching the forecast data from the backend
+    const data = await res.json(); // Parsing the response to JSON
+
+    const forecastDiv = document.getElementById("forecastMessage");
+
+    if (data.success && data.forecast.length > 0) {
+      forecastDiv.innerHTML = data.forecast.map(item => 
+        `<strong>${item.day}</strong>: Predicted Stock = ${item.predictedStock}`
+      ).join("<br>");
+    } else {
+      forecastDiv.textContent = "✅ All products are sufficiently stocked.";
+    }
+  } catch (err) {
+    document.getElementById("forecastMessage").textContent = "❌ Error loading forecast.";
+    console.error("Forecast fetch failed:", err);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadForecast); 
+        // Load products when page loads
+        window.onload = loadProducts;
+
+    </script>
+</body>
+</html>

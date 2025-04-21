@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History - TechMart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #070707;
+            padding-top: 80px;
+        }
+
+        /* Header Styles */
+    header {
+      background-color: #BF6900;
+      padding: 1rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo h1 {
+      color: #070707;
+      font-size: 2.0rem;
+      font-weight: 600;
+    }
+
+    .logo i {
+      color: #fff;
+      font-size: 2rem;
+    }
+
+    .header-nav {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: #070707;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 8px 15px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    .nav-links a:hover {
+      background-color: rgba(255,255,255,0.1);
+    }
+
+    .auth-buttons a {
+      padding: 8px 20px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .login-btn {
+      color: #070707;
+      background-color: white;
+    }
+
+    .register-btn {
+      color: #070707;
+      border: 1px solid white;
+      background-color: white;
+      margin-left: 10px;
+    }
+
+        /* Order History Styles */
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            text-align: center;
+            color: #070707;
+            margin-bottom: 30px;
+            margin-top: 80px;
+            font-size: 2.5rem;
+        }
+
+        .order-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .order-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .order-header h3 {
+            color: #070707;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .order-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .order-items {
+            padding: 20px;
+        }
+
+        .order-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 20px;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-details h4 {
+            color: #070707;
+            margin-bottom: 5px;
+        }
+
+        .item-price {
+            color: #070707;
+            font-weight: bold;
+        }
+
+        .order-total {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-top: 1px solid #e9ecef;
+            text-align: right;
+            font-weight: bold;
+            color: #070707;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #6c757d;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .back-button:hover {
+            text-decoration: underline;
+        }
+
+        .no-orders {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .no-orders i {
+            font-size: 3rem;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+
+        .no-orders p {
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .shop-now-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #BF6900;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+        .shop-now-btn:hover {
+            background: #BF6900;
+        }
+        .reorder-btn {
+            margin-top: 10px;
+            padding: 10px 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .reorder-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                    <img src="images/Logo.png" alt="Company Logo" width="100" height="100">
+                    
+                </a>
+            </div>
+          <nav class="header-nav">
+            <ul class="nav-links">
+              <li><a href="wholesale.html">Wholesale</a></li>
+              <li><a href="hawker.html">Hawker</a></li>   
+              <li><a href="products.html">Products</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="contact.html">Contact</a></li>
+              <li><a href="profile.html">Profile</a></li>
+              <li><a href="cart.html">Cart</a></li>
+            </ul>
+            <div class="auth-buttons">
+              <a href="login.html" class="login-btn">Login</a>
+              <a href="clientlogin.html" class="login-btn">Seller Login</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+    <div class="container">
+        <h1 class="page-title">Order History</h1>
+        <a href="profile.html" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Back to Profile
+        </a>
+        
+        <div id="orderHistory" class="order-list">
+            <!-- Orders will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        const userData = localStorage.getItem('userData');
+        if (!userData) {
+            window.location.href = 'login.html';
+        }
+
+        async function loadOrderHistory() {
+            try {
+                const user = JSON.parse(userData);
+                const orderHistoryDiv = document.getElementById('orderHistory');
+                
+                const response = await fetch(`http://localhost:3000/api/orders/${user._id}`);
+                const orders = await response.json();
+
+                if (!orders || orders.length === 0) {
+                    orderHistoryDiv.innerHTML = `
+                        <div class="no-orders">
+                            <i class="fas fa-shopping-bag"></i>
+                            <p>You haven't placed any orders yet.</p>
+                            <a href="products.html" class="shop-now-btn">Start Shopping</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                orderHistoryDiv.innerHTML = '';
+                orders.forEach(order => {
+                    const orderCard = document.createElement('div');
+                    orderCard.className = 'order-card';
+
+                    const productsHTML = order.products.map(product => `
+                        <div class="order-item">
+                            <div class="item-details">
+                                <h4>${product.name}</h4>
+                                <p>Quantity: ${product.quantity}</p>
+                            </div>
+                            <div class="item-price">
+                                RM ${(product.price * product.quantity).toFixed(2)}
+                            </div>
+                        </div>
+                    `).join('');
+
+                    orderCard.innerHTML = `
+                        <div class="order-header">
+                            <h3>Order #${order._id.slice(-6)}</h3>
+                            <div class="order-meta">
+                                <span>Ordered on ${new Date(order.date).toLocaleDateString()}</span>
+                                <span>Status: ${order.status || 'Completed'}</span>
+                            </div>
+                        </div>
+                        <div class="order-items">${productsHTML}</div>
+                        <div class="order-total">Total: RM ${(order.total || 0).toFixed(2)}</div>
+                        <button class="reorder-btn">Reorder</button>
+                    `;
+
+                    const reorderBtn = orderCard.querySelector('.reorder-btn');
+                    reorderBtn.addEventListener('click', () => reorder(order.products));
+
+                    orderHistoryDiv.appendChild(orderCard);
+                });
+
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                document.getElementById('orderHistory').innerHTML = `
+                    <div class="no-orders">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Error loading order history. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function reorder(products) {
+    const userData = localStorage.getItem('userData');
+    if (!userData) {
+        alert('Please login to reorder.');
+        return;
+    }
+
+    const user = JSON.parse(userData);
+
+    try {
+        const response = await fetch('http://localhost:3000/api/cart/addreorder', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId: user._id,
+                products: products
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert("Products added to your cart!");
+            // Redirect to cart page after adding products to cart
+            window.location.href = 'cart.html';
+        } else {
+            alert("Failed to add products to cart.");
+        }
+    } catch (error) {
+        console.error('Error during reorder:', error);
+        alert("Error occurred while reordering. Please try again.");
+    }
+}
+
+
+        // Load orders when the page loads
+        window.onload = loadOrderHistory;
+    </script>
+</body>
+</html>

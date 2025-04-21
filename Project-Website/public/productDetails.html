@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - We Care You</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  background-color: #f8f9fa;
+  color: #070707;
+}
+
+/* Header Styles */
+header {
+  background-color: #BF6900;
+  padding: 1rem;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo h1 {
+  color: #070707;
+  font-size: 2.0rem;
+  font-weight: 600;
+}
+
+.header-nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: #070707;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 15px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.nav-links a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.auth-buttons a {
+  padding: 8px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.login-btn {
+  color: #070707;
+  background-color: white; 
+  margin-left: 5px;
+  display: inline-block;
+}
+
+.register-btn {
+  color: #070707;
+  border: 1px solid white;
+  background-color: white;
+  margin-left: 10px;
+  display: inline-block;
+}
+
+    /* Hero Section */
+    .hero {
+      margin-top: 80px;
+      background: linear-gradient(rgba(45, 106, 79, 0.9), rgba(45, 106, 79, 0.9)),
+                  url('https://images.unsplash.com/photo-1607082349566-187342175e2f?ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      text-align: center;
+      padding: 100px 20px;
+    }
+
+    .hero h2 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      max-width: 600px;
+      margin: 0 auto 30px;
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 15px 30px;
+      background-color: #fff;
+      color: #BF6900;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: transform 0.3s;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+    }
+
+
+        /* Product Details Styles */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .product-details {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 400px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .product-header {
+            border-bottom: 2px solid #070707;
+            padding-bottom: 20px;
+        }
+
+        .product-name {
+            font-size: 2.5rem;
+            color: #070707;
+            margin-bottom: 10px;
+        }
+
+        .product-category {
+            display: inline-block;
+            background: #e9ecef;
+            padding: 5px 15px;
+            border-radius: 20px;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+
+        .product-price {
+            font-size: 2rem;
+            color: #070707;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .product-price::before {
+        content: 'RM';
+        font-size: 1rem;
+        font-weight: 600;
+        }
+
+        .product-description {
+            color: #070707;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .product-stock {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+        }
+
+        .stock-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .in-stock {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .out-of-stock {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .add-to-cart {
+            background: #BF6900;
+            color: #070707;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+
+        .add-to-cart:hover {
+            background: #BF6900;
+        }
+
+        .add-to-cart:disabled {
+            background: #070707;
+            cursor: not-allowed;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #495057;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 30px;
+            margin-top: 80px;
+            padding-top: 50px;
+        }
+
+        .back-button:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: #070707;
+        }
+
+        /* Error State */
+        .error {
+            text-align: center;
+            padding: 40px;
+            color: #dc3545;
+        }
+
+        /* 添加到 style 部分 */
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .quantity-controls button {
+            width: 36px;
+            height: 36px;
+            border: 2px solid #070707;
+            background: white;
+            color: #070707;
+            font-size: 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .quantity-controls button:hover {
+            background: #BF6900;
+            color: white;
+        }
+
+        .quantity-controls button:disabled {
+            border-color: #ccc;
+            color: #ccc;
+            cursor: not-allowed;
+            background: #f8f9fa;
+        }
+
+        .quantity-controls span {
+            font-size: 1.1rem;
+            font-weight: 500;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            padding: 12px 24px;
+            background-color: #BF6900;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .add-to-cart:hover {
+            background-color: #BF6900;
+        }
+
+        .add-to-cart:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .add-to-cart i {
+            font-size: 1.2rem;
+        }
+
+        /* 库存状态样式 */
+        .stock-status {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .in-stock {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .out-of-stock {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+          <div class="logo">
+            <a href="index.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                <img src="images/Logo.png" alt="Company Logo" width="100" height="100">
+                
+            </a>
+          </div>
+          <nav class="header-nav">
+            <ul class="nav-links">
+              <li><a href="wholesale.html">Wholesale</a></li>
+              <li><a href="hawker.html">Hawker</a></li>
+              <li><a href="products.html">Products</a></li>
+              <li><a href="about.html">About</a></li>
+              <li><a href="contact.html">Contact</a></li>
+              <li><a href="profile.html">Profile</a></li>
+              <li><a href="cart.html">Cart</a></li>
+
+              
+            </ul>
+            <div class="auth-buttons">
+              <a href="login.html" class="login-btn">Login</a>
+              <a href="clientlogin.html" class="login-btn">Seller Login</a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+    <div class="container">
+        <a href="products.html" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Back to Products
+        </a>
+        
+        <div id="productDetails" class="product-details">
+            <!-- Product details will be inserted here -->
+        </div>
+    </div>
+
+    
+
+    <script>
+
+let quantity = 1;
+        const maxStock = parseInt('${product.stock}'); // 假设产品数据中有stock字段
+
+        function incrementQuantity() {
+            if (quantity < maxStock) {
+                quantity++;
+                updateQuantityDisplay();
+            }
+        }
+
+        function decrementQuantity() {
+            if (quantity > 1) {
+                quantity--;
+                updateQuantityDisplay();
+            }
+        }
+
+        function updateQuantityDisplay() {
+            document.getElementById('quantity').textContent = quantity;
+        }
+
+        async function fetchProductDetails() {
+            const productId = new URLSearchParams(window.location.search).get('id');
+            const productDetails = document.getElementById('productDetails');
+            
+            try {
+                productDetails.innerHTML = '<div class="loading">Loading product details...</div>';
+
+                const response = await fetch(`http://localhost:3000/api/products/${productId}`);
+                console.log('Raw response:', response);
+                
+                if (!response.ok) throw new Error('Failed to fetch product details');
+                
+                const data = await response.json();
+                console.log('Product data:', data);
+                
+                const product = data.data || data;
+                
+                productDetails.innerHTML = `
+                    <div class="product-image">
+                        <img src="${product.image }" 
+                             alt="${product.name}">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-header">
+                            <h1 class="product-name">${product.name}</h1>
+                            <span class="product-category">${product.category || 'Uncategorized'}</span>
+                        </div>
+                        
+                        <p class="product-description">${product.description || 'No description available'}</p>
+                        
+                        <div class="product-price">${product.price.toFixed(2)}</div>
+                        
+                        <div class="product-stock">
+                            <span>Availability:</span>
+                            <span class="stock-status ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}">
+                                ${product.stock > 0 ? `In Stock (${product.stock} units)` : 'Out of Stock'}
+                            </span>
+                        </div>
+                        
+                        ${product.stock > 0 ? `
+                        <div class="quantity-controls">
+                          <button onclick="updateQuantity(-1, ${product.stock})">
+                              <i class="fas fa-minus"></i>
+                        </button>
+                        <span id="quantity">1</span>
+                        <button onclick="updateQuantity(1, ${product.stock})">
+                            <i class="fas fa-plus"></i>
+                          </button>
+                        </div>
+                    
+                        <button 
+                          class="add-to-cart" 
+                          onclick="addToCart('${product._id}')"
+                          ${product.stock <= 0 ? 'disabled' : ''}>
+                          <i class="fas fa-shopping-cart"></i>
+                          Add to Cart 
+                        </button>
+                      
+                ` : ''}
+                </div>
+              `;  
+
+            } catch (error) {
+                console.error('Error:', error);
+               
+                productDetails.innerHTML = `
+                    <div class="error">
+                        Error loading product details.<br>
+                        ${error.message}<br>
+                        <button onclick="fetchProductDetails()" class="retry-button">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        function updateQuantity(change, maxStock) {
+            const quantityElement = document.getElementById('quantity');
+            let quantity = parseInt(quantityElement.textContent);
+            
+            // 计算新的数量
+            let newQuantity = quantity + change;
+            
+            // 确保数量在 1 和库存数量之间
+            newQuantity = Math.max(1, Math.min(maxStock, newQuantity));
+            
+            // 更新显示
+            quantityElement.textContent = newQuantity;
+            
+            // 根据数量启用/禁用按钮
+            const decreaseBtn = quantityElement.previousElementSibling;
+            const increaseBtn = quantityElement.nextElementSibling;
+            
+            decreaseBtn.disabled = newQuantity <= 1;
+            increaseBtn.disabled = newQuantity >= maxStock;
+        }
+
+        async function addToCart() {
+            const userData = localStorage.getItem('userData');
+            if (!userData) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const user = JSON.parse(userData);
+            console.log('User data:', user);
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+            const quantityElement = document.getElementById('quantity');
+            const quantity = parseInt(quantityElement.textContent);
+
+            try {
+                const response = await fetch(`http://localhost:3000/api/cart/${user._id}/add`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: user._id,
+                        productId: productId,
+                        quantity: quantity
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Product added to cart successfully!');
+                    // 可以选择跳转到购物车页面或保持在当前页面
+                    // window.location.href = 'cart.html';
+                } else {
+                    alert(result.message || 'Failed to add product to cart');
+                }
+            } catch (error) {
+                console.error('Error adding to cart:', error);
+                alert('Failed to add product to cart. Please try again.');
+            }
+        }
+
+        // Load product details when the page loads
+        window.onload = fetchProductDetails;
+
+        // 页面加载时检查登录状态
+        document.addEventListener('DOMContentLoaded', () => {
+            const userData = localStorage.getItem('userData');
+            const addToCartBtn = document.getElementById('addToCartBtn');
+            
+            if (!userData) {
+                addToCartBtn.textContent = 'Login to Add to Cart';
+            }
+        });
+
+       document.addEventListener('DOMContentLoaded', function() {
+    console.log("Product details page loaded");
+    
+    // Get product ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+    const source = urlParams.get('source');
+    
+    console.log("URL params - ID:", productId, "Source:", source);
+    
+    if (!productId || productId === 'undefined') {
+        console.error("Invalid product ID in URL");
+        displayError("Invalid product ID. Please return to the products page.");
+        return;
+    }
+    
+    // Check if we came from AR scan
+    if (source === 'ar') {
+        console.log("Loading from AR source");
+        // Try to get product data from sessionStorage
+        const arProductJson = sessionStorage.getItem('arProduct');
+        if (arProductJson) {
+            try {
+                const arProduct = JSON.parse(arProductJson);
+                console.log("Loaded AR product from session:", arProduct);
+                
+                if (arProduct && arProduct._id === productId) {
+                    // Use the AR product data
+                    displayProductDetails(arProduct);
+                    return; // Exit early, no need to fetch
+                }
+            } catch (e) {
+                console.error("Error parsing AR product data:", e);
+            }
+        }
+    }
+    
+    // If not from AR or AR data not available/matching, fetch as usual
+    console.log("Fetching product data from API for ID:", productId);
+    
+    // Your existing fetch code
+    fetch(`/api/products/${productId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Product not found');
+            }
+            return response.json();
+        })
+        .then(product => {
+            displayProductDetails(product);
+        })
+        .catch(error => {
+            console.error('Error loading product:', error);
+            displayError("Product could not be loaded. Please try again later.");
+        });
+});
+
+// Function to display error message
+function displayError(message) {
+    const productDetailsElement = document.getElementById('productDetails');
+    if (productDetailsElement) {
+        productDetailsElement.innerHTML = `
+            <div class="error-message">
+                <p>${message}</p>
+                <a href="index.html" class="btn btn-primary">Return to Products</a>
+            </div>
+        `;
+    }
+}
+    </script>
+</body>
+</html>

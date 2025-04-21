@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AR View</title>
+
+  <!-- A-Frame and AR.js -->
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/ar.js/aframe/build/aframe-ar.min.js"></script>
+
+  <!-- Teachable Machine -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+
+  <style>
+    body { margin: 0; overflow: hidden; }
+    a-scene { width: 100vw; height: 100vh; }
+
+    .button-container {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    .button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .button:hover { background: #0056b3; }
+    #retryBtn { display: none; }
+    #imgPreview { display: none; max-width: 300px; margin-top: 10px; z-index: 10; }
+    #resultBox {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 10px;
+      border-radius: 8px;
+      max-width: 300px;
+      font-family: Arial, sans-serif;
+      z-index: 20;
+    }
+    canvas { display: none; }
+  </style>
+</head>
+<body>
+  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+    <a-marker preset="hiro">
+      <a-box id="productBox" position="0 0.5 0" material="color: red;"></a-box>
+    </a-marker>
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <div class="button-container">
+    <button id="searchBtn" class="button">🔍 Search Related Products</button>
+    <input type="file" id="uploadInput" accept="image/*" style="display: none;">
+    <button id="uploadBtn" class="button">📂 Upload Image</button>
+    <button id="retryBtn" class="button">🔄 Try Again</button>
+  </div>
+
+  <!-- Result Box -->
+  <div id="resultBox"></div>
+
+  <canvas id="captureCanvas"></canvas>
+  <img id="imgPreview" />
+
+  <script>
+    const modelURL = "https://teachablemachine.withgoogle.com/models/77yDGUYGc/";
+    let model;
+
+    async function loadModel() {
+      if (!model) {
+        model = await tmImage.load(modelURL + "model.json", modelURL + "metadata.json");
+        console.log(" AI model loaded");
+      }
+    }
+
+    // Buttons
+    const searchBtn = document.getElementById("searchBtn");
+    const retryBtn = document.getElementById("retryBtn");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const uploadInput = document.getElementById("uploadInput");
+    const canvas = document.getElementById("captureCanvas");
+    const resultBox = document.getElementById("resultBox");
+
+    searchBtn.addEventListener("click", captureAndSearch);
+    uploadBtn.addEventListener("click", () => uploadInput.click());
+    retryBtn.addEventListener("click", () => {
+      searchBtn.style.display = "block";
+      retryBtn.style.display = "none";
+      resultBox.innerHTML = "";
+    });
+
+    uploadInput.addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async function (e) {
+        const imgPreview = document.getElementById("imgPreview");
+        imgPreview.src = e.target.result;
+        imgPreview.style.display = "block";
+
+        await loadModel();
+        await predictAndSearch(imgPreview);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    async function captureAndSearch() {
+      const video = document.querySelector("video");
+      if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
+        alert("Camera not ready.");
+        return;
+      }
+
+      const ctx = canvas.getContext("2d");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const img = new Image();
+      img.src = canvas.toDataURL("image/png");
+      img.onload = async () => {
+        await loadModel();
+        await predictAndSearch(img);
+      };
+    }
+
+    async function predictAndSearch(imageElement) {
+      resultBox.innerHTML = "🧠 Predicting...";
+      const prediction = await model.predict(imageElement);
+
+      const top = prediction.reduce((max, p) => p.probability > max.probability ? p : max);
+      const label = top.className;
+      const confidence = (top.probability * 100).toFixed(2);
+
+      resultBox.innerHTML = `🔍 Prediction: <strong>${label}</strong> (${confidence}%)<br/>Searching...`;
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const collection = urlParams.get('collection') || 'products';
+
+      let endpoint;
+      if (collection === 'wholesales') {
+        endpoint = "http://localhost:3000/api/search-wholesale";
+      } else {
+        endpoint = "http://localhost:3000/api/search";
+      }
+      // Search product in backend
+      try {
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ predictedLabel: label })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+  resultBox.innerHTML += 
+    `<br/><br/><strong>✅ Match Found:</strong><br/>
+     ${data.product.name}<br/>
+     RM ${data.product.price}<br/>
+     <img src="${data.product.image}" width="200"/><br/>
+     <p>${data.product.description}</p>`;
+
+  // 👇 Send message to parent window
+  window.parent.postMessage({ type: "AR_RESULT", product: data.product }, "*");
+}
+
+
+        retryBtn.style.display = "inline-block";
+        searchBtn.style.display = "none";
+      } catch (err) {
+        console.error("Fetch error:", err);
+        resultBox.innerHTML += `<br/>❌ Error connecting to server.`;
+      }
+    }
+  </script>
+</body>
+</html>
